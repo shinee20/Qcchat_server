@@ -1,6 +1,6 @@
 # Qcchat_server - Junior Developer Seminar project 
 
-## complete
+## in progress
 - dependency
   - netty
   - redis

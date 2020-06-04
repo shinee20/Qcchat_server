@@ -7,11 +7,13 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.service.JwtService;
-import org.qucell.chat.service.JwtService.Token;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 @Aspect
 public class AuthAspect {
@@ -56,12 +58,13 @@ public class AuthAspect {
         // 토큰 해독
         final JwtService.Token token = jwtService.decode(jwt);
         int userIdx = token.getUser_id();
-
+        System.out.println("--------------------------%%%%%" + userIdx + "%%%%%%%%%%%%%---------------------");
         // 비정상 토큰인 경우 403 리턴
         if(userIdx < 1)
             return RES_RESPONSE_ENTITY_403;
 
         // 컨트롤러의 매개변수인 idx 로 전달
+        
         pjp.getArgs()[0] = (Integer)userIdx;
         return pjp.proceed(pjp.getArgs());
     }

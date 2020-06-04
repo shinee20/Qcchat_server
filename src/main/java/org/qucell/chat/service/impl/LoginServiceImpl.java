@@ -1,8 +1,10 @@
 package org.qucell.chat.service.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 
-import org.qucell.chat.controller.UserController;
+import javax.annotation.Resource;
+
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.LoginVO;
@@ -11,10 +13,9 @@ import org.qucell.chat.service.JwtService;
 import org.qucell.chat.service.LoginService;
 import org.qucell.chat.util.ResponseMessage;
 import org.qucell.chat.util.StatusCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -31,12 +32,16 @@ public class LoginServiceImpl implements LoginService{
 	@Autowired
 	private JwtService jwtService;
 	
+	@Resource(name="redisTemplate")
+	private RedisTemplate<String, Object> redisTemplate;
+	
 	//login 
 	@Override
 	public DefaultRes<JwtService.TokenRes> login(LoginVO vo) {
 		// TODO Auto-generated method stub
 		try {
-			Users user = userDao.getByUserId(vo.getUserId());
+			Users user = userDao.getByUserName(vo.getUserName());
+			log.info(user.toString());
 			if (user != null) {
 				//create token 
 				final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.getUserId()));

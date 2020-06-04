@@ -1,6 +1,7 @@
 package org.qucell.chat.dao.impl;
 
 import java.io.IOException;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -9,7 +10,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.qucell.chat.dao.RoomDao;
 import org.qucell.chat.model.RoomVO;
 import org.qucell.chat.model.Rooms;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class RoomDaoImpl implements RoomDao {
 	
 	@Inject
@@ -28,6 +31,11 @@ public class RoomDaoImpl implements RoomDao {
 	public List<Rooms> selectAllRooms() throws IOException {
 		// TODO Auto-generated method stub
 		return sqlSession.selectList(namespace+".selectAllRooms");
+	}
+	@Override
+	public List<Rooms> selectAllRooms(int userId) throws IOException {
+		// TODO Auto-generated method stub
+		return sqlSession.selectList(namespace+".selectAllRoomsWithoutAlreadyJoin", userId);
 	}
 
 	@Override

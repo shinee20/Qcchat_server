@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-	@Cacheable(value = "userCache", key = "#userId")
 	public Users getUser(int userId) throws IOException {
 		Users user = userDao.getByUserId(userId);
 		return user;

@@ -44,7 +44,6 @@ public class UserController {
 
 	@PostMapping("/login")
 	public ResponseEntity login(@RequestBody LoginVO vo) throws IOException {
-		log.info(vo.toString());
 		return new ResponseEntity<>(loginService.login(vo), HttpStatus.OK);
 	}
 
@@ -64,7 +63,7 @@ public class UserController {
 	 */
 	@Auth
 	@GetMapping("/info")
-	public ResponseEntity getUserInfo(@RequestHeader(required=false, defaultValue="0") int idx) throws IOException {
+	public ResponseEntity getUserInfo(@RequestHeader(required = false, defaultValue = "0") int idx) throws IOException {
 		return new ResponseEntity<>(userService.getByUserId(idx), HttpStatus.OK);
 	}
 

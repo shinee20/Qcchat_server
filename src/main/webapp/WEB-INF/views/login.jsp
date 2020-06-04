@@ -51,13 +51,13 @@
         $.ajax({
                 type : 'POST',
                 url : 'users/login',
-                dataType: 'json',
+                dataType: 'json', 
                 contentType : "application/json; charset=utf-8",
                 data : JSON.stringify(user),
                 async : false,
                 success: function(data) {
                 	if (data.status == 200) {
-                        window.location.href="chatroom";
+                        console.log(data);
                     } else {
                         alert(data.message);
                     }

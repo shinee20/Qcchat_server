@@ -7,7 +7,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<bean id="jedisConnectionFactory"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:usePool="true"  p:hostName="192.168.***.***" p:port="6379" />
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:usePool="true"  p:hostName="127.0.0.1" p:port="6379" />
 
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connectionFactory-ref="jedisConnectionFactory" />
 

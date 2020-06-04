@@ -7,6 +7,6 @@ import org.qucell.chat.model.RoomVO;
 
 public interface RoomService {
 	DefaultRes insertChatRoom(int userId, RoomVO vo);
-	DefaultRes getAllRooms();
+	DefaultRes getAllRooms(String jwt);
 	DefaultRes getUserRooms(int userId);
 }

@@ -15,4 +15,10 @@
   		select * from CHATROOM where room_owner=#{userId};
   		]]>
   	</select>
+  	
+  	<select id ="selectAllRoomsWithoutAlreadyJoin" resultType="org.qucell.chat.model.Rooms">
+  		<![CDATA[
+  			select * from CHATROOM C where C.room_id not in (select room_id from USER where user_id = #{userId})
+  		]]>
+  	</select>
   </mapper>

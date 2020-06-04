@@ -80,6 +80,12 @@ public class UserDaoImpl implements UserDao{
 		return (Users)sqlSession.selectOne(namespace+".selectUserById", userId);
 	}
 
+	@Override
+	public Users getByUserName(String userName) throws IOException {
+		// TODO Auto-generated method stub
+		return (Users)sqlSession.selectOne(namespace+".selectUserByName", userName);
+	}
+
 	public List<Users> getFriendsList(int userId) throws IOException{
 		return sqlSession.selectList(namespace + ".selectFriendsList",userId);
 	}

@@ -14,6 +14,9 @@
  		select * from USER where user_id = #{userId}
  	</select>
  	
+ 	<select id ="selectUserByName" resultType="org.qucell.chat.model.Users">
+ 		select * from USER where user_name=#{userName}
+ 	</select>
  	<select id ="selectFriendsList" resultType="org.qucell.chat.model.Users">
  		<![CDATA[
  			select * from USER U where U.user_id in (

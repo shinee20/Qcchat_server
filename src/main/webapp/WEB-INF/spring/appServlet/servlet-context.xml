@@ -16,7 +16,7 @@ http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
 http://www.springframework.org/schema/mvc
 http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd">
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
-	
+
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<mvc:annotation-driven>
 		<!-- message converter -->
@@ -47,15 +47,10 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd">
         class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
     </bean>
     
-    <mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/chat/**" />
-            <bean class="org.qucell.chat.web.interceptor.JwtInterceptor" />
-        </mvc:interceptor>
-    </mvc:interceptors>
+   
     
 	<context:component-scan base-package="org.qucell.chat.controller" />
-	
+	<aop:aspectj-autoproxy/>
 	<!-- file upload -->
 	
 	<!-- declare Redis Cache Manager -->

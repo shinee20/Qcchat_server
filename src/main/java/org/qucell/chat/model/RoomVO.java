@@ -9,29 +9,29 @@ import lombok.ToString;
 @Data
 @ToString
 public class RoomVO {
-	private int id;
+	private int roomId;
 	private String roomName;
-	private LoginVO owner;
-	private List<LoginVO> userList;
+	private int roomOwner;
+	private List<Integer> userList;
 	
 
-	public RoomVO(int id) {
-		this.id = id;
-		userList = new ArrayList<LoginVO>();
+	public RoomVO(int roomId) {
+		this.roomId = roomId;
+		userList = new ArrayList<Integer>();
 	}
 	
-	public RoomVO(int id, LoginVO owner, String roomName) {
+	public RoomVO(int roomId, int roomOwner, String roomName) {
 		//create room by owner;
-		userList = new ArrayList<LoginVO>();
-		userList.add(owner);
-		this.owner = owner;
+		userList = new ArrayList<Integer>();
+		userList.add(roomOwner);
+		this.roomOwner = roomOwner;
 		this.roomName= roomName;
 	}
 	
-	public RoomVO(int id, String roomName, List<LoginVO> userList) {
+	public RoomVO(int roomId, String roomName, List<Integer> userList) {
 		//create room by owner;
 		this.userList = userList;
-		owner = userList.get(0);
+		roomOwner = userList.get(0);
 		this.roomName= roomName;
 	}
 

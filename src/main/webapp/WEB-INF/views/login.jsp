@@ -28,6 +28,7 @@
 					
 					<div class="icon1">
 						<input placeholder="user name" id="username" type="text"/>
+						<input placeholder="password" id="userpw" type="password"/>
 					</div>
 					
 					 
@@ -43,13 +44,16 @@
 <script type="text/javascript">
     function login() {
     	//do not send request if exists access token in cookie ->auto login 
+    	var user = {
+                userName: $("#username").val(),
+                userPw: $("#userpw").val()
+            };
         $.ajax({
                 type : 'POST',
                 url : 'users/login',
-                dataType: 'application/json',
-                data : {
-                    username: $("#username").val()
-                },
+                dataType: 'json',
+                contentType : "application/json; charset=utf-8",
+                data : JSON.stringify(user),
                 async : false,
                 success: function(data) {
                 	if (data.status == 200) {

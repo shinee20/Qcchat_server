@@ -1,5 +1,6 @@
 package org.qucell.chat.web.server;
 
+import org.qucell.chat.controller.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -11,12 +12,13 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @Sharable
 public class ChatServerHandler extends ChannelInboundHandlerAdapter {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ChatServerHandler.class);
 	
 	private static final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -32,7 +34,7 @@ public class ChatServerHandler extends ChannelInboundHandlerAdapter {
 		String message = null;
 		message = (String)msg;
 		
-		System.out.println("channel Read of [SERVER] " + message);
+		log.info("channel Read of [SERVER] " + message);
 		
 		Channel incoming = ctx.channel();
 		for (Channel channel : channelGroup) {
@@ -57,7 +59,7 @@ public class ChatServerHandler extends ChannelInboundHandlerAdapter {
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		// TODO Auto-generated method stub
 
-		System.out.println("handlerAdded of [SERVER]");
+		log.info("handlerAdded of [SERVER]");
 		Channel incoming = ctx.channel();
 		for (Channel channel : channelGroup) {
 			channel.write("[SERVER]- " + incoming.remoteAddress() + " has joined!\n");
@@ -70,7 +72,7 @@ public class ChatServerHandler extends ChannelInboundHandlerAdapter {
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 		// TODO Auto-generated method stub
 
-		System.out.println("handlerRemoved of [SERVER]");
+		log.info("handlerRemoved of [SERVER]");
 		Channel incoming = ctx.channel();
 		
 		for (Channel channel : channelGroup) {

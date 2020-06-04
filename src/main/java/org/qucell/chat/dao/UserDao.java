@@ -10,7 +10,7 @@ public interface UserDao {
 	
 //	void loadUserInfo();
 	
-	public Users getByUserName(String username) throws IOException;
+	public Users getByUserId(int userId) throws IOException;
 	
 	public void insertUser(LoginVO user) throws IOException;
 	public List<Users> getFriendsList(int userId) throws IOException;
@@ -19,4 +19,5 @@ public interface UserDao {
 	 * redis test
 	 */
 	public List<Users> getAllUsers() throws IOException;
+	public void updateUser(Users user) throws IOException;
 }

@@ -1,5 +1,6 @@
 package org.qucell.chat.web.server;
 
+import org.qucell.chat.controller.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,11 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.concurrent.Future;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 public class ChatServer implements Runnable {
 
-	private final Logger logger = LoggerFactory.getLogger(ChatServer.class);
 
 	@Autowired
 	private EventLoopGroup bossGroup;
@@ -59,7 +60,7 @@ public class ChatServer implements Runnable {
 			serverChannelFuture = serverBootstrap.bind(port).sync();
 		}
 		catch(Exception e) {
-			logger.info(e.getMessage());
+			log.info(e.getMessage());
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();
 			e.printStackTrace();

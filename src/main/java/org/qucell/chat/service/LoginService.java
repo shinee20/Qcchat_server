@@ -2,13 +2,12 @@ package org.qucell.chat.service;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.qucell.chat.model.DefaultRes;
-import org.qucell.chat.model.Users;
+import org.qucell.chat.model.LoginVO;
+
 
 public interface LoginService {
-	Users login(String userName) throws IOException;
-	
+	DefaultRes<JwtService.TokenRes> login(LoginVO vo);
+	DefaultRes signUp(LoginVO vo);
 	
 }

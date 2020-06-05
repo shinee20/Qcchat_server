@@ -1,6 +1,5 @@
 package org.qucell.chat.service;
 
-import java.io.IOException;
 
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.LoginVO;

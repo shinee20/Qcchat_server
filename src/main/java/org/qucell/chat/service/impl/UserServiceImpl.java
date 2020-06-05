@@ -6,12 +6,11 @@ import java.util.List;
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.Users;
-import org.qucell.chat.service.JwtService;
+import org.qucell.chat.service.RedisService;
 import org.qucell.chat.service.UserService;
 import org.qucell.chat.util.ResponseMessage;
 import org.qucell.chat.util.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,17 +23,23 @@ public class UserServiceImpl implements UserService {
 	private UserDao userDao;
 
 	@Autowired
-	private JwtService jwtService;
-
+	private RedisService redisService;
 	/**
 	 * 
 	 * get user info - set caching db
 	 */
 	@Override
 	public DefaultRes getByUserId(int userId) throws IOException{
-		// TODO Auto-generated method stub
-
-		Users user = getUser(userId);
+		
+		//get User from redis cache memory 
+		String key = "id:" + userId;
+		Users user = (Users)redisService.getValue(key);
+		if (user== null) {
+			//GET USER INFO FROM DB
+			log.info("redisService does not have user info");
+			user = userDao.getByUserId(userId); 
+		}
+		//get User from redis cache memory 
 		if (user != null) {
 			log.info("success search " + user.getUserName());
 			return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER_INFO, user);
@@ -56,10 +61,7 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-	public Users getUser(int userId) throws IOException {
-		Users user = userDao.getByUserId(userId);
-		return user;
-	}
+	
 	/*
 	 * redis test
 	 * 

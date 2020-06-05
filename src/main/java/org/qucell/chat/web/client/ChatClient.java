@@ -3,11 +3,6 @@ package org.qucell.chat.web.client;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import org.qucell.chat.controller.UserController;
-import org.qucell.chat.web.server.ChatServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -19,6 +14,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public class ChatClient implements Runnable{
 

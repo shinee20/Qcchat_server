@@ -3,7 +3,6 @@ package org.qucell.chat.controller;
 import java.io.IOException;
 
 import org.qucell.chat.model.LoginVO;
-import org.qucell.chat.service.JwtService;
 import org.qucell.chat.service.LoginService;
 import org.qucell.chat.service.UserService;
 import org.qucell.chat.util.auth.Auth;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +31,6 @@ public class UserController {
 	private LoginService loginService;
 
 	@Autowired
-	private JwtService jwtService;
-
-	@Autowired
 	private UserService userService;
 
 	/**
@@ -51,12 +46,6 @@ public class UserController {
 	public ResponseEntity signUp(@RequestBody LoginVO vo){
 		return new ResponseEntity<>(loginService.signUp(vo), HttpStatus.OK);
 	}
-	
-//	@RequestMapping(value="/logout", method=RequestMethod.POST)
-//	public @ResponseBody DefaultRes logout(HttpServletResponse response) {
-//		setCookie(response, ""); //remove from jwt
-//		return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGOUT);	
-//	}
 
 	/*
 	 * @param : user_name
@@ -67,14 +56,6 @@ public class UserController {
 		return new ResponseEntity<>(userService.getByUserId(idx), HttpStatus.OK);
 	}
 
-//	public void setCookie(HttpServletResponse response, String token) {
-//		Cookie cookie = new Cookie("Authorization", token);
-//		//1년으로 설정
-//		cookie.setMaxAge(365*24*60*60);
-//		cookie.setPath("/");
-//		response.addCookie(cookie);
-//	}
-	
 	@Auth
 	@RequestMapping("/list")
 	public ResponseEntity getFriendsList(@RequestHeader(required=false, defaultValue="0") int idx) throws IOException {

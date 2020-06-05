@@ -1,8 +1,5 @@
 package org.qucell.chat.web.server;
 
-import org.qucell.chat.controller.UserController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.netty.bootstrap.ServerBootstrap;

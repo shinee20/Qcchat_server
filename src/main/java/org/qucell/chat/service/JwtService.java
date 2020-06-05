@@ -1,10 +1,9 @@
 package org.qucell.chat.service;
 
+import static com.auth0.jwt.JWT.require;
 
-import org.qucell.chat.controller.UserController;
-import org.qucell.chat.service.impl.LoginServiceImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +17,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static com.auth0.jwt.JWT.require;
-
 @Slf4j
 @Service
 public class JwtService {
 	
 	@Value("${JWT.SALT}")
-	private String SALT="qcSecret";
+	private String SALT;
 	
 	@Value("${JWT.ISSUER}")
 	private String ISSUER;
@@ -36,12 +33,12 @@ public class JwtService {
 	 * @return token
 	 */
 	public String create(final int userId) {
-		// TODO Auto-generated method stub
-
 		try {
             JWTCreator.Builder b = JWT.create();
             b.withIssuer(ISSUER);
             b.withClaim("user_id", userId);
+            b.withExpiresAt(new Date(System.currentTimeMillis()+86400));
+            //token available one day
             return b.sign(Algorithm.HMAC256(SALT));
         } catch (JWTCreationException JwtCreationException) {
         	log.info(JwtCreationException.getMessage());

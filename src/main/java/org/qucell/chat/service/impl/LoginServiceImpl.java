@@ -1,9 +1,6 @@
 package org.qucell.chat.service.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
-
-import javax.annotation.Resource;
 
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
@@ -11,11 +8,11 @@ import org.qucell.chat.model.LoginVO;
 import org.qucell.chat.model.Users;
 import org.qucell.chat.service.JwtService;
 import org.qucell.chat.service.LoginService;
+import org.qucell.chat.service.RedisService;
 import org.qucell.chat.util.ResponseMessage;
 import org.qucell.chat.util.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -32,13 +29,13 @@ public class LoginServiceImpl implements LoginService{
 	@Autowired
 	private JwtService jwtService;
 	
-	@Resource(name="redisTemplate")
-	private RedisTemplate<String, Object> redisTemplate;
+	@Autowired
+	private RedisService redisService;
 	
 	//login 
 	@Override
 	public DefaultRes<JwtService.TokenRes> login(LoginVO vo) {
-		// TODO Auto-generated method stub
+
 		try {
 			Users user = userDao.getByUserName(vo.getUserName());
 			log.info(user.toString());
@@ -47,6 +44,15 @@ public class LoginServiceImpl implements LoginService{
 				final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.getUserId()));
 				log.info("success login " + tokenDto.toString());
 				
+				/*
+				 * save at redis cache
+				 */
+				String key = "id:"+user.getUserId();
+				redisService.saveValue(key, user);
+			
+				/*
+				 * save at redis cache 
+				 */
 				return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenDto);
 			}
 			log.info("fail login");
@@ -65,7 +71,7 @@ public class LoginServiceImpl implements LoginService{
 	@Transactional
 	@Override
 	public DefaultRes signUp(LoginVO vo) {
-		// TODO Auto-generated method stub
+		
 		try {
 			userDao.insertUser(vo);
 			log.info("join " + vo.getUserName());

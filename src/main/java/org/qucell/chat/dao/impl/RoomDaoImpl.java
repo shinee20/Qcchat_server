@@ -22,25 +22,20 @@ public class RoomDaoImpl implements RoomDao {
 	
 	@Override
 	public void insertRoom(RoomVO vo) throws IOException {
-		// TODO Auto-generated method stub
 		sqlSession.insert(namespace +".insertRoom", vo);
-		
 	}
 
 	@Override
 	public List<Rooms> selectAllRooms() throws IOException {
-		// TODO Auto-generated method stub
 		return sqlSession.selectList(namespace+".selectAllRooms");
 	}
 	@Override
 	public List<Rooms> selectAllRooms(int userId) throws IOException {
-		// TODO Auto-generated method stub
 		return sqlSession.selectList(namespace+".selectAllRoomsWithoutAlreadyJoin", userId);
 	}
 
 	@Override
 	public List<Rooms> selectUserRooms(int userId) throws IOException {
-		// TODO Auto-generated method stub
 		return sqlSession.selectList(namespace + ".selectUserRooms",userId );
 	}
 	

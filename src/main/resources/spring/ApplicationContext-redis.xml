@@ -3,12 +3,53 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:c="http://www.springframework.org/schema/c"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-
+		
+	<context:component-scan base-package="org.qucell.chat.*"/>
+	<!-- jedisConnectionFactory는 새로운 RedisConnection 또는 이미 생성된 RedisConnection 을 리턴한다. 
+RedisConnection 은 Redis서버와의 통신 abstraction 을 제공하며, exception발생 시 Spring DataAccessException을 전환합니다. 
+	 -->
 	<bean id="jedisConnectionFactory"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:usePool="true"  p:hostName="127.0.0.1" p:port="6379" />
 
-	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connectionFactory-ref="jedisConnectionFactory" />
-
+	<!-- redisTemplate은 Redis 서버에 command를 수행. 
+	Redis서버에 데이터 CRUD를 위해, 다섯가지 유형의 오퍼레이션 인터페이스 제공한다. 
+	(value, list, set, zset, hash)
+	
+	redisTemplate은 thread-safe하며 재사용이 가능한다.  -->
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connectionFactory-ref="jedisConnectionFactory" >
+		 <property name="keySerializer">
+        	<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+    	</property>
+    	<property name="valueSerializer">
+	        <bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer">
+	            <constructor-arg value="java.lang.Object" />
+	        </bean>
+	    </property>
+	    <property name="hashKeySerializer">
+	        <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+	    </property>
+	    <property name="hashValueSerializer">
+	        <bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer" >
+	        <constructor-arg value="java.lang.Object" />
+	        </bean>
+	    </property>
+	</bean>
+	
+	<!-- declare Redis Cache Manager -->
+	<bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager" 
+	      c:redis-operations-ref='redisTemplate'>
+        <property name="expires">
+            <map>
+                <entry key="sessionData" value="7200"></entry>
+                <entry key="portalData" value="7200"></entry>
+                <entry key="referenceData" value="86400"></entry>
+            </map>
+        </property>
+        <property name="usePrefix" value ="true"/> <!-- key-value set -->
+    </bean>
+	
+	<bean id="redisService" class="org.qucell.chat.service.RedisService"></bean>
 </beans>

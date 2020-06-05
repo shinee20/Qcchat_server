@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>untitled</title>
+    <title>QCCHAT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="keywords" content="Transparent Sign In Form Responsive Widget,Login form widgets, Sign up Web forms , Login signup Responsive web form,Flat Pricing table,Flat Drop downs,Registration Forms,News letter Forms,Elements" />
@@ -25,14 +25,11 @@
 			<div class="sub-main-w3">	
 				<h2>로그인</h2>
 				<form>
-					
 					<div class="icon1">
 						<input placeholder="user name" id="username" type="text"/>
 						<input placeholder="password" id="userpw" type="password"/>
 					</div>
-					
-					 
-						<div class="clear"></div>
+					<div class="clear"></div>
 					<input type="button" value="Login" onclick="login()"/>
 				</form>
 			</div>
@@ -57,7 +54,7 @@
                 async : false,
                 success: function(data) {
                 	if (data.status == 200) {
-                        console.log(data);
+                       
                     } else {
                         alert(data.message);
                     }

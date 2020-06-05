@@ -1,8 +1,5 @@
 package org.qucell.chat.web.server;
 
-import org.qucell.chat.controller.UserController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import io.netty.channel.Channel;

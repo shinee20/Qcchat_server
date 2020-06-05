@@ -15,7 +15,7 @@
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<!-- threre are info that no relation with view -->
 
-	
+	<!-- Database infomation -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
  
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -30,7 +30,6 @@
     
     <!-- create connection, execute SQL -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
- 
 		<property name="dataSource" ref="dataSource"/>
 		<property name="configLocation" value = "classpath:/mybatis-config.xml"></property>
 		<property name="mapperLocations" value="classpath:mapper/**/*Mapper.xml"></property>

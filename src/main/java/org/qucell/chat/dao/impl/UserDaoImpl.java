@@ -76,13 +76,11 @@ public class UserDaoImpl implements UserDao{
 
 	@Override
 	public Users getByUserId(int userId) throws IOException {
-		// TODO Auto-generated method stub
 		return (Users)sqlSession.selectOne(namespace+".selectUserById", userId);
 	}
 
 	@Override
 	public Users getByUserName(String userName) throws IOException {
-		// TODO Auto-generated method stub
 		return (Users)sqlSession.selectOne(namespace+".selectUserByName", userName);
 	}
 
@@ -125,13 +123,11 @@ public class UserDaoImpl implements UserDao{
 
 	@Override
 	public void insertUser(LoginVO user) throws IOException {
-		// TODO Auto-generated method stub
 		sqlSession.insert(namespace+ ".insertUser", user);
 	}
 
 	@Override
 	public void updateUser(Users user) throws IOException {
-		// TODO Auto-generated method stub
 		sqlSession.update(namespace+".updateUserInfo",user );
 	}
 
@@ -140,8 +136,6 @@ public class UserDaoImpl implements UserDao{
 	 */
 	@Override
 	public List<Users> getAllUsers() throws IOException {
-		// TODO Auto-generated method stub
-		
 		return sqlSession.selectList(namespace+".selectUsers");
 	}
 	/*

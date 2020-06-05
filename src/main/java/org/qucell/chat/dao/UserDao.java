@@ -8,8 +8,6 @@ import org.qucell.chat.model.Users;
 
 public interface UserDao {
 	
-//	void loadUserInfo();
-	
 	public Users getByUserId(int userId) throws IOException;
 	public Users getByUserName(String userName) throws IOException;
 	public void insertUser(LoginVO user) throws IOException;

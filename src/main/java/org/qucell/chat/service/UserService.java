@@ -1,7 +1,6 @@
 package org.qucell.chat.service;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.Users;
@@ -28,5 +27,5 @@ public interface UserService {
 	 * @throws IOException
 	 */
 	public DefaultRes getAllFriendsList(int userId) throws IOException;
-	public Users getUser(int userId) throws IOException;
+	
 }

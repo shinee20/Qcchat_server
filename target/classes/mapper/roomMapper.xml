@@ -6,19 +6,33 @@
   <mapper namespace="org.qucell.chat.mapper.roomMapper">
   	<select id ="selectAllRooms" resultType="org.qucell.chat.model.Rooms">
   	<![CDATA[
-  		select * from CHATROOM where room_id>0;
+  		select * from CHATROOM where room_id>0 order by room_id;
   		]]>
   	</select>
   	
   	<select id ="selectUserRooms" resultType="org.qucell.chat.model.Rooms">
   	<![CDATA[
-  		select * from CHATROOM where room_owner=#{userId};
+  		select * from CHATROOM C, ROOM R where R.user_id = #{userId} and C.room_id = R.room_id
+  		order by C.room_id
   		]]>
   	</select>
   	
   	<select id ="selectAllRoomsWithoutAlreadyJoin" resultType="org.qucell.chat.model.Rooms">
   		<![CDATA[
-  			select * from CHATROOM C where C.room_id not in (select room_id from USER where user_id = #{userId})
+  			select * from CHATROOM C where C.room_id not in (select room_id from USER 
+  			where user_id = #{userId}) order by C.room_id
   		]]>
   	</select>
+  	
+  	<insert id="insertRoom" parameterType="java.util.List">
+  		insert into ROOM values
+  		<foreach collection="list" item="item" separator=" , ">
+  		("${item.roomId}",${item.userId})
+  		</foreach>
+  	</insert>
+  	
+  	<insert id="insertChatRoom">
+  		insert into CHATROOM(room_name, room_pw, room_owner) values
+  		(#{roomName},#{roomPw},#{roomOwner})
+  	</insert>
   </mapper>

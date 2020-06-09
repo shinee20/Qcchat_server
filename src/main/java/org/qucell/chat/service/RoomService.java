@@ -8,4 +8,5 @@ public interface RoomService {
 	DefaultRes insertChatRoom(int userId, RoomVO vo);
 	DefaultRes getAllRooms(String jwt);
 	DefaultRes getUserRooms(int userId);
+	DefaultRes editPassword(String jwt, String roomName);
 }

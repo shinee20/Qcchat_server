@@ -45,33 +45,16 @@ public class RoomServiceImpl implements RoomService {
 	@Override
 	public DefaultRes insertChatRoom(int userId, RoomVO vo){
 		
-		//get user_id with userName
 		try {
 			vo.setRoomOwner(userId);
-			roomDao.insertRoom(vo); //create new chat room
-//			Users user = userDao.getByUserId(userId); //get User from cache memory
+			roomDao.insertChatRoom(vo); //create new chat room
+			roomDao.insertRoom(vo); //insert users in room 
 			
-			//get User from redis cache memory 
-			String key = "id:" + userId;
-			Users user = (Users)redisService.getValue(key);
-			
-			if (user== null) {
-				//GET USER INFO FROM DB
-				log.info("redisService does not have user info");
-				user = userDao.getByUserId(userId); 
-			}
-			//get User from redis cache memory 
-			
-			//update user info (room_id)
-			user.setRoomId(vo.getRoomId());
-			userDao.updateUser(user);
-
 			return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATE_ROOM_SUCCESS);
 		} catch(IOException e) {
 			//ALL ROLLBACK
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); //Rollback
 			return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
-
 		}
 	}
 
@@ -101,21 +84,33 @@ public class RoomServiceImpl implements RoomService {
 		catch(IOException e) {
 			return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
 		}
-
 	}
 
 	@Override
 	public DefaultRes getUserRooms(int userId) {
-
+		
 		try {
 			List<Rooms> roomList = roomDao.selectUserRooms(userId);
+			/*
+			 * save at redis cache
+			 */
+			
+			/*
+			 * save at redis cache 
+			 */
 			return DefaultRes.res(StatusCode.OK, ResponseMessage.SEARCH_SUCCESS, roomList);
 		}
 		catch(IOException e) {
 			return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
 		}
-
 	}
 
-
+	@Override
+	public DefaultRes editPassword(String jwt, String roomName) {
+		//오직 방장만이 방에 비밀번호를 설정하고 수정할 수 있다.
+		//redis에 저장되어있는 채팅방 중에 존재한다면 그 방의 정보를 가져오고 
+		//없다면 디비에 접근한다.
+		
+		return null;
+	}
 }

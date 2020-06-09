@@ -63,12 +63,11 @@ public class ChatClient implements Runnable{
 				}
 			}
 
-			if (lastWriteFuture != null) lastWriteFuture.sync();
+			if (lastWriteFuture != null) lastWriteFuture.sync();  
 		} catch(Exception e) {
 			group.shutdownGracefully();
 			e.printStackTrace();
 		}
-
 	}
 
 	public int getPort() {
@@ -86,7 +85,5 @@ public class ChatClient implements Runnable{
 	public void setHost(String host) {
 		this.host = host;
 	}
-
-
 
 }

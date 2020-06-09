@@ -19,7 +19,6 @@ public class Users{
 	private String userName;
 	private Date regDate;
 	private Date updateDate;
-	private int roomId;
 	private List<Users> friendList;
 	private List<RoomVO> roomList;
 }

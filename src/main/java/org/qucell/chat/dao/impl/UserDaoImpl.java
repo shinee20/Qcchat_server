@@ -126,10 +126,10 @@ public class UserDaoImpl implements UserDao{
 		sqlSession.insert(namespace+ ".insertUser", user);
 	}
 
-	@Override
-	public void updateUser(Users user) throws IOException {
-		sqlSession.update(namespace+".updateUserInfo",user );
-	}
+//	@Override
+//	public void updateUser(Users user) throws IOException {
+//		sqlSession.update(namespace+".updateUserInfo",user );
+//	}
 
 	/*
 	 * redis test

@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import org.qucell.chat.model.RoomVO;
 import org.qucell.chat.service.RoomService;
-import org.qucell.chat.service.UserService;
 import org.qucell.chat.util.auth.Auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,5 +63,19 @@ public class ChatRoomController {
 	{
 		log.info("get user attending room.. user =>" + idx);
 		return new ResponseEntity<>(roomService.getUserRooms(idx), HttpStatus.OK);
+	}
+	
+	/**
+	 * edit room password 
+	 * - already created room 
+	 * - only owner do this method 
+	 * @param jwt
+	 * @param roomName
+	 * @return
+	 */
+	@Auth
+	@PutMapping("/edit")
+	public ResponseEntity editPassword(@RequestHeader(value="Authorization", required=false) String jwt, String roomName) {
+		return new ResponseEntity<>(roomService.editPassword(jwt, roomName), HttpStatus.OK);
 	}
 }

@@ -7,6 +7,7 @@ import org.qucell.chat.model.RoomVO;
 import org.qucell.chat.model.Rooms;
 
 public interface RoomDao {
+	void insertChatRoom(RoomVO vo) throws IOException;
 	void insertRoom(RoomVO vo) throws IOException;
 	List<Rooms> selectAllRooms() throws IOException; 
 	List<Rooms> selectAllRooms(int userId) throws IOException; 

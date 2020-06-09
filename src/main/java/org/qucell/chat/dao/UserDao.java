@@ -17,5 +17,5 @@ public interface UserDao {
 	 * redis test
 	 */
 	public List<Users> getAllUsers() throws IOException;
-	public void updateUser(Users user) throws IOException;
+//	public void updateUser(Users user) throws IOException;
 }

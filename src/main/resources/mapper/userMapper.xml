@@ -25,10 +25,6 @@
  		]]>
  	</select>
  	
- 	<update id ="updateUserInfo">
- 		update USER set room_id = #{roomId} where user_id = #{userId};
- 	</update>
- 	
  	<!-- redis test -->
  	<select id="selectUsers" resultType="org.qucell.chat.model.Users">
  	<![CDATA[

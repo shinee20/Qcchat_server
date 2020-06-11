@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.qucell.chat.model.Users;
-
+import org.qucell.chat.model.user.Users;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;

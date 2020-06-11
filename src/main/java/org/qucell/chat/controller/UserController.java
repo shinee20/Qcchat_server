@@ -1,8 +1,6 @@
 package org.qucell.chat.controller;
 
-import java.io.IOException;
-
-import org.qucell.chat.model.LoginVO;
+import org.qucell.chat.model.user.LoginVO;
 import org.qucell.chat.service.LoginService;
 import org.qucell.chat.service.UserService;
 import org.qucell.chat.util.auth.Auth;
@@ -33,12 +31,9 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	/**
-	 * Simply selects the home view to render by returning its name.
-	 */
 
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody LoginVO vo) throws IOException {
+	public ResponseEntity login(@RequestBody LoginVO vo) {
 		return new ResponseEntity<>(loginService.login(vo), HttpStatus.OK);
 	}
 
@@ -52,13 +47,13 @@ public class UserController {
 	 */
 	@Auth
 	@GetMapping("/info")
-	public ResponseEntity getUserInfo(@RequestHeader(required = false, defaultValue = "0") int idx) throws IOException {
+	public ResponseEntity getUserInfo(@RequestHeader(required = false, defaultValue = "0") int idx){
 		return new ResponseEntity<>(userService.getByUserId(idx), HttpStatus.OK);
 	}
 
 	@Auth
 	@RequestMapping("/list")
-	public ResponseEntity getFriendsList(@RequestHeader(required=false, defaultValue="0") int idx) throws IOException {
+	public ResponseEntity getFriendsList(@RequestHeader(required=false, defaultValue="0") int idx){
 		return new ResponseEntity<>(userService.getAllFriendsList(idx), HttpStatus.OK);
 	}
 	/*

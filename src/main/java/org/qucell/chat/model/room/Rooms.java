@@ -1,24 +1,25 @@
-package org.qucell.chat.model;
+package org.qucell.chat.model.room;
 
 import java.util.Date;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Users{
-//user dto 
-	private int userId;
-	private String userName;
+public class Rooms {
+	/**
+	 * infomation of chatrooom
+	 */
+	private int roomId;
+	private String roomName;
+	private String roomPw;
+	private int roomOwner;
 	private Date regDate;
 	private Date updateDate;
-	private List<Users> friendList;
-	private List<RoomVO> roomList;
+	
 }

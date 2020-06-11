@@ -37,7 +37,7 @@ public class JwtService {
             JWTCreator.Builder b = JWT.create();
             b.withIssuer(ISSUER);
             b.withClaim("user_id", userId);
-            b.withExpiresAt(new Date(System.currentTimeMillis()+86400));
+            b.withExpiresAt(new Date(System.currentTimeMillis()+86400*1000*2));
             //token available one day
             return b.sign(Algorithm.HMAC256(SALT));
         } catch (JWTCreationException JwtCreationException) {

@@ -1,8 +1,6 @@
 package org.qucell.chat.service;
 
 import java.util.List;
-import java.util.Set;
-
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -21,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class RedisService implements InitializingBean{
+public class RedisService<T> implements InitializingBean{
 
 	//CRUD from redis cache
 	//key type = object-type:field
@@ -37,86 +35,58 @@ public class RedisService implements InitializingBean{
 	RedisTemplate<String, Object> redisTemplate;
 
 	@Resource(name="redisTemplate")
-	private ValueOperations<String, Object> valueOps;
+	private ValueOperations<String, T> valueOps;
 
 	@Resource(name="redisTemplate")
-	private SetOperations<String, Object> setOps;
+	private SetOperations<String, T> setOps;
 
 	@Resource(name="redisTemplate")
-	private ListOperations<String, Object> listOps;
+	private ListOperations<String, T> listOps;
 
 	@Resource(name="redisTemplate")
-	private ZSetOperations<String, String> zSetOps;
+	private ZSetOperations<String, T> zSetOps;
 
 	@Resource(name="redisTemplate")
-	private HashOperations<String, String, Object> hashOps;
+	private HashOperations<String, String, T> hashOps;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.cache = cacheManager.getCache("user");
+		
 
 	}
 
 	//R
-	public Object getValue(String key){
-		Object obj = (Object) valueOps.get(key);
+	public T getValue(String key){
+		T data = (T) valueOps.get(key);
 
-		if (obj != null) {
+		if (data != null) {
 
-			System.out.println("--------------------redis dao get--------------------");
-			log.info(key + " " + obj.toString());
-
-			return obj;
+			return data;
 		}
 		return null;
 	}
-
-	public List<Object> getValueList(String key){
-		List<Object> obj = (List<Object>) setOps.members(key);
-
-		if (obj != null) {
-
-			System.out.println("--------------------redis dao get--------------------");
-			log.info(key + " " + obj.toString());
-
-			return obj;
-		}
-		return null;
+	public List<T> getValueList(String key){
+		return listOps.range(key,0,-1);
 	}
+
 	//C
-	public void saveValue(String key, Object obj) {
-
-		valueOps.set(key, obj);
-		System.out.println("--------------------redis dao save--------------------");
-		log.info(key + " " + obj.toString());
+	public void saveValue(String key, T t) {
+		valueOps.set(key, t);
 	}
 
+	public void saveValueList(String key, T t) {
+		listOps.rightPush(key, t);
+	}
 	//U
-	public void updateValue(String key, Object obj)  {
-		valueOps.set(key, obj);
+	public void updateValue(String key, T t)  {
+		valueOps.set(key, t);
 	}
-
 	//D
 	public void deleteValue(String key) {
 		valueOps.set(key, null);
 	}
-	
-	//save list at redis
-	public void saveValue(String key, List<Object> obj) {
-		setOps.add(key, obj);
-	
-		System.out.println("--------------------redis dao save list--------------------");
-		log.info(key + " " + obj.toString());
+	public void deleteValueList(String key) {
+		listOps.trim(key, -1, 0);
 	}
-	
-	//update element at redis
-	public void updateValue(String key, List<Object> obj, String p[]) {
 
-		setOps.pop(key);
-		setOps.add(key, obj);
-		
-		
-		System.out.println("--------------------redis dao update list--------------------");
-		log.info(key + " " + obj.toString());
-	}
 }

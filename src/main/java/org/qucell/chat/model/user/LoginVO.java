@@ -1,4 +1,4 @@
-package org.qucell.chat.model;
+package org.qucell.chat.model.user;
 
 import lombok.Data;
 import lombok.ToString;

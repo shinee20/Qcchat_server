@@ -1,14 +1,13 @@
 package org.qucell.chat.controller;
 
-import java.io.IOException;
-
-import org.qucell.chat.model.RoomVO;
+import org.qucell.chat.model.room.RoomVO;
 import org.qucell.chat.service.RoomService;
 import org.qucell.chat.util.auth.Auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,9 +34,8 @@ public class ChatRoomController {
 	 */
 	@Auth
 	@PostMapping("/add")
-	public ResponseEntity addChatRoom(
-			@RequestHeader(required=false, defaultValue="0") int idx,
-			@RequestBody RoomVO vo) throws IOException {
+	public ResponseEntity addChatRoom(@RequestHeader(required=false, defaultValue="0") int idx,
+									  @RequestBody RoomVO vo){
 		return new ResponseEntity<>(roomService.insertChatRoom(idx, vo), HttpStatus.OK);
 	}
 
@@ -75,7 +73,34 @@ public class ChatRoomController {
 	 */
 	@Auth
 	@PutMapping("/edit")
-	public ResponseEntity editPassword(@RequestHeader(value="Authorization", required=false) String jwt, String roomName) {
-		return new ResponseEntity<>(roomService.editPassword(jwt, roomName), HttpStatus.OK);
+	public ResponseEntity editPassword(@RequestHeader(required = false, defaultValue = "0") int idx, 
+									   @RequestBody RoomVO vo) {
+		return new ResponseEntity<>(roomService.editPassword(idx,vo), HttpStatus.OK);
+	}
+	
+	/**
+	 * add friends at chat room 
+	 * @param idx
+	 * @param vo
+	 * @return
+	 */
+	@Auth
+	@PutMapping("/addFriends")
+	public ResponseEntity addFriendsAtRoom(@RequestHeader(required=false, defaultValue="0") int idx,
+										   @RequestBody RoomVO vo) {
+		return new ResponseEntity<>(roomService.addFriends(idx, vo), HttpStatus.OK);
+	}
+	
+	/**
+	 * get user list at chat room 
+	 * @param idx
+	 * @param roomName
+	 * @return
+	 */
+	@Auth
+	@GetMapping("/list/{roomName}")
+	public ResponseEntity getUserListAtRoom(@RequestHeader(required=false, defaultValue="0") int idx,
+											@PathVariable(value="roomName") final String roomName) {
+		return new ResponseEntity<>(roomService.getUserList(roomName), HttpStatus.OK);
 	}
 }

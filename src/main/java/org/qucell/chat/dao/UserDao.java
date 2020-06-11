@@ -1,21 +1,20 @@
 package org.qucell.chat.dao;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.qucell.chat.model.LoginVO;
-import org.qucell.chat.model.Users;
+import org.qucell.chat.model.user.LoginVO;
+import org.qucell.chat.model.user.Users;
 
 public interface UserDao {
 	
-	public Users getByUserId(int userId) throws IOException;
-	public Users getByUserName(String userName) throws IOException;
-	public void insertUser(LoginVO user) throws IOException;
-	public List<Users> getFriendsList(int userId) throws IOException;
+	public Users getByUserId(int userId);
+	public Users getByUserName(String userName);
+	public void insertUser(LoginVO user);
+	public List<Users> getFriendsList(int userId);
 	
 	/*
 	 * redis test
 	 */
-	public List<Users> getAllUsers() throws IOException;
+	public List<Users> getAllUsers();
 //	public void updateUser(Users user) throws IOException;
 }

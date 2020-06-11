@@ -1,12 +1,9 @@
 package org.qucell.chat.service;
 
-import java.io.IOException;
-
 import org.qucell.chat.model.DefaultRes;
-import org.qucell.chat.model.Users;
 
 public interface UserService {
-	public DefaultRes getByUserId(int userId) throws IOException;
+	public DefaultRes getByUserId(int userId);
 	
 	/**
 	 * redis test
@@ -26,6 +23,6 @@ public interface UserService {
 	 * @return json data - friends list
 	 * @throws IOException
 	 */
-	public DefaultRes getAllFriendsList(int userId) throws IOException;
+	public DefaultRes getAllFriendsList(int userId);
 	
 }

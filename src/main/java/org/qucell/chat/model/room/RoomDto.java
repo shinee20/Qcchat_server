@@ -1,4 +1,4 @@
-package org.qucell.chat.model;
+package org.qucell.chat.model.room;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,8 @@ public class RoomDto {
 	/**
 	 * object of using dto
 	 */
-	private int userId;
+	
 	private int roomId;
+	private int userId;
 	
 }

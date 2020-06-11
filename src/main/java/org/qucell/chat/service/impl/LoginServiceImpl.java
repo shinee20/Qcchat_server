@@ -1,11 +1,10 @@
 package org.qucell.chat.service.impl;
 
-import java.io.IOException;
 
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
-import org.qucell.chat.model.LoginVO;
-import org.qucell.chat.model.Users;
+import org.qucell.chat.model.user.LoginVO;
+import org.qucell.chat.model.user.Users;
 import org.qucell.chat.service.JwtService;
 import org.qucell.chat.service.LoginService;
 import org.qucell.chat.service.RedisService;
@@ -25,45 +24,38 @@ public class LoginServiceImpl implements LoginService{
 
 	@Autowired
 	private UserDao userDao;
-	
+
 	@Autowired
 	private JwtService jwtService;
-	
+
 	@Autowired
 	private RedisService redisService;
-	
+
 	//login 
 	@Override
 	public DefaultRes<JwtService.TokenRes> login(LoginVO vo) {
 
-		try {
-			Users user = userDao.getByUserName(vo.getUserName());
-			log.info(user.toString());
-			if (user != null) {
-				//create token 
-				final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.getUserId()));
-				log.info("success login " + tokenDto.toString());
-				
-				/*
-				 * save at redis cache
-				 */
-				String key = "id:"+user.getUserId();
-				redisService.saveValue(key, user);
+		Users user = userDao.getByUserName(vo.getUserName());
+		log.info(user.toString());
+		if (user != null) {
+			//create token 
+			final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.getUserId()));
+			log.info("success login " + tokenDto.toString());
+
+			/*
+			 * save at redis cache
+			 */
+			String key = "id:"+user.getUserId();
+			redisService.saveValue(key, user);
 			
-				/*
-				 * save at redis cache 
-				 */
-				return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenDto);
-			}
-			log.info("fail login");
-			return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.WRONG_PASSWORD);
+			log.info("--------------------redis dao save--------------------" + redisService.getValue(key));
+			/*
+			 * save at redis cache 
+			 */
+			return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenDto);
 		}
-		catch(IOException e) {
-			log.info("fail login");
-			e.printStackTrace();
-			return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
-		}
-		
+		log.info("fail login");
+		return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.WRONG_PASSWORD);
 	}
 
 	//sign up
@@ -71,22 +63,22 @@ public class LoginServiceImpl implements LoginService{
 	@Transactional
 	@Override
 	public DefaultRes signUp(LoginVO vo) {
-		
+
 		try {
 			userDao.insertUser(vo);
 			log.info("join " + vo.getUserName());
 			return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
 		}
 		catch (DuplicateKeyException e) { // name 중복
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); //Rollback
-            return DefaultRes.res(StatusCode.ALREADY_EXSIT_NAME, ResponseMessage.ALREADY_EXIST_NAME);
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); //Rollback
+			return DefaultRes.res(StatusCode.ALREADY_EXSIT_NAME, ResponseMessage.ALREADY_EXIST_NAME);
 
-        } catch (Exception e) { // DB 에러
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); //Rollback
-            log.error("\n- Exception Detail (below)", e);
-            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
-        }
-		
+		} catch (Exception e) { // DB 에러
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); //Rollback
+			log.error("\n- Exception Detail (below)", e);
+			return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+		}
+
 	}
 
 }

@@ -1,10 +1,12 @@
 package org.qucell.chat.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.user.Users;
+import org.qucell.chat.service.MessageService;
 import org.qucell.chat.service.RedisService;
 import org.qucell.chat.service.UserService;
 import org.qucell.chat.util.ResponseMessage;
@@ -12,6 +14,7 @@ import org.qucell.chat.util.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,6 +26,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private RedisService redisService;
+	
+	@Autowired
+	private MessageService messageService;
 	/**
 	 * 
 	 * get user info - set caching db
@@ -69,6 +75,26 @@ public class UserServiceImpl implements UserService {
 		
 		return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_ALL_FRIENDS_LIST, friendsList);
 
+	}
+	@Override
+	public void registUser(Channel channel, String method, Map<String, Object> data, Map<String, Object> result) {
+		
+		/*
+		 * save at redis cache
+		 */
+		String key="id:"+channel.id()+":userId";
+		int userId = (Integer)redisService.getValue(key);
+		if (((Integer)userId) == null) {
+			userId = Integer.parseInt((String)data.get("userId"));
+			redisService.saveValue(key,userId);
+		}
+		
+		key = "id:"+userId + ":channel";
+		redisService.saveValue(key, channel);
+		/*
+		 * save at redis cache
+		 */
+		messageService.returnMessage(channel, result, method);
 	}
 
 	

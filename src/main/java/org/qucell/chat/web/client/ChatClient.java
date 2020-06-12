@@ -3,6 +3,7 @@ package org.qucell.chat.web.client;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.springframework.beans.factory.annotation.Value;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -22,8 +23,10 @@ public class ChatClient implements Runnable{
 	private EventLoopGroup group;
 	
 	private Bootstrap bootstrap;
-
+	
+	@Value("${websocket.server.port}")
 	private int port;
+	@Value("${websocket.server.host}")
 	private String host;
 
 	private ChannelFuture lastWriteFuture;
@@ -68,22 +71,6 @@ public class ChatClient implements Runnable{
 			group.shutdownGracefully();
 			e.printStackTrace();
 		}
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
 	}
 
 }

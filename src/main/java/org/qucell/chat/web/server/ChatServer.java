@@ -1,6 +1,7 @@
 package org.qucell.chat.web.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -28,6 +29,7 @@ public class ChatServer implements Runnable {
 	@Autowired
 	private ServerBootstrap serverBootstrap;
 
+	@Value("${websocket.server.port}")
 	private int port;
 	
 	private ChannelFuture serverChannelFuture;
@@ -79,13 +81,4 @@ public class ChatServer implements Runnable {
 		}
 		
 	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-	
 }

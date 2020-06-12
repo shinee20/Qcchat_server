@@ -1,6 +1,10 @@
 package org.qucell.chat.service;
 
+import java.util.Map;
+
 import org.qucell.chat.model.DefaultRes;
+
+import io.netty.channel.Channel;
 
 public interface UserService {
 	public DefaultRes getByUserId(int userId);
@@ -24,5 +28,5 @@ public interface UserService {
 	 * @throws IOException
 	 */
 	public DefaultRes getAllFriendsList(int userId);
-	
+	public void registUser(Channel channel, String method, Map<String, Object> data, Map<String, Object> result);
 }

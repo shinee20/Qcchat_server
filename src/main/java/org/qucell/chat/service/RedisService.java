@@ -88,5 +88,5 @@ public class RedisService<T> implements InitializingBean{
 	public void deleteValueList(String key) {
 		listOps.trim(key, -1, 0);
 	}
-
+	
 }

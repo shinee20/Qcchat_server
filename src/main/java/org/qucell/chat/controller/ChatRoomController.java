@@ -1,6 +1,9 @@
 package org.qucell.chat.controller;
 
+import java.io.IOException;
+
 import org.qucell.chat.model.room.RoomVO;
+import org.qucell.chat.netty.server.NettyServer;
 import org.qucell.chat.service.RoomService;
 import org.qucell.chat.util.auth.Auth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/chatroom")
 public class ChatRoomController {
+	
+	@Autowired
+	NettyServer nettyServer;
 	
 	@Autowired
 	private RoomService roomService;
@@ -44,9 +50,12 @@ public class ChatRoomController {
 	 * get all chat rooms 
 	 * @param jwt
 	 * @return
+	 * @throws Exception 
 	 */
 	@GetMapping("")
-	public ResponseEntity getAllRooms(@RequestHeader(value = "Authorization", required = false) String jwt) {
+	public ResponseEntity getAllRooms(@RequestHeader(value = "Authorization", required = false) String jwt) throws Exception {
+		
+		nettyServer.start();
 		return new ResponseEntity<>(roomService.getAllRooms(jwt), HttpStatus.OK);
 	}
 	
@@ -59,7 +68,6 @@ public class ChatRoomController {
 	@GetMapping("/list")
 	public ResponseEntity getUserRoooms(@RequestHeader(required = false, defaultValue = "0") int idx)
 	{
-		log.info("get user attending room.. user =>" + idx);
 		return new ResponseEntity<>(roomService.getUserRooms(idx), HttpStatus.OK);
 	}
 	

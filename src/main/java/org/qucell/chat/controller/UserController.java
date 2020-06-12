@@ -14,13 +14,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
 
 
 /**
  * Handles requests for the application home page.
  */
-@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {

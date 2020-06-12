@@ -1,14 +1,18 @@
 package org.qucell.chat.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.qucell.chat.dao.RoomDao;
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
+import org.qucell.chat.model.Repo.ChannelIdUserIdRepository;
+import org.qucell.chat.model.Repo.UserIdChannelRepository;
 import org.qucell.chat.model.room.RoomVO;
 import org.qucell.chat.model.room.Rooms;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.service.JwtService;
+import org.qucell.chat.service.MessageService;
 import org.qucell.chat.service.RedisService;
 import org.qucell.chat.service.RoomService;
 import org.qucell.chat.util.ResponseMessage;
@@ -21,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -39,6 +44,23 @@ public class RoomServiceImpl implements RoomService {
 	@Autowired
 	private RedisService redisService;
 
+	/**
+	 * netty related
+	 */
+	
+	@Autowired
+	private ChannelIdUserIdRepository channelIdUserIdRepository;
+	
+	@Autowired 
+	private UserIdChannelRepository userIdChannelRepository;
+	
+	@Autowired
+	private MessageService messageService;
+	
+	/**
+	 * netty related
+	 */
+	
 	/*
 	 * insert new chat room 
 	 * 
@@ -240,5 +262,32 @@ public class RoomServiceImpl implements RoomService {
 		return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER_LIST_AT_HOME, userList);
 	}
 	
+	/**
+	 * netty service 
+	 */
 	
+	@Override
+	public void enter(Channel channel, String method, Map<String, Object> data, Map<String, Object> result)
+			throws Exception {
+		
+		String key = "id:"+channel.id() + ":userId";
+		int userId = (Integer)redisService.getValue(key);
+		
+		
+	}
+
+	@Override
+	public void exit(Channel channel, String method, Map<String, Object> result) throws Exception {
+		//userIdChannel 목록에서 제외 
+		
+	}
+
+	@Override
+	public void send(Channel channel, String method, Map<String, Object> data, Map<String, Object> result)
+			throws Exception {
+		//1:n 채팅인 경우의 대화하기 기능
+	}
+	/**
+	 * netty service 
+	 */
 }

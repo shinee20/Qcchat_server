@@ -1,12 +1,15 @@
 package org.qucell.chat.service.impl;
 
 
+import java.util.Map;
+
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.user.LoginVO;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.service.JwtService;
 import org.qucell.chat.service.LoginService;
+import org.qucell.chat.service.MessageService;
 import org.qucell.chat.service.RedisService;
 import org.qucell.chat.util.ResponseMessage;
 import org.qucell.chat.util.StatusCode;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,6 +35,7 @@ public class LoginServiceImpl implements LoginService{
 	@Autowired
 	private RedisService redisService;
 
+	
 	//login 
 	@Override
 	public DefaultRes<JwtService.TokenRes> login(LoginVO vo) {
@@ -45,13 +50,16 @@ public class LoginServiceImpl implements LoginService{
 			/*
 			 * save at redis cache
 			 */
+			//save user info
 			String key = "id:"+user.getUserId();
 			redisService.saveValue(key, user);
 			
 			log.info("--------------------redis dao save--------------------" + redisService.getValue(key));
+			
 			/*
 			 * save at redis cache 
 			 */
+			
 			return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenDto);
 		}
 		log.info("fail login");
@@ -59,7 +67,7 @@ public class LoginServiceImpl implements LoginService{
 	}
 
 	//sign up
-	//CUD isolation 
+	//CUD Atomicity  
 	@Transactional
 	@Override
 	public DefaultRes signUp(LoginVO vo) {
@@ -80,5 +88,4 @@ public class LoginServiceImpl implements LoginService{
 		}
 
 	}
-
 }

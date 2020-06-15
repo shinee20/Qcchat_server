@@ -28,5 +28,5 @@ public interface UserService {
 	 * @throws IOException
 	 */
 	public DefaultRes getAllFriendsList(int userId);
-	public void registUser(Channel channel, String method, Map<String, Object> data, Map<String, Object> result);
+	
 }

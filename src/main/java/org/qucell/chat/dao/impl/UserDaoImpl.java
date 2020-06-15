@@ -18,7 +18,7 @@ public class UserDaoImpl implements UserDao{
 	
 	private static String namespace="org.qucell.chat.mapper.userMapper";
 
-
+	//현재 로그인한 사용자의 정보 조회
 	@Override
 	public Users getByUserId(int userId) {
 		return (Users)sqlSession.selectOne(namespace+".selectUserById", userId);

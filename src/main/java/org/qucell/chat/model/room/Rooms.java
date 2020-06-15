@@ -21,5 +21,4 @@ public class Rooms {
 	private int roomOwner;
 	private Date regDate;
 	private Date updateDate;
-	
 }

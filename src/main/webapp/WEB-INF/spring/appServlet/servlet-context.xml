@@ -29,6 +29,9 @@
 				</property>
 			</bean>
 		</mvc:message-converters>
+		<mvc:argument-resolvers>
+			<bean class="org.qucell.chat.util.request.RequestURLArgumentResolver"></bean>
+		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->

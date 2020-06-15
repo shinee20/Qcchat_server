@@ -50,4 +50,16 @@
   	<select id="getUsersAtRoom" resultType="org.qucell.chat.model.user.Users">
   		select * from USER U, ROOM R where room_id=#{roomId} and R.user_id=U.user_id;
   	</select>
+  	
+  	<delete id="deleteRoomByRoomName">
+  		delete from CHATROOM where room_name=#{roomName}
+  	</delete>
+  	
+  	<select id="selectChatRoomByRoomName" resultType="org.qucell.chat.model.room.Rooms">
+  		select * from CHATROOM where room_name=#{roomName}
+  	</select>
+  	
+  	<delete id="deleteUserFromRoom">
+  		delete from ROOM where user_id=#{userId} and room_id=#{roomId}
+  	</delete>
   </mapper>

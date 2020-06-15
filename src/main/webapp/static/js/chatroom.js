@@ -1,18 +1,18 @@
     function setUserInfo() {
         $.ajax({
-            type : 'POST',
-            url : 'chatroom/get_userinfo',
+            type : 'GET',
+            url : 'users/info',
             dataType: 'json',
             async : true,
                 success: function(data) {
-                    console.log("获取用户信息...");
+                    console.log("get user info...");
                     if (data.status == 200) {
                         var userInfo = data.data.userInfo;
-                        userId = userInfo.userId;
-                        $("#username").html(userInfo.username);
-                        $("#avatarUrl").attr("src", userInfo.avatarUrl);
+                        userId = users.userId;
+                        $("#username").html(users.userName);
+//                        $("#avatarUrl").attr("src", users.avatarUrl);
                         var groupListHTML = "";
-                        var groupList = userInfo.groupList;
+                        var groupList = users.roomList;
                         for (var i = 0; i < groupList.length; i++) {
                             groupListHTML +=
                             '<li>' + 
@@ -73,11 +73,11 @@
             if (socket.readyState == WebSocket.OPEN) {
                 var data = {
                     "userId" : userId,
-                    "type" : "REGISTER"
+                    "type" : "register"
                 };
                 socket.send(JSON.stringify(data));
             } else {
-                alert("Websocket连接没有开启！");
+                alert("Websocket register not connected！");
             }
         },
         
@@ -94,7 +94,7 @@
                 };
                 socket.send(JSON.stringify(data));
             } else {
-                alert("Websocket连接没有开启！");
+                alert("Websocket single sending not connected！");
             }
         },
         
@@ -111,7 +111,7 @@
                 };
                 socket.send(JSON.stringify(data));
             } else {
-                alert("Websocket连接没有开启！");
+                alert("Websocket group sending not connected！");
             }
         },
         
@@ -130,7 +130,7 @@
                 };
                 socket.send(JSON.stringify(data));
             } else {
-                alert("Websocket连接没有开启！");
+                alert("Websocket fileupload to single not connected！");
             }
         },
         
@@ -149,12 +149,12 @@
                 };
                 socket.send(JSON.stringify(data));
             } else {
-                alert("Websocket连接没有开启！");
+                alert("Websocket file upload to group not connected！");
             }
         },
         
         registerReceive: function() {
-            console.log("userId为 " + userId + " 的用户登记到在线用户表成功！");
+            console.log("userId为 " + userId + " success registered！");
         },
         
         singleReceive: function(data) {
@@ -304,27 +304,27 @@
         }
     };
     
-    function logout() {
-        // 1. 关闭websocket连接
-        ws.remove();
-        
-        // 2. 注销登录状态
-        $.ajax({
-            type : 'POST',
-            url : 'logout',
-            dataType: 'json',
-            async : true,
-            success: function(data) {
-                if (data.status == 200) {
-                    // 3. 注销成功，进行页面跳转
-                    console.log("注销成功！");
-                    window.location.href="login";
-                } else {
-                    alert(data.msg);
-                }
-            }
-        });
-    }
+//    function logout() {
+//        // 1. 关闭websocket连接
+//        ws.remove();
+//        
+//        // 2. 注销登录状态
+//        $.ajax({
+//            type : 'POST',
+//            url : 'logout',
+//            dataType: 'json',
+//            async : true,
+//            success: function(data) {
+//                if (data.status == 200) {
+//                    // 3. 注销成功，进行页面跳转
+//                    console.log("注销成功！");
+//                    window.location.href="login";
+//                } else {
+//                    alert(data.msg);
+//                }
+//            }
+//        });
+//    }
     
     $(".myfile").fileinput({
         uploadUrl:"chatroom/upload",
@@ -419,11 +419,11 @@
 		var toGroupId = $('#toGroupId').val();
 		var news = $('#dope').val();
 		if (toUserId == '' && toGroupId == '') {
-			alert("请选择对话方");
+			alert("select group name");
 			return;
 		}
 		if(news == ''){
-			alert('消息不能为空');
+			alert('empty message');
 			return;
 		} else {
 			if (toUserId.length != 0) {

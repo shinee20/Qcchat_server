@@ -9,7 +9,6 @@ import org.qucell.chat.model.user.LoginVO;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.service.JwtService;
 import org.qucell.chat.service.LoginService;
-import org.qucell.chat.service.MessageService;
 import org.qucell.chat.service.RedisService;
 import org.qucell.chat.util.ResponseMessage;
 import org.qucell.chat.util.StatusCode;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

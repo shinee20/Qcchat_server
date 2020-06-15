@@ -40,9 +40,7 @@ public class UserController {
 		return new ResponseEntity<>(loginService.signUp(vo), HttpStatus.OK);
 	}
 
-	/*
-	 * @param : user_name
-	 */
+	
 	@Auth
 	@GetMapping("/info")
 	public ResponseEntity getUserInfo(@RequestHeader(required = false, defaultValue = "0") int idx){

@@ -5,7 +5,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
 	<!-- netty websocket -->
-	<context:component-scan base-package="org.qucell.chat.web.*" />
+	<context:component-scan base-package="org.qucell.chat.*" />
 	
     <!-- 일부 Netty 서버를 Spring에 등록하고 처리 및 확장하기 쉬움 -->
     <!-- 클라이언트 연결 요청을 처리하는 데 사용됩니다.-->

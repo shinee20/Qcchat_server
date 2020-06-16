@@ -1,6 +1,5 @@
 # Qcchat_server - Junior Developer Seminar project 
-
-## in progress
+## spec
 - framework
   - netty
   - redis
@@ -11,6 +10,8 @@
   - jwt token authorization
   - redis cache
   - chatroom 
+## in progress
+
 - todo
   - chat process (netty, redis - cache database, websocket)
     - multi chat

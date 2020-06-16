@@ -16,6 +16,10 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * updated 20/06/15
+ * @author myseo
+ */
 @Slf4j
 @Component
 public class NettyServer {
@@ -28,9 +32,11 @@ public class NettyServer {
 	EventLoopGroup bossGroup ;
 	EventLoopGroup workerGroup ;
 	
-	
 	@PostConstruct
 	public void postConstruct() {
+		/**
+		 * create thread => netty server start
+		 */
 		new Thread(){
 			@Override
 			public void run() {
@@ -49,14 +55,15 @@ public class NettyServer {
 	}
 	/**
 	 * Netty 서버를 시작합니다.
-	 * Netty.Server.NettyServerConfiguration 에서 설정한 ServerBootStrap, port Bean 을 이용해 서버를 시작합니다.
-	 * Netty Server 가 이용할 여러 정보들이 NettyServerConfiguration 에 정의되어 있으니 그 곳을 참조합니다.
+	 * ServerBootStrap, port 을 이용해 서버를 시작합니다.
+	 * 
 	 *
 	 * @throws Exception
 	 */
 	public NettyServer startServer() throws Exception {
 		log.info("== WebSocketServer start");
 		
+		//boss group count is 1 
 		bossGroup = new NioEventLoopGroup(1);
 		workerGroup = new NioEventLoopGroup();
 		

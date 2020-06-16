@@ -8,6 +8,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+/**
+ * updated 20/06/15
+ * @author myseo
+ */
 public class RequestURLArgumentResolver implements HandlerMethodArgumentResolver{
 
 	@Override

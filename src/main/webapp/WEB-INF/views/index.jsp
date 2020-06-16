@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,54 +8,61 @@
 
 <style type="text/css">
 .contents_inner {
-    height: 300px;
-    max-height: 300px;
-    overflow-y: scroll;
-    background: ivory;
-    margin-left: 20px;
-    margin-right: 20px;
+	height: 300px;
+	max-height: 300px;
+	overflow-y: scroll;
+	background: ivory;
+	margin-left: 20px;
+	margin-right: 20px;
 }
 
 .scrollable_200 {
-    height: 200px;
-    max-height: 200px;
-    overflow-y: scroll;
-    background: ivory;
+	height: 200px;
+	max-height: 200px;
+	overflow-y: scroll;
+	background: ivory;
 }
 
 .scrollable_300 {
-    height: 300px;
-    max-height: 300px;
-    overflow-y: scroll;
-    background: ivory;
-    margin-left: 20px;
-    margin-right: 20px;
+	height: 300px;
+	max-height: 300px;
+	overflow-y: scroll;
+	background: ivory;
+	margin-left: 20px;
+	margin-right: 20px;
 }
 
 .scrollable_400 {
-    height: 400px;
-    max-height: 400px;
-    overflow-y: scroll;
-    background: ivory;
+	height: 400px;
+	max-height: 400px;
+	overflow-y: scroll;
+	background: ivory;
 }
 
 .scrollable_500 {
-    height: 500px;
-    max-height: 500px;
-    overflow-y: scroll;
-    background: ivory;
+	height: 500px;
+	max-height: 500px;
+	overflow-y: scroll;
+	background: ivory;
 }
 
-.margin_20{
-    margin-left: 20px;
-    margin-right: 20px;
+.margin_20 {
+	margin-left: 20px;
+	margin-right: 20px;
 }
 </style>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css" crossorigin="anonymous">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.css"  crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css"
+	crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.css"
+	crossorigin="anonymous">
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+	crossorigin="anonymous"></script>
 
 <script>
 
@@ -79,7 +87,7 @@ function startWebsocket(){
 		return;
 	}
 	
-	websocket = new WebSocket("ws://localhost:10103/websocket" );
+	websocket = new WebSocket("ws://${host}:${websocketPort}/websocket" );
 	
 	websocket.onerror = function(event) {
 		console.log("== error", event);
@@ -370,107 +378,124 @@ $(function(){
 <body>
 
 
-<div class="container-fluid">
-	<div class="row">
-		내 ID : <span id="myId"></span> (<span id="myName"></span>) 
-		<button onclick="startWebsocket();">websocket 시작</button> 
-		<button onclick="disconnect();">websocket 끊기</button> 
-		<span id="globalMsg"></span>
-	</div>
-	<div class="row">
-	
-	  <div class="col-xs-2">  
-	 		<div class="row">전체 사용자 목록</div>
-	 		<button onclick="requestAllUserList();">새로고침</button>
-		  	<div id="allUsers" class="row scrollable_400" > </div>
-	 		<div class="row">전체 방 목록</div>
-		  	<div id="allRooms" class="row scrollable_200"> </div>
-	  </div>
-	  
-	  <div class="col-xs-10 row">  
-			  <div class="col-xs-6">  
-			  	<div id="container_1" class="row" style="margin-bottom: 20px;">
-				  	<div class="">
-					  	<input type="text" id="room_1" readonly class="room roomId switchComp" title="방 만들기">
-					  	<button class=" " onclick="createRoom('1');" >방만들거나 들어가기</button>
-					  	<button class=" switchComp" onclick="exitFromRoom('1');">방나가기</button>
-				  	</div>
-				  	<div class="row">
-					  <div class="col-xs-4" style="">  
-						  <div>사용자</div>
-						  <div id="roomUsers_1" class="row switchComp scrollable_300" ></div>
-					  </div>
-					  <div class="col-xs-8" style="">  
-					  	<div class="contents_inner switchComp" id="contents_1" ></div>
-					  	<div><input id="input_1" onkeyup="onMsgKeyUp(event, '1');" type="text" style="width:90%;" class="form-control switchComp margin_20"></div>
-					  </div>
-				  	</div>
-			  	</div>
+	<div class="container-fluid">
+		<div class="row">
+			내 ID : <span id="myId"></span> (<span id="myName"></span>)
+			<button onclick="startWebsocket();">websocket 시작</button>
+			<button onclick="disconnect();">websocket 끊기</button>
+			<span id="globalMsg"></span>
+		</div>
+		<div class="row">
 
-			  	<div id="container_2" class="row" style="margin-bottom: 20px;">
-				  	<div class="">
-					  	<input type="text" id="room_2" readonly class="room roomId switchComp" title="방 만들기">
-					  	<button class=" " onclick="createRoom('2');" >방만들거나 들어가기</button>
-					  	<button class=" switchComp" onclick="exitFromRoom('2');">방나가기</button>
-				  	</div>
-				  	<div class="row">
-					  <div class="col-xs-4" style=";">  
-						  <div>사용자</div>
-						  <div class="row switchComp scrollable_300" id="roomUsers_2"></div>
-					  </div>
-					  <div class="col-xs-8" style="">  
-					  	<div class="contents_inner switchComp" id="contents_2" ></div>
-					  	<div><input id="input_2" onkeyup="onMsgKeyUp(event, '2');" type="text" class="form-control switchComp margin_20"></div>
-					  </div>
-				  	</div>
-			  	</div>
-			  </div>
-			  
-			  
-			  <div class="col-xs-6">  
-			  	<div id="container_3" class="row" style="margin-bottom: 20px;">
-				  	<div class="">
-					  	<input type="text" id="room_3" readonly class="room roomId switchComp" title="방 만들기">
-					  	<button class=" " onclick="createRoom('3');" >방만들거나 들어가기</button>
-					  	<button class=" switchComp" onclick="exitFromRoom('3');">방나가기</button>
-				  	</div>
-				  	<div class="row">
-					  <div class="col-xs-4" style=";">  
-						  <div>사용자</div>
-						  <div class="row switchComp scrollable_300" id="roomUsers_3"></div>
-					  </div>
-					  <div class="col-xs-8" style="">  
-					  	<div class="contents_inner switchComp" id="contents_3" ></div>
-					  	<div><input id="input_3" onkeyup="onMsgKeyUp(event, '3');" type="text" class="form-control switchComp margin_20"></div>
-					  </div>
-				  	</div>
+			<div class="col-xs-2">
+				<div class="row">전체 사용자 목록</div>
+				<button onclick="requestAllUserList();">새로고침</button>
+				<div id="allUsers" class="row scrollable_400"></div>
+				<div class="row">전체 방 목록</div>
+				<div id="allRooms" class="row scrollable_200"></div>
+			</div>
+
+			<div class="col-xs-10 row">
+				<div class="col-xs-6">
+					<div id="container_1" class="row" style="margin-bottom: 20px;">
+						<div class="">
+							<input type="text" id="room_1" readonly
+								class="room roomId switchComp" title="방 만들기">
+							<button class=" " onclick="createRoom('1');">방만들거나 들어가기</button>
+							<button class=" switchComp" onclick="exitFromRoom('1');">방나가기</button>
+						</div>
+						<div class="row">
+							<div class="col-xs-4" style="">
+								<div>사용자</div>
+								<div id="roomUsers_1" class="row switchComp scrollable_300"></div>
+							</div>
+							<div class="col-xs-8" style="">
+								<div class="contents_inner switchComp" id="contents_1"></div>
+								<div>
+									<input id="input_1" onkeyup="onMsgKeyUp(event, '1');"
+										type="text" style="width: 90%;"
+										class="form-control switchComp margin_20">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div id="container_2" class="row" style="margin-bottom: 20px;">
+						<div class="">
+							<input type="text" id="room_2" readonly
+								class="room roomId switchComp" title="방 만들기">
+							<button class=" " onclick="createRoom('2');">방만들거나 들어가기</button>
+							<button class=" switchComp" onclick="exitFromRoom('2');">방나가기</button>
+						</div>
+						<div class="row">
+							<div class="col-xs-4" style="">
+								<div>사용자</div>
+								<div class="row switchComp scrollable_300" id="roomUsers_2"></div>
+							</div>
+							<div class="col-xs-8" style="">
+								<div class="contents_inner switchComp" id="contents_2"></div>
+								<div>
+									<input id="input_2" onkeyup="onMsgKeyUp(event, '2');"
+										type="text" class="form-control switchComp margin_20">
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-				
-			  	<div id="container_4" class="row" style="margin-bottom: 20px;">
-				  	<div class="">
-					  	<input type="text" id="room_4" readonly class="room roomId switchComp" title="방 만들기">
-					  	<button class=" " onclick="createRoom('4');" >방만들거나 들어가기</button>
-					  	<button class=" switchComp" onclick="exitFromRoom('4');">방나가기</button>
-				  	</div>
-				  	<div class="row">
-					  <div class="col-xs-4" style=";">  
-						  <div>사용자</div>
-						  <div class="row switchComp scrollable_300" id="roomUsers_4"></div>
-					  </div>
-					  <div class="col-xs-8" style="">  
-					  	<div class="contents_inner switchComp" id="contents_4" ></div>
-					  	<div><input id="input_4" onkeyup="onMsgKeyUp(event, '4');" type="text" class="form-control switchComp margin_20"></div>
-					  </div>
-				  	</div>
-			  	</div>
-			  </div>
-			  
-	  </div>
-	  
-	</div>
 
-	<div id="log"></div>
-</div>
+
+				<div class="col-xs-6">
+					<div id="container_3" class="row" style="margin-bottom: 20px;">
+						<div class="">
+							<input type="text" id="room_3" readonly
+								class="room roomId switchComp" title="방 만들기">
+							<button class=" " onclick="createRoom('3');">방만들거나 들어가기</button>
+							<button class=" switchComp" onclick="exitFromRoom('3');">방나가기</button>
+						</div>
+						<div class="row">
+							<div class="col-xs-4" style="">
+								<div>사용자</div>
+								<div class="row switchComp scrollable_300" id="roomUsers_3"></div>
+							</div>
+							<div class="col-xs-8" style="">
+								<div class="contents_inner switchComp" id="contents_3"></div>
+								<div>
+									<input id="input_3" onkeyup="onMsgKeyUp(event, '3');"
+										type="text" class="form-control switchComp margin_20">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div id="container_4" class="row" style="margin-bottom: 20px;">
+						<div class="">
+							<input type="text" id="room_4" readonly
+								class="room roomId switchComp" title="방 만들기">
+							<button class=" " onclick="createRoom('4');">방만들거나 들어가기</button>
+							<button class=" switchComp" onclick="exitFromRoom('4');">방나가기</button>
+						</div>
+						<div class="row">
+							<div class="col-xs-4" style="">
+								<div>사용자</div>
+								<div class="row switchComp scrollable_300" id="roomUsers_4"></div>
+							</div>
+							<div class="col-xs-8" style="">
+								<div class="contents_inner switchComp" id="contents_4"></div>
+								<div>
+									<input id="input_4" onkeyup="onMsgKeyUp(event, '4');"
+										type="text" class="form-control switchComp margin_20">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+		<div id="log"></div>
+	</div>
 
 
 </body>

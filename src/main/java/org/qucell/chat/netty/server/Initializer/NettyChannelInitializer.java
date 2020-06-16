@@ -17,17 +17,20 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
 
+/**
+ * updated 20/06/16
+ * @author myseo
+ */
 public class NettyChannelInitializer extends ChannelInitializer<SocketChannel>{
-	private static final StringDecoder STRING_DECODER = new StringDecoder(CharsetUtil.UTF_8);
-	private static final StringEncoder STRING_ENCODER = new StringEncoder(CharsetUtil.UTF_8);
 
 	private static final String WEBSOCKET_PATH = "/websocket";
+	
 	private final HealthCheckHandler healthCheckHandler = new HealthCheckHandler();
 
 	/**
 	 * 채널 파이프라인 설정.
-	 * Netty.Server.Config.NettyServerConfiguration 에서 등록한 Bean 을 이용해 사용자의 통신을 처리할 Handler 도 등록.
-	 * Netty.Server.Handler.JsonHandler 에서 실제 사용자 요청 처리.
+	 * 사용자의 통신을 처리할 Handler 도 등록.
+	 * Netty.Server.Handler.NettyServerHandler 에서 실제 사용자 요청 처리.
 	 *
 	 * @param channel
 	 * @throws Exception
@@ -41,13 +44,12 @@ public class NettyChannelInitializer extends ChannelInitializer<SocketChannel>{
 
 		channelPipeline
 		.addLast(new HttpServerCodec())
-		.addLast(new HttpObjectAggregator(65536))
+		.addLast(new HttpObjectAggregator(65536)) // chunked된 응답을 집계하는 코덱이다
 		.addLast(new WebSocketServerCompressionHandler())
 		.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true))
 		.addLast(healthCheckHandler)
 		.addLast(new IdleStateHandler(HealthCheckHandler.READ_CHECK_INTERVAL, 0, 0, TimeUnit.SECONDS))
 		.addLast(new NettyServerHandler());
-
 
 	}
 

@@ -49,7 +49,7 @@ public class LoginServiceImpl implements LoginService{
 			 * save at redis cache
 			 */
 			//save user info
-			String key = "id:"+user.getUserId();
+			String key = "id:"+user.getUserName();
 			redisService.saveValue(key, user);
 			
 			log.info("--------------------redis dao save--------------------" + redisService.getValue(key));

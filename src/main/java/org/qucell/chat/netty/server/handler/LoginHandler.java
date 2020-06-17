@@ -24,7 +24,7 @@ public class LoginHandler {
 		Objects.requireNonNull(name, "name is required");
 		
 		/**
-		 * 일단 보류
+		 * 일단 보류 -> 이름 중복 안되도록 해야한다.
 		 */
 //		String key = "id:"+name;
 //		

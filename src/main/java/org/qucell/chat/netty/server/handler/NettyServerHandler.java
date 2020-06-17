@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 	
 	private static LoginHandler loginHandler = new LoginHandler();
+	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
 		

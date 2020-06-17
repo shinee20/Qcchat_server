@@ -37,15 +37,22 @@ public class ClientAdapter implements ClientEventListener{
 
 	//key : client value : rooms
 	private final ConcurrentHashMap<Client, List<Room>> CLIENT_TO_ROOMS = new ConcurrentHashMap<>();
+//	@Autowired
+//	private ClientRoomListRepository clientRoomListRepository;
+//	
+//	@Autowired
+//	private RoomRepository roomRepository;
+	
 	public static final ClientAdapter INSTANCE = new ClientAdapter();
-	private final CopyOnWriteArrayList<Room> ROOMS = new CopyOnWriteArrayList<>();
+	private final CopyOnWriteArrayList<Room> ROOMS = new CopyOnWriteArrayList<>();	
 
 	public ClientAdapter login(Client client) {
 		//로그인할 때의 이벤트 
 		ChannelSendHelper.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).build());
-		CLIENT_TO_ROOMS.put(client, new ArrayList<>(2));
+		CLIENT_TO_ROOMS.put(client, new ArrayList<>());
 		client.getChannel().closeFuture().addListener(listener->logout(client));
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogIn).build();
+		log.info("room list of client has : {}", CLIENT_TO_ROOMS.keys());
 		ChannelSendHelper.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()),  entity);
 
 		sendAllClientListToClient(client);
@@ -218,13 +225,13 @@ public class ClientAdapter implements ClientEventListener{
 		EventType eventType = e.eventType;
 	}
 
-	private void run(Runnable r) {
-		try {
-			r.run();
-		} catch(Throwable e) {
-			log.error(e.getMessage(), e);
-		}
-	}
+//	private void run(Runnable r) {
+//		try {
+//			r.run();
+//		} catch(Throwable e) {
+//			log.error(e.getMessage(), e);
+//		}
+//	}
 
 	private void startMonitorThread() {
 		try {

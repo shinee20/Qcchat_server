@@ -1,6 +1,5 @@
 package org.qucell.chat.netty.server.common.client;
 
-import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.netty.server.common.EventType;
 
 public interface ClientEventListener {

@@ -34,11 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class UserController {
 
-//	@Autowired
-//	private LoginService loginService;
-//
-//	@Autowired
-//	private UserService userService;
+	@Autowired
+	private LoginService loginService;
+
+	@Autowired
+	private UserService userService;
 
 	@Value("${websocket.port}")
 	private String websocketPort;
@@ -81,37 +81,32 @@ public class UserController {
 		return "index";
 	}
 	
-//	@GetMapping("/login")
-//	public String login() {
-//		return "login";
-//	}
-//	
-//	@ResponseBody
-//	@PostMapping("/login")
-//	public ResponseEntity login(@RequestBody LoginVO vo) {
-//		//register at channel 
-//		return new ResponseEntity<>(loginService.login(vo), HttpStatus.OK);
-//	}
-//
-//	@ResponseBody
-//	@PostMapping("/signup")
-//	public ResponseEntity signUp(@RequestBody LoginVO vo){
-//		return new ResponseEntity<>(loginService.signUp(vo), HttpStatus.OK);
-//	}
-//
-//	
-//	@Auth
-//	@ResponseBody
-//	@GetMapping("/info")
-//	public ResponseEntity getUserInfo(@RequestHeader(required = false, defaultValue = "0") int idx){
-//		return new ResponseEntity<>(userService.getByUserId(idx), HttpStatus.OK);
-//	}
-//
-//	@Auth
-//	@RequestMapping("/list")
-//	public ResponseEntity getFriendsList(@RequestHeader(required=false, defaultValue="0") int idx){
-//		return new ResponseEntity<>(userService.getAllFriendsList(idx), HttpStatus.OK);
-//	}
+	@ResponseBody
+	@PostMapping("/login")
+	public ResponseEntity login(@RequestBody LoginVO vo) {
+		//register at channel 
+		return new ResponseEntity<>(loginService.login(vo), HttpStatus.OK);
+	}
+
+	@ResponseBody
+	@PostMapping("/signup")
+	public ResponseEntity signUp(@RequestBody LoginVO vo){
+		return new ResponseEntity<>(loginService.signUp(vo), HttpStatus.OK);
+	}
+
+	
+	@Auth
+	@ResponseBody
+	@GetMapping("/info")
+	public ResponseEntity getUserInfo(@RequestHeader(required = false, defaultValue = "0") int idx){
+		return new ResponseEntity<>(userService.getByUserId(idx), HttpStatus.OK);
+	}
+
+	@Auth
+	@RequestMapping("/list")
+	public ResponseEntity getFriendsList(@RequestHeader(required=false, defaultValue="0") int idx){
+		return new ResponseEntity<>(userService.getAllFriendsList(idx), HttpStatus.OK);
+	}
 	
 	/*
 	 * redis test

@@ -79,12 +79,7 @@ public class Room {
 		}
 		return this;
 	}
-	public Map<String, String> toMap() {
-		Map<String, String> map = new HashMap<>();
-		map.put("id", id);
-		map.put("name", name);
-		return map;
-	}
+	
 	public void sendClientList() {
 		List<Map<String, String>> list  = clientList.stream().map(client ->client.toMap()).collect(Collectors.toList());
 		String jsonStr = JsonUtil.toJsonStr(list);
@@ -96,6 +91,14 @@ public class Room {
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.SendMsg).setHeader("roomId", this.id).setContents(msg).build();
 		ChannelSendHelper.writeAndFlushToClients(this.clientList, entity);
 	}
+	
+	public Map<String, String> toMap() {
+		Map<String, String> map = new HashMap<>();
+		map.put("id", id);
+		map.put("name", name);
+		return map;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

@@ -1,12 +1,11 @@
 package org.qucell.chat.netty.server.handler;
 
-import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.AttachHelper;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;
+import org.qucell.chat.netty.server.common.ChatReceiveProcess;
+import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
-import org.qucell.chat.util.ResponseMessage;
-import org.qucell.chat.util.StatusCode;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -46,10 +45,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 			Client client = Client.from(ctx);
 			if (client == null) {
 				//redis에서 찾아서 로그인시켜준다. 
-				client = loginHandler.loginProcess(ctx, requestEntity)
+				client = loginHandler.loginProcess(ctx, requestEntity);
 			}
 			
-			ChatRcvMainProcessor.INSTANCE.process(client, requestEntity);
+			ChatReceiveProcess.INSTANCE.process(client, requestEntity);
 		} 
 		else {
 			String msg = "unsupported frame type: " + frame.getClass().getName();
@@ -69,7 +68,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		log.error(cause.getMessage(), cause);
 		Client client = AttachHelper.about(ctx).getClient();
-		JsonMsgRes entity = new JsonMsgRes.Builder(ctx).setAction(DefaultRes.res(StatusCode.INTERNAL_SERVER_ERROR, ResponseMessage.INTERNAL_SERVER_ERROR)).setContents("[error] " + cause.toString()).build();
+		JsonMsgRes entity = new JsonMsgRes.Builder(ctx).setAction(EventType.SendInfo).setContents("[error] " + cause.toString()).build();
 		ChannelSendHelper.writeAndFlushToClient(client, entity);
 	}
 	

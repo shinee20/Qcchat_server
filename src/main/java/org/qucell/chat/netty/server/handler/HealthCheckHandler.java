@@ -1,12 +1,11 @@
 package org.qucell.chat.netty.server.handler;
 
-import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;
+import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
-import org.qucell.chat.util.ResponseMessage;
-import org.qucell.chat.util.StatusCode;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
@@ -18,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author myseo
  */
 @Slf4j
+@Sharable
 public class HealthCheckHandler extends ChannelInboundHandlerAdapter{
 	/**
 	 * 5분동안 input이 없으면, health check의 목적으로 dummy 데이타를 보냄.
@@ -34,10 +34,10 @@ public class HealthCheckHandler extends ChannelInboundHandlerAdapter{
 				* 파이프에 등록되어있는 handler에서가 아닌 새로 생성한 다른 class에서 채널을 참조한다.
 				*/
 				Client client = Client.from(ctx); //find client 
-				if (client == null) {
-					log.info("== health check sending : {}, {}", client.getUser().getUserId(), client.getUser().getUserName());
+				if (client != null) {
+					log.info("== health check sending : {}, {}", client.getId(), client.getName());
 					//broadcast msg
-					ChannelSendHelper.writeAndFlushToClient(client, new JsonMsgRes.Builder().setAction(DefaultRes.res(StatusCode.OK, ResponseMessage.HEALTH_CHECK)).build());
+					ChannelSendHelper.writeAndFlushToClient(client, new JsonMsgRes.Builder().setAction(EventType.HealthCheck).build());
 				}
 			} else {
 				super.userEventTriggered(ctx, evt);

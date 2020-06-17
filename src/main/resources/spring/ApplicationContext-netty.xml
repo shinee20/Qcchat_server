@@ -10,8 +10,5 @@
     <!-- 일부 Netty 서버를 Spring에 등록하고 처리 및 확장하기 쉬움 -->
     <!-- 클라이언트 연결 요청을 처리하는 데 사용됩니다.-->
     
-    <bean id="bossGroup" class="io.netty.channel.nio.NioEventLoopGroup" />
-    <bean id="workerGroup" class="io.netty.channel.nio.NioEventLoopGroup" />
-    <bean id="serverBootstrap" class="io.netty.bootstrap.ServerBootstrap" scope="prototype" />
     
 </beans>

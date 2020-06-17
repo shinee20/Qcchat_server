@@ -1,19 +1,18 @@
 package org.qucell.chat.model.room;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;
+import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
 import org.qucell.chat.util.JsonUtil;
-import org.qucell.chat.util.ResponseMessage;
-import org.qucell.chat.util.StatusCode;
 
 import lombok.Data;
 
@@ -30,10 +29,9 @@ public class Room {
 		this.clientAdapter = clientAdapter;
 	}
 	
-	public Room EnterRoom(Client client) {
+	public Room enterRoom(Client client) {
 		//enter
 		Objects.requireNonNull(client);
-		List<Room> rooms = clientAdapter.getRoomList(client.getRoomList());
 		
 		if (client != null && !clientList.contains(client)) {
 			synchronized(this) {
@@ -41,7 +39,7 @@ public class Room {
 				client.addRoom(this.id);
 			}
 			
-			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(this.id).setAction(DefaultRes.res(StatusCode.OK, ResponseMessage.ENTER_ROOM)).build();
+			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(this.id).setAction(EventType.EnterToRoom).build();
 			ChannelSendHelper.writeAndFlushToClients(clientList, entity);
 			sendClientList();
 		}
@@ -53,7 +51,7 @@ public class Room {
 		
 		if (client != null && this.clientList.contains(client)) {
 			//현재 접속된 사용자일 경우
-			JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(DefaultRes.res(StatusCode.OK, ResponseMessage.EXIT_ROOM)).build();
+			JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.ExitFromRoom).setRoomId(this.id).build();
 			ChannelSendHelper.writeAndFlushToClients(clientList, entity);
 		}
 		
@@ -62,24 +60,40 @@ public class Room {
 			client.removeRoom(this.getId());
 		}
 		
+		if (this.clientList.size() == 0) {
+			//방에 한 명도 없을 경우
+			
+		}
 		sendClientList();
 		return this;
 	}
 	
-//	public Room logout(Client client) {
-//		//로그아웃시 방에서 빠져나간다?
-//	}
-	
-	public void sendClientList() {
+	public Room logout(Client client) {
+		//로그아웃시 방에서 빠져나간다?
 		
+		synchronized(this) {
+			if (client != null && this.clientList.contains(client)) {
+				clientList.remove(client);
+				exitRoom(client);
+			}
+		}
+		return this;
+	}
+	public Map<String, String> toMap() {
+		Map<String, String> map = new HashMap<>();
+		map.put("id", id);
+		map.put("name", name);
+		return map;
+	}
+	public void sendClientList() {
 		List<Map<String, String>> list  = clientList.stream().map(client ->client.toMap()).collect(Collectors.toList());
 		String jsonStr = JsonUtil.toJsonStr(list);
-		JsonMsgRes entity = new JsonMsgRes.Builder().setAction(DefaultRes.res(StatusCode.OK, ResponseMessage.READ_ALL_USER_LIST)).build();
+		JsonMsgRes entity = new JsonMsgRes.Builder().setAction(EventType.UserList).setHeader("roomId", this.id).setContents(jsonStr).build();
 		ChannelSendHelper.writeAndFlushToClients(this.clientList, entity);
 	}
 
 	public void sendMsg(Client client, String msg) {
-		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(DefaultRes.res(StatusCode.OK, ResponseMessage.SEND_MSG)).setContents(this.id).build();
+		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.SendMsg).setHeader("roomId", this.id).setContents(msg).build();
 		ChannelSendHelper.writeAndFlushToClients(this.clientList, entity);
 	}
 	@Override
@@ -109,7 +123,7 @@ public class Room {
 
 	@Override
 	public String toString() {
-		return "Room [id=" + id + ", name=" + name + ", clientList=" + clientList + ", clientAdapter=" + clientAdapter
+		return "Room [id=" + id + ", name=" + name + ", clientList=" + clientList
 				+ "]";
 	}
 	

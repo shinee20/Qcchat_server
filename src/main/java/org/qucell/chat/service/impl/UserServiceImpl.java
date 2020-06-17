@@ -1,8 +1,6 @@
 package org.qucell.chat.service.impl;
 
 import java.util.List;
-import java.util.Map;
-
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.user.Users;
@@ -13,7 +11,6 @@ import org.qucell.chat.util.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -25,7 +22,6 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private RedisService redisService;
-	
 	
 	/**
 	 * 

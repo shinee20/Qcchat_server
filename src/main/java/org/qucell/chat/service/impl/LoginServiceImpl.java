@@ -1,8 +1,5 @@
 package org.qucell.chat.service.impl;
 
-
-import java.util.Map;
-
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.user.LoginVO;
@@ -33,7 +30,6 @@ public class LoginServiceImpl implements LoginService{
 	@Autowired
 	private RedisService redisService;
 
-	
 	//login 
 	@Override
 	public DefaultRes<JwtService.TokenRes> login(LoginVO vo) {

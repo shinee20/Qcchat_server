@@ -4,20 +4,20 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
   <mapper namespace="org.qucell.chat.mapper.roomMapper">
-  	<select id ="selectAllRooms" resultType="org.qucell.chat.model.room.Rooms">
+  	<select id ="selectAllRooms" resultType="org.qucell.chat.model.room.Room">
   	<![CDATA[
   		select * from CHATROOM where room_id>0 order by room_id;
   		]]>
   	</select>
   	
-  	<select id ="selectUserRooms" resultType="org.qucell.chat.model.room.Rooms">
+  	<select id ="selectUserRooms" resultType="org.qucell.chat.model.room.Room">
   	<![CDATA[
   		select * from CHATROOM C, ROOM R where R.user_id = #{userId} and C.room_id = R.room_id
   		order by C.room_id
   		]]>
   	</select>
   	
-  	<select id ="selectAllRoomsWithoutAlreadyJoin" resultType="org.qucell.chat.model.room.Rooms">
+  	<select id ="selectAllRoomsWithoutAlreadyJoin" resultType="org.qucell.chat.model.room.Room">
   		<![CDATA[
   			select * from CHATROOM C where C.room_id not in (select room_id from ROOM 
   			where user_id = #{userId}) order by C.room_id
@@ -55,7 +55,7 @@
   		delete from CHATROOM where room_name=#{roomName}
   	</delete>
   	
-  	<select id="selectChatRoomByRoomName" resultType="org.qucell.chat.model.room.Rooms">
+  	<select id="selectChatRoomByRoomName" resultType="org.qucell.chat.model.room.Room">
   		select * from CHATROOM where room_name=#{roomName}
   	</select>
   	

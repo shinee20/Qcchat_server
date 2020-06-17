@@ -25,14 +25,16 @@ public class Client {
 	 * 채널(==socket)의 클라이언트 정보에 관한 것들을 처리한다.
 	 */
 	private LocalDateTime createdTime = LocalDateTime.now();
-	private Users user;
+	private String id;
+	private String name;
 	private final Channel channel;
 	private List<String> roomList = new ArrayList<>();
 	
-	public Client(Users user, Channel channel) {
+	public Client(String id, String name, Channel channel) {
 		
 		super();
-		this.user = user;
+		this.id = id;
+		this.name = name;
 		this.channel = channel;
 	}
 	
@@ -82,8 +84,8 @@ public class Client {
 
 	public Map<String, String> toMap() {
 		Map<String, String> map = new HashMap<>();
-		map.put("id", user.getUserId()+"");
-		map.put("name", user.getUserName());
+		map.put("id", id);
+		map.put("name", name);
 		return map;
 	}
 	@Override
@@ -95,10 +97,10 @@ public class Client {
 		if (getClass() != obj.getClass())
 			return false;
 		Client other = (Client) obj;
-		if (user.getUserName() == null) {
-			if (other.user.getUserName() != null)
+		if (id== null) {
+			if (other.id != null)
 				return false;
-		} else if (!user.getUserName().equals(other.user.getUserName()))
+		} else if (!id.equals(other.id))
 			return false;
 		return true;
 	}
@@ -107,13 +109,13 @@ public class Client {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((user.getUserName()==null)? 0 : user.getUserName().hashCode());
+		result = prime * result + ((id==null)? 0 : id.hashCode());
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "Client [id=" + user.getUserId() + ", name=" + user.getUserName() + ", channel=" + channel
+		return "Client [id=" + id + ", name=" + name + ", channel=" + channel
 				+ ", roomNameList=" + roomList.toString() + "]";
 	}
 	

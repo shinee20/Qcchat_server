@@ -66,17 +66,21 @@
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="servicePublicMethod" />
 	
 	</aop:config>
-    
+	
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">    
+        <property name="locations" value="classpath:system.properties"/>    
+        <property name="fileEncoding" value="UTF-8"/>
+    </bean>
 	<!-- Database infomation -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
  
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="driverClassName" value="${driverClassName}" />
  
-        <property name="url" value="jdbc:mysql://127.0.0.1:3306/chatroom" />
+        <property name="url" value="${url}" />
  
-        <property name="username" value="qucell" />
+        <property name="username" value="${username}" />
  
-        <property name="password" value="mysql0202" />
+        <property name="password" value="${password}" />
  
     </bean>
 	

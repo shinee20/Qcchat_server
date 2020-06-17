@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class NettyServer {
 	
-	@Value("${netty.websocket.port}")
+	@Value("${websocket.port}")
 	private int port;
 	
 	Channel channel;

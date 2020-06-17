@@ -3,6 +3,7 @@ package org.qucell.chat.controller;
 import java.util.Map;
 
 import org.qucell.chat.model.user.LoginVO;
+import org.qucell.chat.netty.server.NettyServer;
 import org.qucell.chat.netty.server.handler.LoginHandler;
 import org.qucell.chat.service.LoginService;
 import org.qucell.chat.service.UserService;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Handles requests for the application home page.
  */
@@ -27,23 +30,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * updated 20/06/15
  * @author myseo
  */
+@Slf4j
 @Controller
 public class UserController {
 
-	@Autowired
-	private LoginService loginService;
+//	@Autowired
+//	private LoginService loginService;
+//
+//	@Autowired
+//	private UserService userService;
 
-	@Autowired
-	private UserService userService;
-
-	@Value("${netty.websocket.port}")
+	@Value("${websocket.port}")
 	private String websocketPort;
 
-	@Autowired
-	private LoginHandler loginHandler;
 	
 	@GetMapping("/")
-	public String login(@RequestURL String requestURL, Map<String, Object> model) {
+	public String index(@RequestURL String requestURL, Map<String, Object> model) {
 		/**
 		 * parsing request url = http://localhost:10101/
 		 */
@@ -79,32 +81,37 @@ public class UserController {
 		return "index";
 	}
 	
-	@ResponseBody
-	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody LoginVO vo) {
-		//register at channel 
-		return new ResponseEntity<>(loginService.login(vo), HttpStatus.OK);
-	}
-
-	@ResponseBody
-	@PostMapping("/signup")
-	public ResponseEntity signUp(@RequestBody LoginVO vo){
-		return new ResponseEntity<>(loginService.signUp(vo), HttpStatus.OK);
-	}
-
-	
-	@Auth
-	@ResponseBody
-	@GetMapping("/info")
-	public ResponseEntity getUserInfo(@RequestHeader(required = false, defaultValue = "0") int idx){
-		return new ResponseEntity<>(userService.getByUserId(idx), HttpStatus.OK);
-	}
-
-	@Auth
-	@RequestMapping("/list")
-	public ResponseEntity getFriendsList(@RequestHeader(required=false, defaultValue="0") int idx){
-		return new ResponseEntity<>(userService.getAllFriendsList(idx), HttpStatus.OK);
-	}
+//	@GetMapping("/login")
+//	public String login() {
+//		return "login";
+//	}
+//	
+//	@ResponseBody
+//	@PostMapping("/login")
+//	public ResponseEntity login(@RequestBody LoginVO vo) {
+//		//register at channel 
+//		return new ResponseEntity<>(loginService.login(vo), HttpStatus.OK);
+//	}
+//
+//	@ResponseBody
+//	@PostMapping("/signup")
+//	public ResponseEntity signUp(@RequestBody LoginVO vo){
+//		return new ResponseEntity<>(loginService.signUp(vo), HttpStatus.OK);
+//	}
+//
+//	
+//	@Auth
+//	@ResponseBody
+//	@GetMapping("/info")
+//	public ResponseEntity getUserInfo(@RequestHeader(required = false, defaultValue = "0") int idx){
+//		return new ResponseEntity<>(userService.getByUserId(idx), HttpStatus.OK);
+//	}
+//
+//	@Auth
+//	@RequestMapping("/list")
+//	public ResponseEntity getFriendsList(@RequestHeader(required=false, defaultValue="0") int idx){
+//		return new ResponseEntity<>(userService.getAllFriendsList(idx), HttpStatus.OK);
+//	}
 	
 	/*
 	 * redis test

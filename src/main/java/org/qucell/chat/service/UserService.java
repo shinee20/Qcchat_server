@@ -1,10 +1,6 @@
 package org.qucell.chat.service;
 
-import java.util.Map;
-
 import org.qucell.chat.model.DefaultRes;
-
-import io.netty.channel.Channel;
 
 public interface UserService {
 	public DefaultRes getByUserId(int userId);

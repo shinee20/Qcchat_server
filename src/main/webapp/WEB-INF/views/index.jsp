@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>websocket test</title>
+<title>QCCHAT</title>
 
 <style type="text/css">
 .contents_inner {
@@ -81,9 +81,9 @@ var websocket ;
 var myId;
 var roomInfo = {};
 function startWebsocket(){
-	var name = prompt("이름은 ?");
+	var name = prompt("이름을 입력하세요");
 	if(name==null || name==""){
-		alert("이름을 입력하셔야죠.");
+		alert("다시 입력하세요");
 		return;
 	}
 	
@@ -164,7 +164,7 @@ function startWebsocket(){
       		var idx = getIdxFromRoomname(roomId);
         	if(refId==myId){
 	        	$("#room_"+idx).css("color","black").val("");
-	        	append($("#contents_"+idx), "나는 방에서 나갔음.");
+	        	append($("#contents_"+idx), "방에서 나갔음.");
 	        	$("#container_"+idx).find(".switchComp").css("background-color","silver").prop("disabled",true);
 	        	$("#roomUsers_"+idx).empty();
         	}else{
@@ -273,10 +273,10 @@ function createRoom(idx){
 		alert("websocket을 시작한후에 하세요.");
 		return;
 	}
-	var roomName = prompt("방명은 ? ");
+	var roomName = prompt("방명을 입력해주세요. ");
 	console.log("== roomName", roomName);
 	if(roomName==null || roomName==""){
-		alert("방명을 입력하셔야지요.");
+		alert("방명을 입력하세요.");
 		return;
 	}
 	$("#room_" + idx).val(roomName);
@@ -352,6 +352,9 @@ function onClick_room(name){
 function initDisplay(){
 	$(".switchComp").css("background-color","silver").prop("disabled", true);
 }
+function gotoLogin() {
+	window.location.href="login";
+}
 
 // function createNewRoom(){
 // 	var name = $("#newRoomName").val();
@@ -381,8 +384,8 @@ $(function(){
 	<div class="container-fluid">
 		<div class="row">
 			내 ID : <span id="myId"></span> (<span id="myName"></span>)
-			<button onclick="startWebsocket();">websocket 시작</button>
-			<button onclick="disconnect();">websocket 끊기</button>
+			<button onclick="startWebsocket();">Login</button>
+			<button onclick="disconnect();">Logout</button>
 			<span id="globalMsg"></span>
 		</div>
 		<div class="row">
@@ -450,7 +453,7 @@ $(function(){
 							<input type="text" id="room_3" readonly
 								class="room roomId switchComp" title="방 만들기">
 							<button class=" " onclick="createRoom('3');">방만들거나 들어가기</button>
-							<button class=" switchComp" onclick="exitFromRoom('3');">방나가기</button>
+							<button class="switchComp" onclick="exitFromRoom('3');">방나가기</button>
 						</div>
 						<div class="row">
 							<div class="col-xs-4" style="">

@@ -2,8 +2,12 @@ package org.qucell.chat.netty.server.common;
 
 import java.util.Objects;
 
+
 import org.qucell.chat.model.JsonMsgRes;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public enum EventType {
 	LoginConfirmed("LoginConfirmed", "로그인 확인됨"),
 	LogIn("LogIn", "로그인"),
@@ -30,13 +34,14 @@ public enum EventType {
 	}
 	
 	public static EventType from(String c) {
+		log.info("EventType code : {}", c );
 		if (c == null || c.contentEquals("")) {
 			//null
 			return Invalid;
 		}
 		
 		for (EventType t : EventType.values()) {
-			if (c.equals(t)) {
+			if (c.equals(t.code)) {
 				return t;
 			}
 		}
@@ -57,7 +62,7 @@ public enum EventType {
 		Objects.requireNonNull(c, "EventType의 code는 null이면 안됨");
 		
 		for (EventType t : EventType.values()) {
-			if (c.equals(t)) {
+			if (c.equals(t.code)) {
 				return;
 			}
 		}

@@ -1,10 +1,10 @@
 package org.qucell.chat.model;
 
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.util.JsonUtil;
 
@@ -28,11 +28,9 @@ public class JsonMsgRes {
 		  }
 		}
 	 */
-	public String msg;
-	public String action;
-	public Map<String, String> headers;
-	
-	private static final Charset UTF_8 = Charset.forName("UTF_8");
+	public String msg; //->content
+	public String action; //->action
+	public Map<String, String> headers; //->headers
 	
 	public ByteBuf formatToByteBuf() throws Exception {
 		//string to byte
@@ -89,11 +87,11 @@ public class JsonMsgRes {
 			this.client = null;
 		}
 		
-		private DefaultRes action;
+		private EventType action;
 		private String contents;
 		private Map<String, String> headers;
 		
-		public Builder setAction(DefaultRes action) {
+		public Builder setAction(EventType action) {
 			this.action = action;
 			return this;
 		}
@@ -101,8 +99,8 @@ public class JsonMsgRes {
 			this.contents = contents;
 			return this;
 		}
-		public Builder setRefId(int refId) {
-			setHeader("refId", refId+"");
+		public Builder setRefId(String refId) {
+			setHeader("refId", refId);
 			return this;
 		}
 		public Builder setRefName(String refName) {
@@ -115,8 +113,8 @@ public class JsonMsgRes {
 		}
 		
 		public Builder setRefIdAndName(Client userInfo) {
-			setRefId(userInfo.getUser().getUserId());
-			setRefName(userInfo.getUser().getUserName());
+			setRefId(userInfo.getId());
+			setRefName(userInfo.getName());
 			return this;
 		}
 		
@@ -132,10 +130,10 @@ public class JsonMsgRes {
 			JsonMsgRes entity = new JsonMsgRes();
 			
 			entity.msg = contents;
-			entity.action = action.getMessage();
+			entity.action = action.code;
 			if (client != null) {
-				setRefId(client.getUser().getUserId());
-				setRefName(client.getUser().getUserName());
+				setRefId(client.getId());
+				setRefName(client.getName());
 			}
 			entity.headers = headers;
 			return entity;

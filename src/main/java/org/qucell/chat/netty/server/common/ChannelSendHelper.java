@@ -21,7 +21,7 @@ public class ChannelSendHelper {
 		}
 		
 		String str = entity.toStr();
-		TextWebSocketFrame frame = new TextWebSocketFrame();
+		TextWebSocketFrame frame = new TextWebSocketFrame(str);
 		clients.stream().forEach(client->{
 			
 			Channel ch = client.getChannel();
@@ -38,7 +38,7 @@ public class ChannelSendHelper {
 	}
 	public static void writeAndFlushToClient(Client client, JsonMsgRes entity) {
 		String str = entity.toStr();
-		TextWebSocketFrame frame = new TextWebSocketFrame();
+		TextWebSocketFrame frame = new TextWebSocketFrame(str);
 		
 		Channel channel = client.getChannel();
 		if (channel.isActive()) {

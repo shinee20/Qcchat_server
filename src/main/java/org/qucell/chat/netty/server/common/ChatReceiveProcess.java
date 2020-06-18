@@ -4,6 +4,7 @@ import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.room.Room;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ChatReceiveProcess {
+	
 	
 	private ChatReceiveProcess() {}
 	//singleton

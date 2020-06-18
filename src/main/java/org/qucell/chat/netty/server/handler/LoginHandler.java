@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginHandler {
 	
-//	@Autowired
-//	private RedisService redisService;
 	
 	private static AtomicInteger idGen = new AtomicInteger();
 	
@@ -26,15 +24,11 @@ public class LoginHandler {
 		/**
 		 * 일단 보류 -> 이름 중복 안되도록 해야한다.
 		 */
-//		String key = "id:"+name;
-//		
-//		Users user = (Users)redisService.getValue(key);
-//		
-//		Client client = new Client(user, ctx.channel());
+		
+		
 		/**
 		 * 일단 보류
 		 */
-		
 		Client client = new Client(String.valueOf(idGen.incrementAndGet()), name, ctx.channel());
 		
 		log.info("== login ({}) ({})", name, ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress());

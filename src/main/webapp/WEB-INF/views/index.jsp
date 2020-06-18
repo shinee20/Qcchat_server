@@ -65,314 +65,329 @@
 	crossorigin="anonymous"></script>
 
 <script>
+	// 	{
+	// 	  "msg" : "잘 지내고 있냐",
+	// 	  "action" : "SendMsg",
+	// 	  "headers" : {
+	// 	    "lets" : "go go",
+	// 	    "refId" : "id_12345",
+	// 	    "roomId" : "room_1234"
+	// 	  }
+	// 	}
 
-// 	{
-// 	  "msg" : "잘 지내고 있냐",
-// 	  "action" : "SendMsg",
-// 	  "headers" : {
-// 	    "lets" : "go go",
-// 	    "refId" : "id_12345",
-// 	    "roomId" : "room_1234"
-// 	  }
-// 	}
-
-
-var websocket ;
-var myId;
-var roomInfo = {};
-function startWebsocket(){
-	var name = prompt("이름을 입력하세요");
-	if(name==null || name==""){
-		alert("다시 입력하세요");
-		return;
-	}
-	
-	websocket = new WebSocket("ws://${host}:${websocketPort}/websocket" );
-	
-	websocket.onerror = function(event) {
-		console.log("== error", event);
-        alert("== Error : " + event.code + " , " + event.reason);
-    };
-
-    websocket.onopen = function(event) {
-        console.log("== onopen");
-        $("#globalMsg").text("websocket 연결됨");
-        login(name);
-    };
-	
-    websocket.onclose = function(event){
-    	console.log("== websocket closeed");
-        $("#globalMsg").text("websocket 종료");
-    	initDisplay();
-    	$("#myId").text("");
-    	$("#allUsers").empty();
-    	websocket = null;
-    };
-    
-    websocket.onmessage = function(event) {
-        console.log(event.data);
-        var obj = JSON.parse(event.data);
-        var action = obj.action;
-        if(action=='LoginConfirmed'){
-        	var refId = getFromHeader(obj, "refId");
-        	var refName = getFromHeader(obj, "refName");
-        	console.log("== myId : " + refId);
-        	myId = refId;
-        	$("#myId").text(myId);
-        	$("#myName").text(refName);
-        } else if(action=='AllUserList'){
-        	var refId = getFromHeader(obj, "refId");
-        	var arr = JSON.parse(obj.msg);
-        	var target = $("#allUsers");
-        	target.html("");
-        	$.each(arr, function(idx, elem){
-	        	append2(target, elem.name + "(" + elem.id + ")"  + (myId==elem.id ? " => 나" : ""), elem.id );
-        	});
-        } else if(action=='RoomList'){
-        	var arr = JSON.parse(obj.msg);
-        	var target = $("#allRooms");
-        	target.html("");
-        	$.each(arr, function(idx, elem){
-	        	append2(target, elem.name, elem.id );
-        	});
-        } else if(action=='UserList'){
-        	var arr = JSON.parse(obj.msg);
-        	var roomId = getFromHeader(obj, "roomId");
-      		var idx = getIdxFromRoomname(roomId);
-        	var target = $("#roomUsers_"+idx);
-        	target.html("");
-        	$.each(arr, function(idx, elem){
-	        	append(target, elem.name + "(" + elem.id + ")" + (myId==elem.id ? " => 나" : "") ) ;
-        	});
-        } else if(action=='EnterToRoom'){
-        	var roomId = getFromHeader(obj, "roomId");
-        	var refId = getFromHeader(obj, "refId");
-        	var refName = getFromHeader(obj, "refName");
-      		var idx = getIdxFromRoomname(roomId);
-        	if(refId==myId){
-	        	$("#room_"+idx).css("color","blue");
-	        	append($("#contents_"+idx), "방으로 들어왔음.");
-	        	$("#container_"+idx).find(".switchComp").css("background-color","white").prop("disabled",false);
-        	}else{
-	        	append($("#contents_"+idx), refName+"("+refId+")이 방으로 들어왔습니다.");
-        	}
-        	$("#input_"+idx).css("background-color", "white");
-        } else if(action=='ExitFromRoom'){
-        	var roomId = getFromHeader(obj, "roomId");
-        	var refId = getFromHeader(obj, "refId");
-        	var refName = getFromHeader(obj, "refName");
-      		var idx = getIdxFromRoomname(roomId);
-        	if(refId==myId){
-	        	$("#room_"+idx).css("color","black").val("");
-	        	append($("#contents_"+idx), "방에서 나갔음.");
-	        	$("#container_"+idx).find(".switchComp").css("background-color","silver").prop("disabled",true);
-	        	$("#roomUsers_"+idx).empty();
-        	}else{
-	        	append($("#contents_"+idx), refName+"("+refId+")이 방에서 나갔습니다.");
-        	}
-        	$("#input_"+idx).css("background-color", "silver");
-        } else if(action=='SendMsg'){
-        	var roomId = getFromHeader(obj, "roomId");
-        	var refId = getFromHeader(obj, "refId");
-        	var refName = getFromHeader(obj, "refName");
-      		var idx = getIdxFromRoomname(roomId);
-        	append($("#contents_"+idx), (myId==refId ? "<나> " : refName+"("+refId+")" + " : ") + obj.msg);
-        } else if(action=='LogIn'){
-        	var roomId = getFromHeader(obj, "roomId");
-        	var refId = getFromHeader(obj, "refId");
-        	var refName = getFromHeader(obj, "refName");
-        	var target = $("#allUsers");
-        	if(target.find("[hong-etc='" + refId+"']").length==0){
-        		append2(target, refName + "(" + refId +")", refId);
-        	}
-        } else if(action=='LogOut'){
-        	var roomId = getFromHeader(obj, "roomId");
-        	var refId = getFromHeader(obj, "refId");
-        	var refName = getFromHeader(obj, "refName");
-        	var target = $("#allUsers");
-        	target.find("[hong-etc='" + refId+"']").remove();
-        }
-    };
-    
-// 	$('#input_1').keyup(function(e) {
-// 	    if (e.keyCode == 13) {
-// 	    	console.log("==");
-// 	    	append($("#contents_1"), $("#input_1").val());
-// 	    	$("#contents_1").animate({ scrollTop: $(document).height() });
-// // 	    	websocket.send($("#msg").val());
-// // 	    	$("#msg").val("");
-// 	    }        
-// 	});
-}
-
-function onMsgKeyUp(event, idx){
-    if (event.keyCode == 13 || event.which == 13) {
-    	console.log("== enter");
-  		var roomId = $("#room_"+idx).val();
-    	var input = $("#input_"+idx);
-    	var msg = input.val();
-    	input.val("");
-    	var obj = new Builder().action("SendMsg").header("roomId", roomId).msg(msg).finish();
-    	var jsonStr = JSON.stringify(obj);
-    	websocket.send(jsonStr);
-    }   	
-}
-
-function getFromHeader(obj, key){
-	var headers =  obj.headers;
-	if(headers!=null){
-		return headers[key];
-	}else{
-		return null;
-	}
-}
-
-function login(name){
-	var obj = new Builder().action("LogIn").header("name", name).finish();
-	var jsonStr = JSON.stringify(obj);
-	websocket.send(jsonStr);
-}
-
-function disconnect(){
-	websocket.close();
-	initDisplay();
-}
-
-function Builder(){
-	var me = {};
-	function action(a){
-		me.action=a;
-		return this;
-	}
-	function header(k,v){
-		if(me.headers==null){
-			me.headers = {};
-			me.headers[k] = v;
-		}else{
-			me.headers.push({k:v});
+	var websocket;
+	var myId;
+	var roomInfo = {};
+	function startWebsocket() {
+		var name = prompt("이름을 입력하세요");
+		if (name == null || name == "") {
+			alert("다시 입력하세요");
+			return;
 		}
-		return this;
-	}
-	function msg(m){
-		me.msg = m;
-		return this;
-	}
-	function finish(){
-		return me;
-	}	
-	return {
-		action : action,
-		header : header,
-		msg : msg,
-		finish : finish
-	};
-}
 
-function createRoom(idx){
-	if(websocket==null ){
-		alert("websocket을 시작한후에 하세요.");
-		return;
+		websocket = new WebSocket("ws://${host}:${websocketPort}/websocket");
+
+		websocket.onerror = function(event) {
+			console.log("== error", event);
+			alert("== Error : " + event.code + " , " + event.reason);
+		};
+
+		websocket.onopen = function(event) {
+			console.log("== onopen");
+			$("#globalMsg").text("websocket 연결됨");
+			login(name);
+		};
+
+		websocket.onclose = function(event) {
+			console.log("== websocket closeed");
+			$("#globalMsg").text("websocket 종료");
+			initDisplay();
+			$("#myId").text("");
+			$("#allUsers").empty();
+			websocket = null;
+		};
+
+		websocket.onmessage = function(event) {
+			console.log(event.data);
+			var obj = JSON.parse(event.data);
+			var action = obj.action;
+			if (action == 'LoginConfirmed') {
+				var refId = getFromHeader(obj, "refId");
+				var refName = getFromHeader(obj, "refName");
+				console.log("== myId : " + refId);
+				myId = refId;
+				$("#myId").text(myId);
+				$("#myName").text(refName);
+			} else if (action == 'AllUserList') {
+				var refId = getFromHeader(obj, "refId");
+				var arr = JSON.parse(obj.msg);
+				var target = $("#allUsers");
+				target.html("");
+				$.each(arr, function(idx, elem) {
+					append2(target, elem.name + "(" + elem.id + ")"
+							+ (myId == elem.id ? " => 나" : ""), elem.id);
+				});
+			} else if (action == 'RoomList') {
+				var arr = JSON.parse(obj.msg);
+				var target = $("#allRooms");
+				target.html("");
+				$.each(arr, function(idx, elem) {
+					append2(target, elem.name, elem.id);
+				});
+			} else if (action == 'UserList') {
+				var arr = JSON.parse(obj.msg);
+				var roomId = getFromHeader(obj, "roomId");
+				var idx = getIdxFromRoomname(roomId);
+				var target = $("#roomUsers_" + idx);
+				target.html("");
+				$.each(arr, function(idx, elem) {
+					append(target, elem.name + "(" + elem.id + ")"
+							+ (myId == elem.id ? " => 나" : ""));
+				});
+			} else if (action == 'EnterToRoom') {
+				var roomId = getFromHeader(obj, "roomId");
+				var refId = getFromHeader(obj, "refId");
+				var refName = getFromHeader(obj, "refName");
+				var idx = getIdxFromRoomname(roomId);
+				if (refId == myId) {
+					$("#room_" + idx).css("color", "blue");
+					append($("#contents_" + idx), "방으로 들어왔음.");
+					$("#container_" + idx).find(".switchComp").css(
+							"background-color", "white")
+							.prop("disabled", false);
+				} else {
+					append($("#contents_" + idx), refName + "(" + refId
+							+ ")이 방으로 들어왔습니다.");
+				}
+				$("#input_" + idx).css("background-color", "white");
+			} else if (action == 'ExitFromRoom') {
+				var roomId = getFromHeader(obj, "roomId");
+				var refId = getFromHeader(obj, "refId");
+				var refName = getFromHeader(obj, "refName");
+				var idx = getIdxFromRoomname(roomId);
+				if (refId == myId) {
+					$("#room_" + idx).css("color", "black").val("");
+					append($("#contents_" + idx), "방에서 나갔음.");
+					$("#container_" + idx).find(".switchComp").css(
+							"background-color", "silver")
+							.prop("disabled", true);
+					$("#roomUsers_" + idx).empty();
+				} else {
+					append($("#contents_" + idx), refName + "(" + refId
+							+ ")이 방에서 나갔습니다.");
+				}
+				$("#input_" + idx).css("background-color", "silver");
+			} else if (action == 'SendMsg') {
+				var roomId = getFromHeader(obj, "roomId");
+				var refId = getFromHeader(obj, "refId");
+				var refName = getFromHeader(obj, "refName");
+				var idx = getIdxFromRoomname(roomId);
+				append($("#contents_" + idx), (myId == refId ? "<나> " : refName
+						+ "(" + refId + ")" + " : ")
+						+ obj.msg);
+			} else if (action == 'LogIn') {
+				var roomId = getFromHeader(obj, "roomId");
+				var refId = getFromHeader(obj, "refId");
+				var refName = getFromHeader(obj, "refName");
+				var target = $("#allUsers");
+				if (target.find("[hong-etc='" + refId + "']").length == 0) {
+					append2(target, refName + "(" + refId + ")", refId);
+				}
+			} else if (action == 'LogOut') {
+				var roomId = getFromHeader(obj, "roomId");
+				var refId = getFromHeader(obj, "refId");
+				var refName = getFromHeader(obj, "refName");
+				var target = $("#allUsers");
+				target.find("[hong-etc='" + refId + "']").remove();
+			}
+		};
+
+		// 	$('#input_1').keyup(function(e) {
+		// 	    if (e.keyCode == 13) {
+		// 	    	console.log("==");
+		// 	    	append($("#contents_1"), $("#input_1").val());
+		// 	    	$("#contents_1").animate({ scrollTop: $(document).height() });
+		// // 	    	websocket.send($("#msg").val());
+		// // 	    	$("#msg").val("");
+		// 	    }        
+		// 	});
 	}
-	var roomName = prompt("방명을 입력해주세요. ");
-	console.log("== roomName", roomName);
-	if(roomName==null || roomName==""){
-		alert("방명을 입력하세요.");
-		return;
-	}
-	$("#room_" + idx).val(roomName);
-	var obj = new Builder().action("CreateRoom").header("roomId", roomName).finish();
-	var jsonStr = JSON.stringify(obj);
-	websocket.send(jsonStr);
-}
 
-function exitFromRoom(idx){
-	var roomId = $("#room_"+idx).val();
-	var obj = new Builder().action("ExitFromRoom").header("roomId", roomId).finish();
-	var jsonStr = JSON.stringify(obj);
-	websocket.send(jsonStr);
-}
-
-function requestAllUserList(){
-	var obj = new Builder().action("AllUserList").finish();
-	var jsonStr = JSON.stringify(obj);
-	websocket.send(jsonStr);
-}
-
-function getIdxFromRoomname(roomName){
-	var result ;
-	$("#room_1, #room_2, #room_3, #room_4").each(function(){
-		var val = $(this).val();
-		if(val==roomName){
-			result = $(this).prop("id").substring(5);
-			return false;
+	function onMsgKeyUp(event, idx) {
+		if (event.keyCode == 13 || event.which == 13) {
+			console.log("== enter");
+			var roomId = $("#room_" + idx).val();
+			var input = $("#input_" + idx);
+			var msg = input.val();
+			input.val("");
+			var obj = new Builder().action("SendMsg").header("roomId", roomId)
+					.msg(msg).finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
 		}
+	}
+
+	function getFromHeader(obj, key) {
+		var headers = obj.headers;
+		if (headers != null) {
+			return headers[key];
+		} else {
+			return null;
+		}
+	}
+
+	function login(name) {
+		var obj = new Builder().action("LogIn").header("name", name).finish();
+		var jsonStr = JSON.stringify(obj);
+		websocket.send(jsonStr);
+	}
+
+	function disconnect() {
+		websocket.close();
+		initDisplay();
+	}
+
+	function Builder() {
+		var me = {};
+		function action(a) {
+			me.action = a;
+			return this;
+		}
+		function header(k, v) {
+			if (me.headers == null) {
+				me.headers = {};
+				me.headers[k] = v;
+			} else {
+				me.headers.push({
+					k : v
+				});
+			}
+			return this;
+		}
+		function msg(m) {
+			me.msg = m;
+			return this;
+		}
+		function finish() {
+			return me;
+		}
+		return {
+			action : action,
+			header : header,
+			msg : msg,
+			finish : finish
+		};
+	}
+
+	function createRoom(idx) {
+		if (websocket == null) {
+			alert("websocket을 시작한후에 하세요.");
+			return;
+		}
+		var roomName = prompt("방명을 입력해주세요. ");
+		console.log("== roomName", roomName);
+		if (roomName == null || roomName == "") {
+			alert("방명을 입력하세요.");
+			return;
+		}
+		$("#room_" + idx).val(roomName);
+		var obj = new Builder().action("CreateRoom").header("roomId", roomName)
+				.finish();
+		var jsonStr = JSON.stringify(obj);
+		websocket.send(jsonStr);
+	}
+
+	function exitFromRoom(idx) {
+		var roomId = $("#room_" + idx).val();
+		var obj = new Builder().action("ExitFromRoom").header("roomId", roomId)
+				.finish();
+		var jsonStr = JSON.stringify(obj);
+		websocket.send(jsonStr);
+	}
+
+	function requestAllUserList() {
+		var obj = new Builder().action("AllUserList").finish();
+		var jsonStr = JSON.stringify(obj);
+		websocket.send(jsonStr);
+	}
+
+	function getIdxFromRoomname(roomName) {
+		var result;
+		$("#room_1, #room_2, #room_3, #room_4").each(function() {
+			var val = $(this).val();
+			if (val == roomName) {
+				result = $(this).prop("id").substring(5);
+				return false;
+			}
+		});
+		return result;
+	}
+
+	function log(msg) {
+		$('<div/>').text(msg).appendTo($("#log"));
+	}
+
+	function append($div, msg, etcVal) {
+		var children = $div.children("div");
+		var len = children.length;
+		// 50개 이전것은 삭제
+		if (len > 50) {
+			children.slice(0, len - 50).remove();
+		}
+		var newElem = $('<div/>').text(msg);
+		if (etcVal != null) {
+			newElem.attr("hong-etc", etcVal);
+		}
+		newElem.appendTo($div);
+		$div.animate({
+			scrollTop : 100000
+		});
+	}
+
+	function append2($div, msg, etcVal) {
+		var newElem = $('<div/>').text(msg);
+		if (etcVal != null) {
+			newElem.attr("hong-etc", etcVal);
+		}
+		// 	if(funcName!=null){
+		// 		newElem.attr("onclick", funcName + "('" + etcVal +"');").attr("style", "cursor: pointer;");
+		// 	}
+		newElem.appendTo($div);
+		$div.animate({
+			scrollTop : 100000
+		});
+	}
+
+	function onClick_room(name) {
+		if (confirm(name + " 방에 들어가시겠습니까?")) {
+			var obj = new Builder().action("EnterToRoom")
+					.header("roomId", name).finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
+		}
+	}
+
+	function initDisplay() {
+		//방을 나가거나 로그아웃 했을 시 채팅방창을 disabled
+		$(".switchComp").css("background-color", "silver").prop("disabled",
+				true);
+	}
+
+	// function createNewRoom(){
+	// 	var name = $("#newRoomName").val();
+	// 	var obj = new Builder().action("CreateRoom").header("roomId", name).finish();
+	// 	var jsonStr = JSON.stringify(obj);
+	// 	websocket.send(jsonStr);
+	// }
+
+	// function popupMessenger(){
+	// 	var win = window.open("/msgPopup", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
+	// }
+
+	$(function() {
+		//	startWebsocket();
+		initDisplay();
 	});
-	return result;
-}
-
-function log(msg){
-	$('<div/>').text(msg).appendTo($("#log"));
-}
-
-function append($div, msg, etcVal){
-	var children = $div.children("div");
-	var len = children.length;
-	// 50개 이전것은 삭제
-	if(len>50){
-		children.slice(0,len-50).remove();
-	}
-	var newElem = $('<div/>').text(msg);
-	if(etcVal!=null){
-		newElem.attr("hong-etc", etcVal);
-	}
-	newElem.appendTo($div);
-	$div.animate({ scrollTop: 100000 });	
-}
-
-function append2($div, msg, etcVal){
-	var newElem = $('<div/>').text(msg);
-	if(etcVal!=null){
-		newElem.attr("hong-etc", etcVal);
-	}
-// 	if(funcName!=null){
-// 		newElem.attr("onclick", funcName + "('" + etcVal +"');").attr("style", "cursor: pointer;");
-// 	}
-	newElem.appendTo($div);
-	$div.animate({ scrollTop: 100000 });	
-}
-
-function onClick_room(name){
-	if(confirm(name + " 방에 들어가시겠습니까?")){
-    	var obj = new Builder().action("EnterToRoom").header("roomId", name).finish();
-    	var jsonStr = JSON.stringify(obj);
-    	websocket.send(jsonStr);		
-	}
-}
-
-function initDisplay(){
-	$(".switchComp").css("background-color","silver").prop("disabled", true);
-}
-function gotoLogin() {
-	window.location.href="login";
-}
-
-// function createNewRoom(){
-// 	var name = $("#newRoomName").val();
-// 	var obj = new Builder().action("CreateRoom").header("roomId", name).finish();
-// 	var jsonStr = JSON.stringify(obj);
-// 	websocket.send(jsonStr);
-// }
-
-// function popupMessenger(){
-// 	var win = window.open("/msgPopup", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
-// }
-
-
-$(function(){
-//	startWebsocket();
-	initDisplay();
-});
-
 </script>
 
 

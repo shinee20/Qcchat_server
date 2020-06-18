@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;
+import org.qucell.chat.netty.server.common.EmptyRoomMgr;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
@@ -62,7 +63,7 @@ public class Room {
 		
 		if (this.clientList.size() == 0) {
 			//방에 한 명도 없을 경우
-			
+			EmptyRoomMgr.INSTANCE.add(this);
 		}
 		sendClientList();
 		return this;

@@ -210,6 +210,14 @@
 			<artifactId>java-jwt</artifactId>
 			<version>3.4.0</version>
 		</dependency>
+		
+		<!-- ChannelInterceptor -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>5.2.5.RELEASE</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis -->
 		<!-- redis -->

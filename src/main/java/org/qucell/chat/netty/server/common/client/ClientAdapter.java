@@ -178,6 +178,13 @@ public class ClientAdapter implements ClientEventListener{
 		} 
 		return this;
 	}
+	
+	public ClientAdapter invalidateRoom(Room room) {
+		Objects.requireNonNull(room);
+		ROOMS.remove(room);
+		sendAllRoomListToClients();
+		return this;
+	}
 	public List<Room> getAllRoomList() {
 		List<Room> list = ROOMS.stream().collect(Collectors.toList());
 		return list;

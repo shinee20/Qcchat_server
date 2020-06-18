@@ -40,12 +40,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 			 * 	}
 			 * }
 			 */
-			/**
-			* 파이프에 등록되어있는 handler에서가 아닌 새로 생성한 다른 class에서 채널을 참조한다.
-			*/
+		
 			Client client = Client.from(ctx);
 			if (client == null) {
-				//redis에서 찾아서 로그인시켜준다. 
+				//일단 확인 없이 로그인을 한다. => 추후에는 다른 방식으로 바꿔야 함
 				client = loginHandler.loginProcess(ctx, requestEntity);
 			}
 			

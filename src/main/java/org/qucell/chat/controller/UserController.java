@@ -2,11 +2,7 @@ package org.qucell.chat.controller;
 
 import java.util.Map;
 
-import org.qucell.chat.service.JwtService;
-import org.qucell.chat.service.RedisService;
-import org.qucell.chat.service.UserService;
 import org.qucell.chat.util.request.RequestURL;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,14 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class UserController {
 
-
 	@Value("${websocket.port}")
 	private String websocketPort;
 
-	
 	@GetMapping("/")
 	public String index(@RequestURL String requestURL, 
-			
 			Map<String, Object> model) {
 		/**
 		 * parsing request url = http://localhost:10101/
@@ -98,21 +91,5 @@ public class UserController {
 //	public ResponseEntity getFriendsList(@RequestHeader(required=false, defaultValue="0") int idx){
 //		return new ResponseEntity<>(userService.getAllFriendsList(idx), HttpStatus.OK);
 //	}
-//	
-	/*
-	 * redis test
-	 */
-//	@RequestMapping("/test")
-//	public ResponseEntity getUsers() throws IOException {
-//		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
-//	}
-//
-//	@RequestMapping("/test-refresh")
-//	public ResponseEntity refreshUsers() throws IOException {
-//		userService.removeCacheUsers();
-//		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
-//	}
-	/*
-	 * redis test
-	 */
+
 }

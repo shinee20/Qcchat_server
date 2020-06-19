@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.qucell.chat.netty.server.handler.HealthCheckHandler;
 import org.qucell.chat.netty.server.handler.NettyServerHandler;
+import org.springframework.stereotype.Component;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -18,6 +19,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  * updated 20/06/16
  * @author myseo
  */
+@Component
 public class NettyChannelInitializer extends ChannelInitializer<SocketChannel>{
 
 	private static final String WEBSOCKET_PATH = "/websocket";

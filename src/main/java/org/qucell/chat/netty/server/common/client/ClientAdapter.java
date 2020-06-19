@@ -16,6 +16,7 @@ import org.qucell.chat.model.room.Room;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.util.JsonUtil;
+import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author myseo
  */
 @Slf4j
+@Component
 public class ClientAdapter implements ClientEventListener{
 	/**
 	 * client event listener를 받아서 처리한다.

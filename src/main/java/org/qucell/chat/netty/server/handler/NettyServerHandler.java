@@ -1,5 +1,6 @@
 package org.qucell.chat.netty.server.handler;
 
+import org.qucell.chat.controller.LoginHandler;
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.AttachHelper;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.qucell.chat.model.room.Room;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +30,7 @@ public class EmptyRoomMgr {
 		}.start();
 	}
 
+	
 	private volatile List<Room> list = new ArrayList<>();
 
 	public synchronized void add(Room room) {

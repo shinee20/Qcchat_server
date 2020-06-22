@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.qucell.chat.netty.server.Initializer.NettyChannelInitializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,9 @@ public class NettyServer {
 	
 	@Value("${websocket.port}")
 	private int port;
+	
+	@Autowired 
+	private NettyChannelInitializer nettyChannelInitializer;
 	
 	Channel channel;
 	
@@ -71,7 +75,7 @@ public class NettyServer {
 		serverBootstrap.group(bossGroup, workerGroup)
 						.channel(NioServerSocketChannel.class)
 						.handler(new LoggingHandler(LogLevel.INFO))
-						.childHandler(new NettyChannelInitializer());
+						.childHandler(nettyChannelInitializer);
 		
 		channel = serverBootstrap.bind(port).sync().channel();
 		return this;

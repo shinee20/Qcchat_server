@@ -29,14 +29,13 @@ public class LoginServiceImpl implements LoginService{
 
 	@Autowired
 	private RedisService redisService;
-
+	
 	//login 
 	@Override
-	public void login(LoginVO vo) {
+	public Users login(LoginVO vo) {
 		log.info(vo.getUserName());
 		Users user = userDao.getByUserName(vo.getUserName());
-		log.info(user.toString());
-		if (user != null) {
+		if (user != null) {//check already login 
 			//create token 
 			final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.getUserId()));
 			log.info("success login " + tokenDto.toString());
@@ -45,18 +44,18 @@ public class LoginServiceImpl implements LoginService{
 			 * save at redis cache
 			 */
 			//save user info
-			String key = "id:"+user.getUserName();
+			String key = "id:"+user.getUserId();
 			redisService.saveValue(key, user);
 			
 			log.info("--------------------redis dao save--------------------" + redisService.getValue(key));
 			
 			/*
 			 * save at redis cache 
-			 */
-			
-			
+			 */	
+			return user;
 		}
-		log.info("fail login");
+		return null;
+		
 	}
 
 	//sign up
@@ -81,4 +80,5 @@ public class LoginServiceImpl implements LoginService{
 		}
 
 	}
+	
 }

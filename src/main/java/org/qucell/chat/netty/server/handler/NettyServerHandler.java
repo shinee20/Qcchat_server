@@ -1,13 +1,16 @@
 package org.qucell.chat.netty.server.handler;
 
-import org.qucell.chat.controller.LoginHandler;
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.AttachHelper;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;
 import org.qucell.chat.netty.server.common.ChatReceiveProcess;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -19,9 +22,18 @@ import lombok.extern.slf4j.Slf4j;
  * @author myseo
  */
 @Slf4j
+@Component
+@Qualifier("nettyServerHandler")
+@Sharable
 public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 	
-	private static LoginHandler loginHandler = new LoginHandler();
+	@Autowired
+	@Qualifier("loginHandler")
+	private LoginHandler loginHandler;
+	
+	@Autowired
+	@Qualifier("chatReceiveProcess")
+	private ChatReceiveProcess chatReceiveProcess;
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
@@ -43,12 +55,15 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 			 */
 		
 			Client client = Client.from(ctx);
+			if (client == null && !EventType.LogIn.code.equals(requestEntity.action)) {
+				throw new IllegalStateException("login부터 시작해야 함.");
+			}
 			if (client == null) {
 				//일단 확인 없이 로그인을 한다. => 추후에는 다른 방식으로 바꿔야 함
 				client = loginHandler.loginProcess(ctx, requestEntity);
 			}
 			
-			ChatReceiveProcess.INSTANCE.process(client, requestEntity);
+			chatReceiveProcess.process(client, requestEntity);
 		} 
 		else {
 			String msg = "unsupported frame type: " + frame.getClass().getName();

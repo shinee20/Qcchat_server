@@ -13,9 +13,13 @@ import java.util.stream.Collectors;
 
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.room.Room;
+import org.qucell.chat.model.user.Users;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;
 import org.qucell.chat.netty.server.common.EventType;
+import org.qucell.chat.service.UserService;
 import org.qucell.chat.util.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +29,13 @@ import lombok.extern.slf4j.Slf4j;
  * @author myseo
  */
 @Slf4j
-@Component
 public class ClientAdapter implements ClientEventListener{
 	/**
 	 * client event listener를 받아서 처리한다.
 	 * 관리 대상 : client_rooms, rooms
 	 */
-
+	public static final ClientAdapter INSTANCE = new ClientAdapter();
+	
 	//singleton
 	private ClientAdapter() {
 //		startMonitorThread(); //create only once;
@@ -39,28 +43,37 @@ public class ClientAdapter implements ClientEventListener{
 
 	//key : client value : rooms
 	private final ConcurrentHashMap<Client, List<Room>> CLIENT_TO_ROOMS = new ConcurrentHashMap<>();
-//	@Autowired
-//	private ClientRoomListRepository clientRoomListRepository;
-//	
-//	@Autowired
-//	private RoomRepository roomRepository;
-	
-	public static final ClientAdapter INSTANCE = new ClientAdapter();
 	private final CopyOnWriteArrayList<Room> ROOMS = new CopyOnWriteArrayList<>();	
-
+	
+	/**
+	 * 로그인할 때의 이벤트 
+	 * @param client
+	 * @return
+	 */
 	public ClientAdapter login(Client client) {
-		//로그인할 때의 이벤트 
+		
 		ChannelSendHelper.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).build());
+		
+		//클라이언트마다 참여하고 있는 방들의 정보를 가지고 있다.
 		CLIENT_TO_ROOMS.put(client, new ArrayList<>());
+		
 		client.getChannel().closeFuture().addListener(listener->logout(client));
+		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogIn).build();
 		log.info("room list of client has : {}", CLIENT_TO_ROOMS.keys());
-		ChannelSendHelper.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()),  entity);
+		
+		//클라이언트 리스트를 모든 접속자들에게 broadcast
+		ChannelSendHelper.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
 
 		sendAllClientListToClient(client);
 		return this;
 	}
 
+	/**
+	 * 로그아웃 시 모든 룸의 정보를 날라가게 한다. -> 추후 수정
+	 * @param client
+	 * @return
+	 */
 	public ClientAdapter logout(Client client) {
 		log.warn("== logout : {}", client);
 		if (client == null) return this;
@@ -81,16 +94,26 @@ public class ClientAdapter implements ClientEventListener{
 		roomsOfClient.stream().forEach(room->{
 			room.exitRoom(client);
 		});
-
+		/**
+		 * 수정해야 할 부분
+		 */
+		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogOut).build();
 		ChannelSendHelper.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
 
 		return this;
 	}
 
+	/**
+	 * 새로운 룸을 생성하거나, 이미 존재하는 채팅방이라면 참여한다.
+	 * @param client
+	 * @param roomId
+	 * @return
+	 */
 	public ClientAdapter createRoom(Client client, String roomId) {
 		Objects.requireNonNull(client);
 		Objects.requireNonNull(roomId);
+		//null일 경우 예외를 발생시키지 않도록
 		Optional<Room> optional  = ROOMS.stream().filter(room->roomId.equals(room.getId())).findFirst();
 
 		Room newRoom;
@@ -129,6 +152,11 @@ public class ClientAdapter implements ClientEventListener{
 		return this;
 	}
 	
+	/**
+	 * 모든 접속자 목록을 화면에 보여준다.
+	 * @param client
+	 * @return
+	 */
 	public ClientAdapter sendAllClientListToClient(Client client) {
 		//로그인하면 현재 접속해있는 모든 클라이언트 목록을 조회할 수 있다.
 		List<Map<String, String>> list = Collections.list(CLIENT_TO_ROOMS.keys()).stream().map(cl->{
@@ -143,7 +171,12 @@ public class ClientAdapter implements ClientEventListener{
 		ChannelSendHelper.writeAndFlushToClient(client, entity);
 		return this;
 	}
-
+	
+	/**
+	 * 모든 채팅방 목록을 화면에 보여지도록 한다.
+	 * @param client
+	 * @return
+	 */
 	public ClientAdapter sendAllRoomListToClient(Client client) {
 		//로그인하면 현재 접속해있는 모든 채팅방 목록을 조회할 수 있다.
 		List<Map<String, String>> list = getAllRoomList().stream().map(room->room.toMap()).collect(Collectors.toList());
@@ -153,6 +186,10 @@ public class ClientAdapter implements ClientEventListener{
 		return this;
 	}
 	
+	/**
+	 * 채팅방 목록이 추가되었을 시에는 모든 접속자들에게 새로운 목록을 보여준다.
+	 * @return
+	 */
 	public ClientAdapter sendAllRoomListToClients() {
 		List<Map<String, String>> list = getAllRoomList().stream().map(room->room.toMap()).collect(Collectors.toList());
 		String jsonStr = JsonUtil.toJsonStr(list);
@@ -161,6 +198,12 @@ public class ClientAdapter implements ClientEventListener{
 		return this;
 	}
 	
+	/**
+	 * 방에 들어간다.
+	 * @param client
+	 * @param roomId
+	 * @return
+	 */
 	public ClientAdapter enterRoom(Client client, String roomId) {
 		Optional<Room> optional = ROOMS.stream().filter(room->room.getId().equals(roomId)).findFirst();
 		if (optional.isPresent()) {
@@ -170,6 +213,12 @@ public class ClientAdapter implements ClientEventListener{
 		return this;
 	}
 	
+	/**
+	 * 방에서 나온다.
+	 * @param client
+	 * @param roomId
+	 * @return
+	 */
 	public ClientAdapter exitRoom(Client client, String roomId) {
 		Optional<Room> optional = ROOMS.stream().filter(room->room.getId().equals(roomId)).findFirst();
 		if (optional.isPresent()) {
@@ -181,16 +230,31 @@ public class ClientAdapter implements ClientEventListener{
 		return this;
 	}
 	
+	/**
+	 * 사람이 한 명도 없거나, 삭제된 채팅방이라면 삭제하고 모든 접속자들에게 알린다.
+	 * @param room
+	 * @return
+	 */
 	public ClientAdapter invalidateRoom(Room room) {
 		Objects.requireNonNull(room);
 		ROOMS.remove(room);
 		sendAllRoomListToClients();
 		return this;
 	}
+	
+	/**
+	 * 모든 채팅방의 목록을 가져온다.
+	 * @return
+	 */
 	public List<Room> getAllRoomList() {
 		List<Room> list = ROOMS.stream().collect(Collectors.toList());
 		return list;
 	}
+	/**
+	 * 
+	 * @param roomIds
+	 * @return
+	 */
 	public List<Room> getRoomList(List<String> roomIds) {
 		if (roomIds == null) {
 			return Collections.emptyList();
@@ -199,11 +263,21 @@ public class ClientAdapter implements ClientEventListener{
 		List<Room> list = ROOMS.stream().filter(room->roomIds.contains(room.getId())).collect(Collectors.toList());
 		return list;
 	}
-
+	
+	/**
+	 * 클라이언트가 참여하고 있는 채팅방의 목록을 조회
+	 * @param clientId
+	 * @return
+	 */
 	public List<Room> getRoomList(String clientId) {
 		return CLIENT_TO_ROOMS.get(clientId);
 	}
 
+	/**
+	 * 룸이름에 따라 채팅방 정보를 조회한다.
+	 * @param roomId
+	 * @return
+	 */
 	public Room getRoomByRoomId(String roomId) {
 		//optional => wrapper class 
 
@@ -216,15 +290,31 @@ public class ClientAdapter implements ClientEventListener{
 		else return null;
 	}
 
+	/**
+	 * 채팅방에 대화를 생성한다.
+	 * @param room
+	 * @param client
+	 * @param msg
+	 */
 	public void sendMsgInRoom(Room room, Client client, String msg) {
 		room.sendMsg(client, msg);
 	}
 
+	/**
+	 * 이미 로그아웃한 사용자가 가진 채팅방 목록을 지워준다. => 추후 수정
+	 * @param client
+	 * @return
+	 */
 	public ClientAdapter invalidateClient(Client client) {
 		log.error("== invalid client : {}\n{}" , client);
-
+		/**
+		 * 수정해야 할 부분
+		 */
 		Objects.requireNonNull(client);
 		CLIENT_TO_ROOMS.remove(client);
+		/**
+		 * 수정해야 할 부분
+		 */
 		return this;
 	}
 

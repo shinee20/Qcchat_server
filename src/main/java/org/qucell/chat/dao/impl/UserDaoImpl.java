@@ -39,20 +39,4 @@ public class UserDaoImpl implements UserDao{
 		sqlSession.insert(namespace+ ".insertUser", user);
 	}
 
-//	@Override
-//	public void updateUser(Users user) throws IOException {
-//		sqlSession.update(namespace+".updateUserInfo",user );
-//	}
-
-	/*
-	 * redis test
-	 */
-	@Override
-	public List<Users> getAllUsers()  {
-		return sqlSession.selectList(namespace+".selectUsers");
-	}
-	/*
-	 * redis test
-	 */
-
 }

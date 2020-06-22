@@ -11,14 +11,4 @@ public interface UserDao {
 	public Users getByUserName(String userName);
 	public void insertUser(LoginVO user);
 	public List<Users> getFriendsList(int userId);
-	
-	/*
-	 * redis test
-	 */
-	public List<Users> getAllUsers();
-//	public void updateUser(Users user) throws IOException;
-
-	/*
-	 * redis test
-	 */
 }

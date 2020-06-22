@@ -1,6 +1,7 @@
 package org.qucell.chat.service.impl;
 
 import java.util.List;
+
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.user.Users;
@@ -50,23 +51,24 @@ public class UserServiceImpl implements UserService {
 
 	// 사용자의 친구 리스트를 찾는다.
 	@Override
-	public DefaultRes getAllFriendsList(int userId) {
+	public List<Users> getAllFriendsList(int userId) {
 		
 		// cache에서 userId를 찾아서 mapper에게 전달해야 한다.
-		String key = "id:"+userId+":friends";
-		List<Users> friendsList = redisService.getValueList(key);
-		if (friendsList.isEmpty()) {
-			friendsList= userDao.getFriendsList(userId);
-			if (friendsList.isEmpty()) {
-				return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.INTERNAL_SERVER_ERROR);
-			}
-			
-			for (Users user : friendsList) {
-				redisService.saveValueList(key, user);
-			}
-		}
-		
-		return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_ALL_FRIENDS_LIST, friendsList);
+//		String key = "id:"+userId+":friends";
+//		List<Users> friendsList = redisService.getValueList(key);
+//		if (friendsList.isEmpty()) {
+//			friendsList= userDao.getFriendsList(userId);
+//			log.info(friendsList.toString());
+//			if (friendsList.isEmpty()) {
+//				return null;
+//			}
+//			
+//			for (Users user : friendsList) {
+//				redisService.saveValueList(key, user);
+//			}
+//		}
+		List<Users> friendsList = userDao.getFriendsList(userId);
+		return friendsList;
 
 	}
 	

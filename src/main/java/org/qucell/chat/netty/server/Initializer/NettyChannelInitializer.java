@@ -3,11 +3,13 @@ package org.qucell.chat.netty.server.Initializer;
 import java.util.concurrent.TimeUnit;
 
 import org.qucell.chat.netty.server.handler.HealthCheckHandler;
-import org.qucell.chat.netty.server.handler.NettyServerHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
@@ -25,7 +27,11 @@ public class NettyChannelInitializer extends ChannelInitializer<SocketChannel>{
 	private static final String WEBSOCKET_PATH = "/websocket";
 	
 	private final HealthCheckHandler healthCheckHandler = new HealthCheckHandler();
-
+	
+	@Autowired
+	@Qualifier("nettyServerHandler")
+	private SimpleChannelInboundHandler nettyServerHandler;
+	
 	/**
 	 * 채널 파이프라인 설정.
 	 * 사용자의 통신을 처리할 Handler 도 등록.
@@ -48,7 +54,7 @@ public class NettyChannelInitializer extends ChannelInitializer<SocketChannel>{
 		.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true))
 		.addLast(healthCheckHandler)
 		.addLast(new IdleStateHandler(HealthCheckHandler.READ_CHECK_INTERVAL, 0, 0, TimeUnit.SECONDS))
-		.addLast(new NettyServerHandler());
+		.addLast(nettyServerHandler);
 
 	}
 

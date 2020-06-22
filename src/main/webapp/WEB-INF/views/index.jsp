@@ -127,6 +127,15 @@
 					append2(target, elem.name + "(" + elem.id + ")"
 							+ (myId == elem.id ? " => 나" : ""), elem.id);
 				});
+			} else if (action == 'FriendsList') {
+				var refId = getFromHeader(obj, "refId");
+				var arr = JSON.parse(obj.msg);
+				var target = $("#friends");
+				target.html("");
+				$.each(arr, function(idx, elem) {
+					append2(target, elem.name + "(" + elem.id + ")"
+							+ (myId == elem.id ? " => 나" : ""), elem.id);
+				});
 			} else if (action == 'RoomList') {
 				var arr = JSON.parse(obj.msg);
 				var target = $("#allRooms");
@@ -311,6 +320,12 @@
 		websocket.send(jsonStr);
 	}
 
+	function requestFriendsList() {
+		var obj = new Builder().action("FriendsList").finish();
+		var jsonStr = JSON.stringify(obj);
+		websocket.send(jsonStr);
+	}
+	
 	function getIdxFromRoomname(roomName) {
 		var result;
 		$("#room_1, #room_2, #room_3, #room_4").each(function() {
@@ -409,6 +424,8 @@
 				<div class="row">전체 사용자 목록</div>
 				<button onclick="requestAllUserList();">새로고침</button>
 				<div id="allUsers" class="row scrollable_400"></div>
+				<div class="row">친구 목록</div>
+				<div id="friends" class="row scrollable 200"></div>
 				<div class="row">전체 방 목록</div>
 				<div id="allRooms" class="row scrollable_200"></div>
 			</div>

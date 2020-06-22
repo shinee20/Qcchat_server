@@ -126,7 +126,12 @@
 			<version>3.4</version>
 			<scope>compile</scope>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
 		<!-- json -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -210,7 +215,7 @@
 			<artifactId>java-jwt</artifactId>
 			<version>3.4.0</version>
 		</dependency>
-		
+
 		<!-- ChannelInterceptor -->
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
 		<dependency>

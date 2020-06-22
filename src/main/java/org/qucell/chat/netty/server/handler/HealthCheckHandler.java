@@ -4,6 +4,8 @@ import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.ChannelSendHelper;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,13 +19,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author myseo
  */
 @Slf4j
+@Component
 @Sharable
 public class HealthCheckHandler extends ChannelInboundHandlerAdapter{
 	/**
 	 * 5분동안 input이 없으면, health check의 목적으로 dummy 데이타를 보냄.
 	 */
 	public static final int READ_CHECK_INTERVAL = 5*60; //5minutes
-
+	
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		

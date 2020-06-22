@@ -21,6 +21,7 @@ public enum EventType {
 	SendInfo("SendInfo", "정보 메시지 전송"),
 	UserList("UserList", "방 사람들 목록"),
 	AllUserList("AllUserList", "모든 사람들 목록"),
+	FriendsList("FriendsList", "친구 목록"),
 	HealthCheck("HealthCheck", "헬스 체크"),
 	Invalid("Invalid", "잘못된 코드")
 	;

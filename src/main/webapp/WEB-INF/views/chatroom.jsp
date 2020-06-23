@@ -590,7 +590,7 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 		}
 		
 		function login(name) {
-			var obj = new Builder().action("LogIn").header("name", name).build();
+			var obj = new Builder().action("LogIn").header("name", name).finish();
 			var jsonStr = JSON.stringify(obj);
 			websocket.send(jsonStr);
 		}
@@ -621,7 +621,7 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 				me.msg = m;
 				return this;
 			}
-			function build() {
+			function finish() {
 				return me;
 			}
 			return {
@@ -630,6 +630,32 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 				msg : msg,
 				finish : finish
 			};
+		}
+		
+		function createRoom(idx) {
+			if (websocket == null) {
+				alert("websocket을 시작한후에 하세요.");
+				return;
+			}
+			var roomName = prompt("방명을 입력해주세요. ");
+			console.log("== roomName", roomName);
+			if (roomName == null || roomName == "") {
+				alert("방명을 입력하세요.");
+				return;
+			}
+			$(".chat-name h1").text(roomName);
+			var obj = new Builder().action("CreateRoom").header("roomId", roomName)
+					.finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
+		}
+		
+		function exitFromRoom(idx) {
+			var roomId = $(".chat-name h1").text();
+			var obj = new Builder().action("ExitFromRoom").header("roomId", roomId)
+					.finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
 		}
 		
 		$(function() {
@@ -666,8 +692,9 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 			<div class="wrap-search">
 				<div class="search">
 					<i class="fa fa-search fa" aria-hidden="true"></i> <input
-						type="text" class="input-search"
+						type="text" class="input-search" id="roomName"
 						placeholder="Suchen oder neuen Chat beginnen">
+					<button class=" " onclick="createRoom('1');">방만들거나 들어가기</button>
 				</div>
 			</div>
 			<div class="contact-list"></div>
@@ -680,8 +707,8 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 					<h1 class="font-name"></h1>
 					<p class="font-online"></p>
 				</div>
-				 <i
-					class="fa fa-paperclip fa-lg" aria-hidden="true"></i> <i
+				<button class=" switchComp" onclick="exitFromRoom('1');">방나가기</button>
+				<i class="fa fa-paperclip fa-lg" aria-hidden="true"></i> <i
 					class="fa fa-bars fa-lg" aria-hidden="true"
 					id="show-contact-information"></i> <i class="fa fa-times fa-lg"
 					aria-hidden="true" id="close-contact-information"></i>
@@ -692,8 +719,7 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 			</div>
 			<div class="wrap-message">
 				<div class="message">
-					<input type="text" class="input-message"
-						placeholder="Schreibe eine Nachricht">
+					<input type="text" class="input-message" placeholder="대화 입력">
 				</div>
 			</div>
 		</section>
@@ -966,7 +992,7 @@ window.CP.exitedLoop(7);
 			$(".information").css("display", "flex");
 			$("#close-contact-information").show();
 			if (currentChat.members == undefined) {
-				$(".information").append("<img src='" + currentChat.img + "'><div><h1>Name:</h1><p>" + currentChat.name + "</p></div><div id='listGroups'><h1>Gemeinsame Gruppen:</h1></div>");
+				$(".information").append("<img src='" + currentChat.img + "'><div><h1>채팅방 이름:</h1><p>" + currentChat.name + "</p></div><div id='listGroups'><h1>Gemeinsame Gruppen:</h1></div>");
 				for (var i = 0; i < currentChat.groups.length; i++) {if (window.CP.shouldStopExecution(9)){break;}
 					html = $("<div class='listGroups'><img src='" + currentChat.groups[i].img + "'><p>" + currentChat.groups[i].name + "</p></div>");
 					$("#listGroups").append(html);

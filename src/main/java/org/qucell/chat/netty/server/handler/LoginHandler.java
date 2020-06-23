@@ -1,17 +1,16 @@
 package org.qucell.chat.netty.server.handler;
 
 import java.net.InetSocketAddress;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.user.LoginVO;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.netty.server.common.AttachHelper;
-import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
+import org.qucell.chat.netty.server.repo.UserRepository;
 import org.qucell.chat.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,11 +28,12 @@ public class LoginHandler {
 
 	private static AtomicInteger idGen = new AtomicInteger();
 
-	private static Hashtable userList = new Hashtable();
-
 	@Autowired
 	private LoginService loginService;
 
+	@Autowired
+	private UserRepository userRepository;
+	
 	/**
 	 * 로그인
 	 * @param ctx
@@ -53,7 +53,8 @@ public class LoginHandler {
 		log.info("== login ({}) ({})", name, ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress());
 
 		//add login user list
-		userList.put(name, ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress());
+		userRepository.getUserList().add(client);
+
 		AttachHelper.about(ctx).attachUsers(client);
 		return client;
 
@@ -65,19 +66,16 @@ public class LoginHandler {
 	 * @return
 	 */
 	public boolean isLogin(String name) {
-		boolean isLogin = false;
-		Enumeration e = userList.keys();
+		Optional<Client> optional = userRepository.getUserList().stream().filter(cl->name.equals(cl.getName())).findFirst();
 
-		String key = "";
-		while(e.hasMoreElements()) {
-			key = (String)e.nextElement();
-
-			if (name.equals(key)) {
-				isLogin = true;
-				break;
-			}
-		}
-		return isLogin;
+		if (optional.isPresent()) return true;
+		return false;
 	}
+	
+	public void logout(Client client) {
+		Optional<Client> optional = userRepository.getUserList().stream().filter(cl->client.equals(cl)).findFirst();
 
+		if (optional.isPresent())
+			userRepository.getUserList().remove(client);
+	}
 }

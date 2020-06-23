@@ -325,7 +325,7 @@
 		var jsonStr = JSON.stringify(obj);
 		websocket.send(jsonStr);
 	}
-	
+
 	function getIdxFromRoomname(roomName) {
 		var result;
 		$("#room_1, #room_2, #room_3, #room_4").each(function() {
@@ -404,13 +404,8 @@
 		initDisplay();
 	});
 </script>
-
-
-
 </head>
 <body>
-
-
 	<div class="container-fluid">
 		<div class="row">
 			내 ID : <span id="myId"></span> (<span id="myName"></span>)

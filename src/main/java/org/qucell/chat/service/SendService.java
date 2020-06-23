@@ -1,13 +1,11 @@
-package org.qucell.chat.netty.server.common;
+package org.qucell.chat.service;
 
 import java.util.List;
 
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -16,9 +14,8 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
  * updated 20/06/16
  * @author myseo
  */
-@Component
-@Qualifier("channelSendHelper")
-public class ChannelSendHelper {
+@Service
+public class SendService {
 	
 	public static void writeAndFlushToClients(List<Client> clients, JsonMsgRes entity) {
 		if (clients == null) {

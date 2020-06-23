@@ -9,5 +9,4 @@ import org.qucell.chat.model.user.Users;
 public interface LoginService {
 	public Users login(LoginVO vo);
 	DefaultRes signUp(LoginVO vo);
-	
 }

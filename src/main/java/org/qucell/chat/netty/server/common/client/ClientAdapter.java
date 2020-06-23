@@ -13,14 +13,9 @@ import java.util.stream.Collectors;
 
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.room.Room;
-import org.qucell.chat.model.user.Users;
-import org.qucell.chat.netty.server.common.ChannelSendHelper;
 import org.qucell.chat.netty.server.common.EventType;
-import org.qucell.chat.service.UserService;
+import org.qucell.chat.service.SendService;
 import org.qucell.chat.util.JsonUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author myseo
  */
 @Slf4j
-public class ClientAdapter implements ClientEventListener{
+public class ClientAdapter {
 	/**
 	 * client event listener를 받아서 처리한다.
 	 * 관리 대상 : client_rooms, rooms
@@ -38,21 +33,18 @@ public class ClientAdapter implements ClientEventListener{
 	
 	//singleton
 	private ClientAdapter() {
-//		startMonitorThread(); //create only once;
 	}
 
 	//key : client value : rooms
 	private final ConcurrentHashMap<Client, List<Room>> CLIENT_TO_ROOMS = new ConcurrentHashMap<>();
 	private final CopyOnWriteArrayList<Room> ROOMS = new CopyOnWriteArrayList<>();	
-	
 	/**
 	 * 로그인할 때의 이벤트 
 	 * @param client
 	 * @return
 	 */
 	public ClientAdapter login(Client client) {
-		
-		ChannelSendHelper.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).build());
+		SendService.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).build());
 		
 		//클라이언트마다 참여하고 있는 방들의 정보를 가지고 있다.
 		CLIENT_TO_ROOMS.put(client, new ArrayList<>());
@@ -63,7 +55,7 @@ public class ClientAdapter implements ClientEventListener{
 		log.info("room list of client has : {}", CLIENT_TO_ROOMS.keys());
 		
 		//클라이언트 리스트를 모든 접속자들에게 broadcast
-		ChannelSendHelper.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
+		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
 
 		sendAllClientListToClient(client);
 		return this;
@@ -98,8 +90,9 @@ public class ClientAdapter implements ClientEventListener{
 		 * 수정해야 할 부분
 		 */
 		
+		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogOut).build();
-		ChannelSendHelper.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
+		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
 
 		return this;
 	}
@@ -145,7 +138,7 @@ public class ClientAdapter implements ClientEventListener{
 
 		//자신이 만든 방을 확인시켜준다.
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setHeader("roomId", roomId).setAction(EventType.CreateRoom).build();
-		ChannelSendHelper.writeAndFlushToClient(client, entity);
+		SendService.writeAndFlushToClient(client, entity);
 
 		// 방이 만들어졌으므로 방 목록을 보냄
 		sendAllRoomListToClients();
@@ -168,7 +161,7 @@ public class ClientAdapter implements ClientEventListener{
 
 		String jsonStr = JsonUtil.toJsonStr(list);
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.AllUserList).setContents(jsonStr).build();
-		ChannelSendHelper.writeAndFlushToClient(client, entity);
+		SendService.writeAndFlushToClient(client, entity);
 		return this;
 	}
 	
@@ -182,7 +175,7 @@ public class ClientAdapter implements ClientEventListener{
 		List<Map<String, String>> list = getAllRoomList().stream().map(room->room.toMap()).collect(Collectors.toList());
 		String jsonStr = JsonUtil.toJsonStr(list);
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.RoomList).setContents(jsonStr).build();
-		ChannelSendHelper.writeAndFlushToClient(client, entity);
+		SendService.writeAndFlushToClient(client, entity);
 		return this;
 	}
 	
@@ -194,7 +187,7 @@ public class ClientAdapter implements ClientEventListener{
 		List<Map<String, String>> list = getAllRoomList().stream().map(room->room.toMap()).collect(Collectors.toList());
 		String jsonStr = JsonUtil.toJsonStr(list);
 		JsonMsgRes entity = new JsonMsgRes.Builder().setAction(EventType.RoomList).setContents(jsonStr).build();
-		ChannelSendHelper.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
+		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
 		return this;
 	}
 	
@@ -319,11 +312,6 @@ public class ClientAdapter implements ClientEventListener{
 	}
 
 
-	@Override
-	public void listen(ClientEvent e) {
-		EventType eventType = e.eventType;
-	}
-
 //	private void run(Runnable r) {
 //		try {
 //			r.run();
@@ -332,27 +320,27 @@ public class ClientAdapter implements ClientEventListener{
 //		}
 //	}
 
-	private void startMonitorThread() {
-		try {
-			new Thread() {
-				@Override
-				public void run() {
-					while(true) {
-						try {
-							log.info("== client list");
-							Collections.list(CLIENT_TO_ROOMS.keys()).stream().forEach(client ->{
-								log.info("{}", client);
-							});
-
-						}
-						catch(Exception e) {
-							log.error(e.getMessage(), e);
-						}
-					}
-				}
-			}.start();
-		} catch(Exception e) {
-			log.error("[...]", e);
-		}
-	}
+//	private void startMonitorThread() {
+//		try {
+//			new Thread() {
+//				@Override
+//				public void run() {
+//					while(true) {
+//						try {
+//							log.info("== client list");
+//							Collections.list(CLIENT_TO_ROOMS.keys()).stream().forEach(client ->{
+//								log.info("{}", client);
+//							});
+//
+//						}
+//						catch(Exception e) {
+//							log.error(e.getMessage(), e);
+//						}
+//					}
+//				}
+//			}.start();
+//		} catch(Exception e) {
+//			log.error("[...]", e);
+//		}
+//	}
 }

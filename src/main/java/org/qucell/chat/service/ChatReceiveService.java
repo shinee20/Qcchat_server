@@ -1,13 +1,13 @@
-package org.qucell.chat.netty.server.common;
+package org.qucell.chat.service;
 
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.room.Room;
+import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
 import org.qucell.chat.netty.server.repo.ClientIdFriendIdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,9 +16,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author myseo
  */
 @Slf4j
-@Component
-@Qualifier("chatReceiveProcess")
-public class ChatReceiveProcess {
+@Service
+public class ChatReceiveService {
 	
 //	private ChatReceiveProcess() {}
 //	//singleton
@@ -26,6 +25,7 @@ public class ChatReceiveProcess {
 	
 	@Autowired 
 	private ClientIdFriendIdRepository clientIdFriendIdRepository;
+	
 	
 	public void process(Client client, JsonMsgRes entity) {
 		EventType eventType = EventType.from(entity);

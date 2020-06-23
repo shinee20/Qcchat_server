@@ -2,10 +2,10 @@ package org.qucell.chat.netty.server.handler;
 
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.AttachHelper;
-import org.qucell.chat.netty.server.common.ChannelSendHelper;
-import org.qucell.chat.netty.server.common.ChatReceiveProcess;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
+import org.qucell.chat.service.ChatReceiveService;
+import org.qucell.chat.service.SendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -32,8 +32,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 	private LoginHandler loginHandler;
 	
 	@Autowired
-	@Qualifier("chatReceiveProcess")
-	private ChatReceiveProcess chatReceiveProcess;
+	@Qualifier("chatReceiveService")
+	private ChatReceiveService chatReceiveService;
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
@@ -63,7 +63,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 				client = loginHandler.loginProcess(ctx, requestEntity);
 			}
 			
-			chatReceiveProcess.process(client, requestEntity);
+			chatReceiveService.process(client, requestEntity);
 		} 
 		else {
 			String msg = "unsupported frame type: " + frame.getClass().getName();
@@ -75,6 +75,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 		//remove users in channel 
 		//userService
 		Client client = AttachHelper.about(ctx).getClient();
+		loginHandler.logout(client);
 		log.warn("== inactive : {}", client);
 
 	}
@@ -84,7 +85,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 		log.error(cause.getMessage(), cause);
 		Client client = AttachHelper.about(ctx).getClient();
 		JsonMsgRes entity = new JsonMsgRes.Builder(ctx).setAction(EventType.SendInfo).setContents("[error] " + cause.toString()).build();
-		ChannelSendHelper.writeAndFlushToClient(client, entity);
+		SendService.writeAndFlushToClient(client, entity);
 	}
 	
 }

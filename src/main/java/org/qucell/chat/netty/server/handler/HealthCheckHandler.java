@@ -1,9 +1,9 @@
 package org.qucell.chat.netty.server.handler;
 
 import org.qucell.chat.model.JsonMsgRes;
-import org.qucell.chat.netty.server.common.ChannelSendHelper;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
+import org.qucell.chat.service.SendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +40,7 @@ public class HealthCheckHandler extends ChannelInboundHandlerAdapter{
 				if (client != null) {
 					log.info("== health check sending : {}, {}", client.getId(), client.getName());
 					//broadcast msg
-					ChannelSendHelper.writeAndFlushToClient(client, new JsonMsgRes.Builder().setAction(EventType.HealthCheck).build());
+					SendService.writeAndFlushToClient(client, new JsonMsgRes.Builder().setAction(EventType.HealthCheck).build());
 				}
 			} else {
 				super.userEventTriggered(ctx, evt);

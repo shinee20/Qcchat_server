@@ -8,11 +8,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.qucell.chat.model.JsonMsgRes;
-import org.qucell.chat.netty.server.common.ChannelSendHelper;
 import org.qucell.chat.netty.server.common.EmptyRoomMgr;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
+import org.qucell.chat.service.SendService;
 import org.qucell.chat.util.JsonUtil;
 
 import lombok.Data;
@@ -41,7 +41,7 @@ public class Room {
 			}
 			
 			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(this.id).setAction(EventType.EnterToRoom).build();
-			ChannelSendHelper.writeAndFlushToClients(clientList, entity);
+			SendService.writeAndFlushToClients(clientList, entity);
 			sendClientList();
 		}
 		return this;
@@ -53,7 +53,7 @@ public class Room {
 		if (client != null && this.clientList.contains(client)) {
 			//현재 접속된 사용자일 경우
 			JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.ExitFromRoom).setRoomId(this.id).build();
-			ChannelSendHelper.writeAndFlushToClients(clientList, entity);
+			SendService.writeAndFlushToClients(clientList, entity);
 		}
 		
 		synchronized(this) {
@@ -85,12 +85,12 @@ public class Room {
 		List<Map<String, String>> list  = clientList.stream().map(client ->client.toMap()).collect(Collectors.toList());
 		String jsonStr = JsonUtil.toJsonStr(list);
 		JsonMsgRes entity = new JsonMsgRes.Builder().setAction(EventType.UserList).setHeader("roomId", this.id).setContents(jsonStr).build();
-		ChannelSendHelper.writeAndFlushToClients(this.clientList, entity);
+		SendService.writeAndFlushToClients(this.clientList, entity);
 	}
 
 	public void sendMsg(Client client, String msg) {
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.SendMsg).setHeader("roomId", this.id).setContents(msg).build();
-		ChannelSendHelper.writeAndFlushToClients(this.clientList, entity);
+		SendService.writeAndFlushToClients(this.clientList, entity);
 	}
 	
 	public Map<String, String> toMap() {

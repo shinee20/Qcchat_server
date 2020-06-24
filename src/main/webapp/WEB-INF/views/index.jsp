@@ -69,7 +69,6 @@
 	// 	  "msg" : "잘 지내고 있냐",
 	// 	  "action" : "SendMsg",
 	// 	  "headers" : {
-	// 	    "lets" : "go go",
 	// 	    "refId" : "id_12345",
 	// 	    "roomId" : "room_1234"
 	// 	  }

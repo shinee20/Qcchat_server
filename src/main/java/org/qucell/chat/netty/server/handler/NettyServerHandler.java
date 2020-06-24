@@ -70,6 +70,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 			throw new UnsupportedOperationException(msg);
 		}
 	}
+	/**
+	 * 사용자의 channel이 더 이상 존재하지 않을 경우 호출된다. 
+	 */
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		//remove users in channel 

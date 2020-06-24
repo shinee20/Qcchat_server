@@ -78,7 +78,6 @@ public class Client {
 		if (roomList.size() != rooms.size()) {
 			log.error("=== validateRoom ERROR : client room : {}, cooordiante room : {}", roomList, rooms);
 		}
-		
 		return this;
 	}
 

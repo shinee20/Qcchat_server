@@ -505,6 +505,14 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 					append2(target, elem.name + "(" + elem.id + ")"
 							+ (myId == elem.id ? " => 나" : ""), elem.id);
 				});
+			} else if (action == 'MsgLog') {
+				var roomId = getFromHeader(obj, "roomId");
+				var arr = JSON.parse(obj.msg);
+				var target = $(".wrap-chat-chat");
+				target.html("");
+				$.each(arr, function(idx, elem) {
+					append2(target, elem.text);
+				});
 			} else if (action == 'RoomList') {
 				var arr = JSON.parse(obj.msg);
 				var target = $("#allRooms");
@@ -538,6 +546,10 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 							+ ")이 방으로 들어왔습니다.");
 				}
 				$("#input_" + idx).css("background-color", "white");
+				/**
+				* 메시지 로그를 요청하는 함수를 호출한다.
+				*/
+				
 			} else if (action == 'ExitFromRoom') {
 				var roomId = getFromHeader(obj, "roomId");
 				var refId = getFromHeader(obj, "refId");
@@ -566,7 +578,7 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 			} else if (action == 'LogIn') {
 				var roomId = getFromHeader(obj, "roomId");
 				var refId = getFromHeader(obj, "refId");
-				var refName = getFromHeader(obj, "refName");
+				var refName = getFromHeader(objwriteAndFlush, "refName");
 				var target = $("#allUsers");
 				if (target.find("[hong-etc='" + refId + "']").length == 0) {
 					append2(target, refName + "(" + refId + ")", refId);
@@ -579,6 +591,20 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 				target.find("[hong-etc='" + refId + "']").remove();
 			}
 		};
+	}
+	
+	function onMsgKeyUp(event, idx) {
+		if (event.keyCode == 13 || event.which == 13) {
+			console.log("== enter");
+			var roomId = $(".chat-name h1").text();
+			var input = $(".input-message").val();
+			var msg = input.val();
+			input.val("");
+			var obj = new Builder().action("SendMsg").header("roomId", roomId)
+					.msg(msg).finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
+		}
 	}
 		function getFromHeader(obj, key) {
 			var headers = obj.headers;
@@ -632,6 +658,21 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 			};
 		}
 		
+		function getMsgLog(idx) {
+			if (websocket == null) {
+				alert("websocket을 시작한후에 하세요.");
+				return;
+			}
+			var roomId = $(".chat-name h1").text();
+			console.log("== roomId", roomId);
+			if (roomId == null || roomId == "") {
+			}
+			var obj = new Builder().action("MsgLog").header("roomId", roomId)
+			.finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
+		}
+		
 		function createRoom(idx) {
 			if (websocket == null) {
 				alert("websocket을 시작한후에 하세요.");
@@ -658,6 +699,34 @@ body::-webkit-scrollbar-thumb, .contact-list::-webkit-scrollbar-thumb,
 			websocket.send(jsonStr);
 		}
 		
+		function append($div, msg, etcVal) {
+			var children = $div.children("div");
+			var len = children.length;
+			
+			var newElem = $('<div/>').text(msg);
+			if (etcVal != null) {
+				newElem.attr("hong-etc", etcVal);
+			}
+			newElem.appendTo($div);
+			$div.animate({
+				scrollTop : 100000
+			});
+		}
+
+		function append2($div, msg, etcVal) {
+			var newElem = $('<div/>').text(msg);
+			if (etcVal != null) {
+				newElem.attr("hong-etc", etcVal);
+			}
+			// 	if(funcName!=null){
+			// 		newElem.attr("onclick", funcName + "('" + etcVal +"');").attr("style", "cursor: pointer;");
+			// 	}
+			newElem.appendTo($div);
+			$div.animate({
+				scrollTop : 100000
+			});
+		}
+
 		$(function() {
 			//	startWebsocket();
 			initDisplay();

@@ -44,6 +44,9 @@ public class LoginHandler {
 		String name = requestEntity.extractFromHeader("name");
 		Objects.requireNonNull(name, "name is required");
 
+		/**
+		 * 중복 로그인 방지
+		 */
 		if (isLogin(name)) {
 			throw new IllegalStateException("이미 로그인 된 사용자입니다.");
 		}
@@ -72,6 +75,10 @@ public class LoginHandler {
 		return false;
 	}
 	
+	/**
+	 * 현재 로그인되어있는 사용자 리스트에서 제거
+	 * @param client
+	 */
 	public void logout(Client client) {
 		Optional<Client> optional = userRepository.getUserList().stream().filter(cl->client.equals(cl)).findFirst();
 

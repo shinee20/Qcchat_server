@@ -23,7 +23,8 @@ public enum EventType {
 	AllUserList("AllUserList", "모든 사람들 목록"),
 	FriendsList("FriendsList", "친구 목록"),
 	HealthCheck("HealthCheck", "헬스 체크"),
-	Invalid("Invalid", "잘못된 코드")
+	Invalid("Invalid", "잘못된 코드"),
+	MsgLog("msgLog", "메시지 로그")
 	;
 	
 	public final String code;

@@ -5,6 +5,8 @@ import java.util.List;
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
+import org.qucell.chat.netty.server.repo.ChatMessageLogRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.netty.channel.Channel;
@@ -36,7 +38,7 @@ public class SendService {
 				ClientAdapter.INSTANCE.invalidateClient(client);
 			}
 		});
-		
+
 	}
 	public static void writeAndFlushToClient(Client client, JsonMsgRes entity) {
 		String str = entity.toStr();
@@ -49,5 +51,6 @@ public class SendService {
 		else {
 			ClientAdapter.INSTANCE.invalidateClient(client);
 		}
+		
 	}
 }

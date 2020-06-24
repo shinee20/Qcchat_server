@@ -71,38 +71,5 @@ public class UserServiceImpl implements UserService {
 		return friendsList;
 
 	}
-	
-	
-	/*
-	 * redis test
-	 * 
-	 * @Cacheable(value = "post-single", key = "#id", unless =
-	 * "#result.shares < 500")
-	 *
-	 */
-	//	@Override
-	//	@Cacheable(cacheNames="userCache") //if it exists in cache memory, take them.
-	//	public DefaultRes getAllUsers() throws IOException {
-	//		// TODO Auto-generated method stub
-	//		List<Users> users = userDao.getAllUsers();
-	//		
-	//		if (users.isEmpty()) {
-	//			return DefaultRes.res(StatusCode.NO_CONTENT,ResponseMessage.SEARCH_NO_RESULT );
-	//		}
-	//		return DefaultRes.res(StatusCode.OK, ResponseMessage.SEARCH_SUCCESS, users);
-	//	}
-	//
-	//	//@CacheEvict = remove cache
-	//	@Caching(evict = {
-	//            @CacheEvict(cacheNames="userCache", allEntries = true)
-	//        })
-	//	@Override
-	//	public void removeCacheUsers() {
-	//		// TODO Auto-generated method stub
-	//		
-	//	}
-	/*
-	 * redis test
-	 */
 
 }

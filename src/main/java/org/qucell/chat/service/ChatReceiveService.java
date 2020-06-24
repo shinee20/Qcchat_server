@@ -5,6 +5,7 @@ import org.qucell.chat.model.room.Room;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
+import org.qucell.chat.netty.server.repo.ChatMessageLogRepository;
 import org.qucell.chat.netty.server.repo.ClientIdFriendIdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class ChatReceiveService {
 	@Autowired 
 	private ClientIdFriendIdRepository clientIdFriendIdRepository;
 	
+	@Autowired
+	private ChatMessageLogRepository chatMessageLogRepository;
 	
 	public void process(Client client, JsonMsgRes entity) {
 		EventType eventType = EventType.from(entity);
@@ -59,8 +62,12 @@ public class ChatReceiveService {
 			adapter.exitRoom(client, roomId);
 			break;
 		case SendMsg:
+			chatMessageLogRepository.save(roomId, entity.msg, client.getName());
 			Room room = adapter.getRoomByRoomId(roomId);
 			room.sendMsg(client, entity.msg);
+			break;
+		case MsgLog:
+			chatMessageLogRepository.writeAndFlush(client, roomId);
 			break;
 		}
 	}

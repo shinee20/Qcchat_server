@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.room.Room;
 import org.qucell.chat.netty.server.common.EventType;
+import org.qucell.chat.netty.server.repo.UserIdRoomIdRepository;
 import org.qucell.chat.service.SendService;
 import org.qucell.chat.util.JsonUtil;
 
@@ -47,12 +48,22 @@ public class ClientAdapter {
 		SendService.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).build());
 		
 		//클라이언트마다 참여하고 있는 방들의 정보를 가지고 있다.
-		CLIENT_TO_ROOMS.put(client, new ArrayList<>());
+		List<Room> list = UserIdRoomIdRepository.getUserIdRoomIdMap().get(client.getName());
+		if (list == null) {
+			CLIENT_TO_ROOMS.put(client, new ArrayList<>());
+		}
+		else {
+			CLIENT_TO_ROOMS.put(client, list);
+			log.info("client relogin : {} ", list.toString());
+			
+			list.stream().forEach(room->{
+				room.enterRoom(client);
+			});
+		}
 		
 		client.getChannel().closeFuture().addListener(listener->logout(client));
 		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogIn).build();
-		log.info("room list of client has : {}", CLIENT_TO_ROOMS.keys());
 		
 		//클라이언트 리스트를 모든 접속자들에게 broadcast
 		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
@@ -62,7 +73,8 @@ public class ClientAdapter {
 	}
 
 	/**
-	 * 로그아웃 시 모든 룸의 정보를 날라가게 한다. -> 추후 수정
+	 *
+	 * 이 방들의 정보를 따로 저장하고 있어야 한다. -> 날라가지 않도록
 	 * @param client
 	 * @return
 	 */
@@ -76,20 +88,15 @@ public class ClientAdapter {
 
 		List<Room> roomsOfClient = CLIENT_TO_ROOMS.get(client);
 		CLIENT_TO_ROOMS.remove(client);
-		//삭제되어서 룸의 개수가 남아있어야 하는 룸의 개수와 일치하는지 확인한다.
-		client.validateRoom(roomsOfClient.stream().map(room->room.getId()).collect(Collectors.toList()));
+		
 		/**
-		 * 수정해야 할 부분
+		 * 로그아웃 후에 다시 로그인을 하는 경우 룸의 정보를 그대로 가지고 있어야 한다.
 		 */
+		UserIdRoomIdRepository.getUserIdRoomIdMap().put(client.getName(), roomsOfClient);
+		//삭제되어서 룸의 개수가 남아있어야 하는 룸의 개수와 일치하는지 확인한다.
+//		client.validateRoom(roomsOfClient.stream().map(room->room.getId()).collect(Collectors.toList()));
 		client.removeAllRooms();
 
-		roomsOfClient.stream().forEach(room->{
-			room.exitRoom(client);
-		});
-		/**
-		 * 수정해야 할 부분
-		 */
-		
 		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogOut).build();
 		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
@@ -218,7 +225,13 @@ public class ClientAdapter {
 			Room room  = optional.get();
 			room.exitRoom(client);
 			room.sendClientList();
-			//모든 클라이언트들에게 방이 사라졌음을 알린다.
+			
+			/**
+			 * 
+			 */
+			List<Room> clientRooms = CLIENT_TO_ROOMS.get(client);
+			clientRooms.remove(getRoomByRoomId(roomId));
+			log.info(clientRooms.toString());
 		} 
 		return this;
 	}
@@ -263,6 +276,9 @@ public class ClientAdapter {
 	 * @return
 	 */
 	public List<Room> getRoomList(String clientId) {
+		if (clientId == null) {
+			return Collections.emptyList();
+		}
 		return CLIENT_TO_ROOMS.get(clientId);
 	}
 

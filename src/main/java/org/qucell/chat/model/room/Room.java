@@ -30,6 +30,12 @@ public class Room {
 		this.clientAdapter = clientAdapter;
 	}
 	
+	/**
+	 * 새로운 채팅방 입장 
+	 * 이미 입장해있는 사용자라면 재입장하지 않는다.
+	 * @param client
+	 * @return
+	 */
 	public Room enterRoom(Client client) {
 		//enter
 		Objects.requireNonNull(client);
@@ -47,6 +53,12 @@ public class Room {
 		return this;
 	}
 	
+	/**
+	 * 채팅방 나가기ㅣ
+	 * 방에 한 명도 남아있지 않는 경우에는 채팅방 리스트에서 제해준다. 
+	 * @param client
+	 * @return
+	 */
 	public Room exitRoom(Client client) {
 		Objects.requireNonNull(client);
 		
@@ -69,18 +81,31 @@ public class Room {
 		return this;
 	}
 	
-	public Room logout(Client client) {
-		//로그아웃시 방에서 빠져나간다?
-		
-		synchronized(this) {
-			if (client != null && this.clientList.contains(client)) {
-				clientList.remove(client);
-				exitRoom(client);
-			}
-		}
-		return this;
-	}
+//	/**
+//	 * 로그아웃 상태로 전환이 되면 동작한다.  추후 참여하고 있던 채팅방에서 자동으로 나가지 않도록 수정해야한다.
+//	 * @param client
+//	 * @return
+//	 */
+//	public Room logout(Client client) {
+//		//로그아웃시 방에서 빠져나간다?
+//		/**
+//		 * 추후 수정
+//		 */
+//		synchronized(this) {
+//			if (client != null && this.clientList.contains(client)) {
+//				clientList.remove(client);
+//				exitRoom(client);
+//			}
+//		}
+//		/**
+//		 * 추후 수정
+//		 */
+//		return this;
+//	}
 	
+	/**
+	 * 현재 채팅방에 참여하고 있는 사용자들의 리스트를 조회
+	 */
 	public void sendClientList() {
 		List<Map<String, String>> list  = clientList.stream().map(client ->client.toMap()).collect(Collectors.toList());
 		String jsonStr = JsonUtil.toJsonStr(list);
@@ -88,6 +113,11 @@ public class Room {
 		SendService.writeAndFlushToClients(this.clientList, entity);
 	}
 
+	/**
+	 * 현재 채팅방에 대화를 보낸다.
+	 * @param client
+	 * @param msg
+	 */
 	public void sendMsg(Client client, String msg) {
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.SendMsg).setHeader("roomId", this.id).setContents(msg).build();
 		SendService.writeAndFlushToClients(this.clientList, entity);

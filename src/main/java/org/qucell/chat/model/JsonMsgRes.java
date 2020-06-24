@@ -67,7 +67,6 @@ public class JsonMsgRes {
 		return entity;
 	}
 	
-	//브로드캐스트 하는 메시지와 사용자를 연결해준다.
 	public static class Builder {
 		private Client client;
 		

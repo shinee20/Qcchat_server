@@ -10,6 +10,7 @@
   - jwt token authorization
   - redis cache
   - chatroom 
+  
 ## in progress
 
 - todo
@@ -19,6 +20,7 @@
   - ui 
   - modify chat room password
   - json header add jwt token 
+  
 ## complete
 - login + jwt token authorization 
 - get friends list 
@@ -27,6 +29,8 @@
 - add user in chat room 
 - get user list in chat room 
 - send message in chat room 
+- get message log by room name
+- get room list by user id (user logout -> login)
 
 ## Change
 - 채팅방 방장 제도 없앰 (사람이 한 명도 남아있지 않으면 채팅방 자동 제거)

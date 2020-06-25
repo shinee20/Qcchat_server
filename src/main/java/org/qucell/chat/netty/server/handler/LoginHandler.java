@@ -10,6 +10,7 @@ import org.qucell.chat.model.user.LoginVO;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.netty.server.common.AttachHelper;
 import org.qucell.chat.netty.server.common.client.Client;
+import org.qucell.chat.netty.server.repo.UserIdRoomIdRepository;
 import org.qucell.chat.netty.server.repo.UserRepository;
 import org.qucell.chat.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class LoginHandler {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private UserIdRoomIdRepository userIdRoomIdRepository;
 	/**
 	 * 로그인
 	 * @param ctx
@@ -82,7 +85,9 @@ public class LoginHandler {
 	public void logout(Client client) {
 		Optional<Client> optional = userRepository.getUserList().stream().filter(cl->client.equals(cl)).findFirst();
 
-		if (optional.isPresent())
+		if (optional.isPresent()) {
 			userRepository.getUserList().remove(client);
+//			userIdRoomIdRepository.save(client.getName());
+		}
 	}
 }

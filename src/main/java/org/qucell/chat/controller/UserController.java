@@ -57,11 +57,11 @@ public class UserController {
 		model.put("host", host);
 		model.put("websocketPort", websocketPort);
 		
-		return "index";
+		return "room";
 	}
 	
-//	@GetMapping("/chatroom")
-//	public String goChatRoom() {
-//		return "chatroom";
-//	}
+	@GetMapping("/room")
+	public String goChatRoom() {
+		return "chatroom";
+	}
 }

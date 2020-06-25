@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientAdapter {
 	/**
 	 * client event listener를 받아서 처리한다.
-	 * 관리 대상 : client_rooms, rooms
+	 * 관리 대상 : client_rooms, all rooms list
 	 */
 	public static final ClientAdapter INSTANCE = new ClientAdapter();
 	
@@ -93,6 +93,7 @@ public class ClientAdapter {
 		 * 로그아웃 후에 다시 로그인을 하는 경우 룸의 정보를 그대로 가지고 있어야 한다.
 		 */
 		UserIdRoomIdRepository.getUserIdRoomIdMap().put(client.getName(), roomsOfClient);
+		
 		//삭제되어서 룸의 개수가 남아있어야 하는 룸의 개수와 일치하는지 확인한다.
 //		client.validateRoom(roomsOfClient.stream().map(room->room.getId()).collect(Collectors.toList()));
 		client.removeAllRooms();

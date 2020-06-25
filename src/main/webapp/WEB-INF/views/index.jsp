@@ -381,27 +381,6 @@
 		}
 	}
 
-	function initDisplay() {
-		//방을 나가거나 로그아웃 했을 시 채팅방창을 disabled
-		$(".switchComp").css("background-color", "silver").prop("disabled",
-				true);
-	}
-
-	// function createNewRoom(){
-	// 	var name = $("#newRoomName").val();
-	// 	var obj = new Builder().action("CreateRoom").header("roomId", name).finish();
-	// 	var jsonStr = JSON.stringify(obj);
-	// 	websocket.send(jsonStr);
-	// }
-
-	// function popupMessenger(){
-	// 	var win = window.open("/msgPopup", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
-	// }
-
-	$(function() {
-		//	startWebsocket();
-		initDisplay();
-	});
 </script>
 </head>
 <body>

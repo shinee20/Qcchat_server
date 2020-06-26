@@ -23,6 +23,7 @@ public class JsonMsgRes {
 	 *  {
 		  "msg" : "잘 지내고 있냐",
 		  "action" : "SendMsg",
+		  "jwt" : json web token,
 		  "headers" : {
 		    "roomId" : "room_1234"
 		  }
@@ -30,6 +31,7 @@ public class JsonMsgRes {
 	 */
 	public String msg; //->content
 	public String action; //->action
+	public String jwt;
 	public Map<String, String> headers; //->headers
 	
 	public ByteBuf formatToByteBuf() throws Exception {
@@ -56,6 +58,7 @@ public class JsonMsgRes {
 		Map<String, Object> obj = new HashMap<>();
 		
 		obj.put("action", action);
+		obj.put("jwt", jwt);
 		obj.put("headers", headers);
 		obj.put("msg", msg);
 		String jsonStr = JsonUtil.toJsonStr(obj);
@@ -88,8 +91,13 @@ public class JsonMsgRes {
 		
 		private EventType action;
 		private String contents;
+		private String auth;
 		private Map<String, String> headers;
 		
+		public Builder setAuth(String auth) {
+			this.auth = auth;
+			return this;
+		}
 		public Builder setAction(EventType action) {
 			this.action = action;
 			return this;
@@ -134,6 +142,7 @@ public class JsonMsgRes {
 				setRefId(client.getId());
 				setRefName(client.getName());
 			}
+			entity.jwt = auth;
 			entity.headers = headers;
 			return entity;
 		}

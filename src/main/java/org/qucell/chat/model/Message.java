@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Message {
+	/**
+	 * 메시지 로그
+	 */
 	private String text;
 	private String sender;
 	private String time;

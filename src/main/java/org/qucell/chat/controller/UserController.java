@@ -62,6 +62,6 @@ public class UserController {
 	
 	@GetMapping("/room")
 	public String goChatRoom() {
-		return "chatroom";
+		return "index";
 	}
 }

@@ -3,14 +3,10 @@
 <!DOCTYPE html>
 <html class=''>
 <head>
-
+<title>QCCHAT</title>
 <meta charset='UTF-8'>
 <meta name="robots" content="noindex">
-<link rel="shortcut icon" type="image/x-icon"
-	href="//production-assets.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico" />
-<link rel="mask-icon" type=""
-	href="//production-assets.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg"
-	color="#111" />
+<link rel="shortcut icon" type="chat/ico" href="static/img/chat.ico" />
 <link rel="canonical"
 	href="https://codepen.io/emilcarlsson/pen/ZOQZaV?limit=all&page=74&q=contact+" />
 <link
@@ -38,31 +34,17 @@
 <link rel="stylesheet" type="text/css" href="static/css/room.css">
 </head>
 <body>
-	<!-- 
-
-A concept for a chat interface. 
-
-Try writing a new message! :)
-
-
-Follow me here:
-Twitter: https://twitter.com/thatguyemil
-Codepen: https://codepen.io/emilcarlsson/
-Website: http://emilcarlsson.se/
-
--->
-
 	<div id="frame">
 		<div id="sidepanel">
 			<div id="profile">
 				<div class="wrap">
-					<img id="profile-img"
-						src="http://emilcarlsson.se/assets/mikeross.png" class="online"
-						alt="" /> &nbsp; ID:<span id="myId"></span> (<span id="myName"></span>)
-					<button type="button" class="btn btn-secondary btn-sm"
-						onclick="startWebsocket();" aria-hidden="true">IN</button>
-					<button type="button" class="btn btn-secondary btn-sm"
-						onclick="disconnect();" aria-hidden="true">OUT</button>
+					<img id="profile-img" src="static/img/emoji/smile.png"
+						class="online" alt="" /> <p>&nbsp; ID:<span id="myName"></span> (<span
+						id="myId"></span>)
+					<p><button type="button" class="btn btn-secondary btn-sm" id="login"
+						onclick="startWebsocket();" aria-hidden="true">IN</button></p>
+					<p><button type="button" class="btn btn-secondary btn-sm" id="logout"
+						onclick="disconnect();" aria-hidden="true">OUT</button></p>
 
 					<i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
 
@@ -70,56 +52,36 @@ Website: http://emilcarlsson.se/
 						<ul>
 							<li id="status-online" class="active"><span
 								class="status-circle"></span>
-								<p>Online</p></li>
+								<p>Smile</p></li>
 							<li id="status-away"><span class="status-circle"></span>
-								<p>Away</p></li>
+								<p>Enjoy</p></li>
 							<li id="status-busy"><span class="status-circle"></span>
-								<p>Busy</p></li>
+								<p>Serious</p></li>
 							<li id="status-offline"><span class="status-circle"></span>
-								<p>Offline</p></li>
+								<p>Sad</p></li>
+							<li id="status-happy"><span class="status-circle"></span>
+								<p>Happy</p></li>
 						</ul>
 					</div>
 					<div id="expanded">
-						<label for="twitter"><i class="fa fa-facebook fa-fw"
-							aria-hidden="true"></i></label> <input name="twitter" type="text"
-							value="mikeross" /> <label for="twitter"><i
-							class="fa fa-twitter fa-fw" aria-hidden="true"></i></label> <input
-							name="twitter" type="text" value="ross81" /> <label
-							for="twitter"><i class="fa fa-instagram fa-fw"
-							aria-hidden="true"></i></label> <input name="twitter" type="text"
-							value="mike.ross" />
+						
+
 					</div>
 				</div>
 			</div>
-			<div id="search">
-				<label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
-				<input type="text" placeholder="Search contacts..." />
-			</div>
+
 			<div id="contacts">
 				<ul>
-					<li class="contact">
-						<div class="wrap">
-							<span class="contact-status online"></span> <img
-								src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
-							<div class="meta">
-								<p class="name">Louis Litt</p>
-								<p class="preview">You just got LITT up, Mike.</p>
-							</div>
-						</div>
-					</li>
 					<li class="contact active">
 						<div class="wrap">
-							<span class="contact-status busy"></span> <img
-								src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
+							<span class="contact-status online"></span> <img
+								src="static/img/emoji/smile.png" alt="" />
 							<div class="meta">
-								<p class="name">Harvey Specter</p>
-								<p class="preview">Wrong. You take the gun, or you pull out
-									a bigger one. Or, you call their bluff. Or, you do any one of a
-									hundred and forty six other things.</p>
+								<p class="name">CHATNAME</p>
+								<p class="preview">Preview Message</p>
 							</div>
 						</div>
 					</li>
-					
 				</ul>
 			</div>
 			<div id="bottom-bar">
@@ -127,19 +89,19 @@ Website: http://emilcarlsson.se/
 					<i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>채팅방
 						추가</span>
 				</button>
-				<button id="settings">
-					<i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span>
+				<button id="showallroom" onClick="">
+					<i class="fa fa-comments-o" aria-hidden="true"></i> <span>모든
+						채팅방 보기</span>
 				</button>
 			</div>
 		</div>
 		<div class="content">
 			<div class="contact-profile">
-				<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-				<span id="chat-name">
-					<h1 class="font-name"></h1>
-				</span>
+				<img src="static/img/emoji/smile.png" alt="" /> <span
+					id="chat-name">CHATNAME</span>
 				<div class="social-media">
-					<button type="button" class="btn btn-success" onclick="exitFromRoom('1');" >나가기</button>
+					<button type="button" class="btn btn-success"
+						onclick="exitFromRoom('1');">나가기</button>
 					<i class="fa fa-bars fa-lg" aria-hidden="true"
 						id="show-contact-information"></i> <i class="fa fa-times fa-lg"
 						aria-hidden="true" id="close-contact-information"></i>
@@ -147,41 +109,13 @@ Website: http://emilcarlsson.se/
 			</div>
 			<div class="messages">
 				<ul>
-					<li class="sent"><img
-						src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-						<p>How the hell am I supposed to get a jury to believe you
-							when I am not even sure that I do?!</p></li>
-					<li class="replies"><img
-						src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-						<p>When you're backed against the wall, break the god damn
-							thing down.</p></li>
-					<li class="replies"><img
-						src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-						<p>Excuses don't win championships.</p></li>
-					<li class="sent"><img
-						src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-						<p>Oh yeah, did Michael Jordan tell you that?</p></li>
-					<li class="replies"><img
-						src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-						<p>No, I told him that.</p></li>
-					<li class="replies"><img
-						src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-						<p>What are your choices when someone puts a gun to your head?</p>
-					</li>
-					<li class="sent"><img
-						src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-						<p>What are you talking about? You do what they say or they
-							shoot you.</p></li>
-					<li class="replies"><img
-						src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-						<p>Wrong. You take the gun, or you pull out a bigger one. Or,
-							you call their bluff. Or, you do any one of a hundred and forty
-							six other things.</p></li>
+		
 				</ul>
 			</div>
 			<div class="message-input">
 				<div class="wrap">
-					<input type="text" placeholder="Write your message..." onkeyup="onMsgKeyUp(event, '4');" id="input-msg"/> <i
+					<input type="text" placeholder="Write your message..."
+						onkeyup="onMsgKeyUp(event, '4');" id="input-msg" /> <i
 						class="fa fa-paperclip attachment" aria-hidden="true"></i>
 					<button class="submit">
 						<i class="fa fa-paper-plane" aria-hidden="true"></i>
@@ -196,7 +130,7 @@ Website: http://emilcarlsson.se/
 	<script>
 		var websocket;
 		var myId;
-		var roomInfo = {};
+
 		function startWebsocket() {
 			var name = prompt("이름을 입력하세요");
 			if (name == null || name == "") {
@@ -222,7 +156,7 @@ Website: http://emilcarlsson.se/
 				alert("websocket 종료");
 				initDisplay();
 				$("#myId").text("");
-				$("#allUsers").empty();
+				$("#expanded ul").html();
 				websocket = null;
 			};
 
@@ -237,6 +171,7 @@ Website: http://emilcarlsson.se/
 					myId = refId;
 					$("#myId").text(myId);
 					$("#myName").text(refName);
+					requestFriendsList();
 				} else if (action == 'AllUserList') {
 					var refId = getFromHeader(obj, "refId");
 					var arr = JSON.parse(obj.msg);
@@ -249,7 +184,7 @@ Website: http://emilcarlsson.se/
 				} else if (action == 'FriendsList') {
 					var refId = getFromHeader(obj, "refId");
 					var arr = JSON.parse(obj.msg);
-					var target = $("#friends");
+					var target = $("#expanded");
 					target.html("");
 					$.each(arr, function(idx, elem) {
 						append2(target, elem.name + "(" + elem.id + ")"
@@ -276,29 +211,35 @@ Website: http://emilcarlsson.se/
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
-					var idx = getIdxFromRoomname(roomId);
-					if (refId == myId) {
-						$("#room_" + idx).css("color", "blue");
-						append($("#contents_" + idx), "방으로 들어왔음.");
-						
-					} else {
-						append($("#contents_" + idx), refName + "(" + refId
-								+ ")이 방으로 들어왔습니다.");
-					}
-				
+					
+					getMessageLog(roomId);
+					
+					var msg = refName + "(" + refId
+					+ ")이 방으로 들어왔습니다."
+					enterMessage(msg,refId, refName);
+					$("#chat-name").text(roomId);
+					
+
 				} else if (action == 'ExitFromRoom') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
 					var idx = getIdxFromRoomname(roomId);
 					if (refId == myId) {
-						$("#roomUsers_" + idx).empty();
+						$(".contact").attr("id").empty();
 					} else {
 						append($("#contents_" + idx), refName + "(" + refId
 								+ ")이 방에서 나갔습니다.");
 					}
-					
+
 				} else if (action == 'SendMsg') {
+					var roomId = getFromHeader(obj, "roomId");
+					var refId = getFromHeader(obj, "refId");
+					var refName = getFromHeader(obj, "refName");
+					var idx = getIdxFromRoomname(roomId);
+					enterMessage(obj.msg, refId,refName);
+					
+				} else if (action == 'MsgLog') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
@@ -314,12 +255,15 @@ Website: http://emilcarlsson.se/
 					if (target.find("[hong-etc='" + refId + "']").length == 0) {
 						append2(target, refName + "(" + refId + ")", refId);
 					}
+					$("#login").hide();
+					$("#logout").show();
 				} else if (action == 'LogOut') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
 					var target = $("#allUsers");
 					target.find("[hong-etc='" + refId + "']").remove();
+					
 				}
 			};
 		}
@@ -356,6 +300,10 @@ Website: http://emilcarlsson.se/
 
 		function disconnect() {
 			websocket.close();
+			$("#login").show();
+			$("#logout").hide();
+			$("#myId").text("");
+			$("#myName").text("");
 		}
 
 		function Builder() {
@@ -401,7 +349,7 @@ Website: http://emilcarlsson.se/
 				alert("방명을 입력하세요.");
 				return;
 			}
-			$("#chat-name").text(roomName);
+			
 			var obj = new Builder().action("CreateRoom").header("roomId",
 					roomName).finish();
 			var jsonStr = JSON.stringify(obj);
@@ -464,8 +412,9 @@ Website: http://emilcarlsson.se/
 
 		//채팅방 리스트 목록 (target, room name, room Id)
 		function append2($div, msg, etcVal) {
-			var newElem = $("<li class='contact' id='"+msg +"'><div class='wrap'><span class='contact-status busy'></span><img src='http://emilcarlsson.se/assets/mikeross.png' alt='' /><div class='meta'><p class='name'>"+msg+"</p></div></div></li>")
-			
+			var newElem = $("<li class='contact' id='"+msg +"'><div class='wrap'><span class='contact-status busy'></span><img src='http://emilcarlsson.se/assets/mikeross.png' alt='' /><div class='meta'><p class='name'>"
+					+ msg + "</p></div></div></li>")
+
 			newElem.appendTo($div);
 			$div.animate({
 				scrollTop : 100000
@@ -481,6 +430,15 @@ Website: http://emilcarlsson.se/
 			}
 		}
 
+		//대화 로그가 존재한다면 같이 보내줘야 한다. 
+		function getMessageLog(name) {
+			var obj = new Builder().action("MsgLog").header("roomId", name)
+					.finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
+		}
+
+		
 		$(".messages").animate({
 			scrollTop : $(document).height()
 		}, "fast");
@@ -493,48 +451,76 @@ Website: http://emilcarlsson.se/
 			$("#profile").toggleClass("expanded");
 			$("#contacts").toggleClass("expanded");
 		});
-
+	
+		$("#contacts ul").on("click",".contact", function(){
+			console.log("== click chat room");
+			$(this).addClass("active");
+			
+			onClick_room($(this).find("p").first().text());
+		});
+		
 		$("#status-options ul li").click(function() {
 			$("#profile-img").removeClass();
 			$("#status-online").removeClass("active");
 			$("#status-away").removeClass("active");
 			$("#status-busy").removeClass("active");
 			$("#status-offline").removeClass("active");
+			$("#status-happy").removeClass("active");
 			$(this).addClass("active");
 
 			if ($("#status-online").hasClass("active")) {
 				$("#profile-img").addClass("online");
+				$("#profile-img").attr("src", "static/img/emoji/smile.png");
 			} else if ($("#status-away").hasClass("active")) {
 				$("#profile-img").addClass("away");
+				$("#profile-img").attr("src", "static/img/emoji/smiling.png");
 			} else if ($("#status-busy").hasClass("active")) {
 				$("#profile-img").addClass("busy");
+				$("#profile-img").attr("src", "static/img/emoji/serious.png");
 			} else if ($("#status-offline").hasClass("active")) {
 				$("#profile-img").addClass("offline");
+				$("#profile-img").attr("src", "static/img/emoji/sad.png");
+			} else if ($("#status-happy").hasClass("active")) {
+				$("#profile-img").addClass("happy");
+				$("#profile-img").attr("src", "static/img/emoji/heart.png");
 			} else {
 				$("#profile-img").removeClass();
 			}
-			;
 
 			$("#status-options").removeClass("active");
 		});
-
-		function newMessage() {
-			message = $(".message-input input").val();
-			if ($.trim(message) == '') {
-				return false;
+		function enterMessage(message, userId, userName) {
+			console.log(message);
+	
+			if (myId == userId) {
+				$('<li class="sent"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>'
+						+ message + '</p></li>')
+				.appendTo($('.messages ul'));
+			} else {
+				$('<li class="replies"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><span>"'+userName+'"</span><p>'
+						+ message + '</p></li>')
+				.appendTo($('.messages ul'));
 			}
-			$('<li class="sent"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>'
-							+ message + '</p></li>')
-					.appendTo($('.messages ul'));
-			$('.message-input input').val(null);
-			$('.contact.active .preview').html('<span>You: </span>' + message);
 			$(".messages").animate({
 				scrollTop : $(document).height()
 			}, "fast");
 		};
-
+			
+		function newMessage(message) {
+			var obj = new Builder().action("SendMsg").header("roomId", $("#chat-name")).header("refId", myId).header("refName", myName).msg(message).finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
+		}
+		
 		$('.submit').click(function() {
-			newMessage();
+			message = $(".message-input input").val();
+			if($.trim(message) == '') {
+				return false;
+			}
+			$('.message-input input').val(null);
+			$('.contact.active .preview').html('<span>You: </span>' + message);
+			
+			newMessage(message);
 		});
 
 		$(window).on('keydown', function(e) {
@@ -543,6 +529,8 @@ Website: http://emilcarlsson.se/
 				return false;
 			}
 		});
+	
+
 		//# sourceURL=pen.js
 	</script>
 </body>

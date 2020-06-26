@@ -26,9 +26,14 @@ public class ChatMessageLogRepository {
 	
 	public void writeAndFlush(Client client, String roomId) {
 		List<Message> messageLog = chatMessageLogRepository.get(roomId);
-		String jsonStr = JsonUtil.toJsonStr(messageLog.stream().map(msg->msg.toMap()).collect(Collectors.toList()));
-		JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(roomId).setAction(EventType.MsgLog).setContents(jsonStr).build();
-		SendService.writeAndFlushToClient(client, entity);
+		if (messageLog == null) {
+			
+		}
+		else {
+			String jsonStr = JsonUtil.toJsonStr(messageLog.stream().map(msg->msg.toMap()).collect(Collectors.toList()));
+			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(roomId).setAction(EventType.MsgLog).setContents(jsonStr).build();
+			SendService.writeAndFlushToClient(client, entity);
+		}
 	}
 	
 	public void save(String roomId, String msg, String sender) {

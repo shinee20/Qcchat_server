@@ -64,21 +64,19 @@ body {
 }
 
 #frame #sidepanel #profile.expanded .wrap {
-	height: 210px;
-	line-height: initial;
+  height: 210px;
+  line-height: initial;
 }
-
 #frame #sidepanel #profile.expanded .wrap p {
-	margin-top: 20px;
+  margin-top: 20px;
 }
-
 #frame #sidepanel #profile.expanded .wrap i.expand-button {
-	-moz-transform: scaleY(-1);
-	-o-transform: scaleY(-1);
-	-webkit-transform: scaleY(-1);
-	transform: scaleY(-1);
-	filter: FlipH;
-	-ms-filter: "FlipH";
+  -moz-transform: scaleY(-1);
+  -o-transform: scaleY(-1);
+  -webkit-transform: scaleY(-1);
+  transform: scaleY(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
 }
 
 #frame #sidepanel #profile .wrap {
@@ -132,6 +130,10 @@ body {
 
 #frame #sidepanel #profile .wrap img.offline {
 	border: 2px solid #95a5a6;
+}
+
+#frame #sidepanel #profile .wrap img.happy {
+	border: 2px solid #79C5F3;
 }
 
 #frame #sidepanel #profile .wrap p {
@@ -318,33 +320,40 @@ body {
 	{
 	border: 1px solid #95a5a6;
 }
+#frame #sidepanel #profile .wrap #status-options ul li#status-happy span.status-circle
+	{
+	background: #79C5F3;
+}
+
+#frame #sidepanel #profile .wrap #status-options ul li#status-happy.active span.status-circle:before
+	{
+	border: 1px solid #79C5F3;
+}
 
 #frame #sidepanel #profile .wrap #expanded {
-	padding: 100px 0 0 0;
-	display: block;
-	line-height: initial !important;
+  padding: 100px 0 0 0;
+  display: block;
+  line-height: initial !important;
 }
 
 #frame #sidepanel #profile .wrap #expanded label {
-	float: left;
-	clear: both;
-	margin: 0 8px 5px 0;
-	padding: 5px 0;
+  float: left;
+  clear: both;
+  margin: 0 8px 5px 0;
+  padding: 5px 0;
 }
-
 #frame #sidepanel #profile .wrap #expanded input {
-	border: none;
-	margin-bottom: 6px;
-	background: #32465a;
-	border-radius: 3px;
-	color: #f5f5f5;
-	padding: 7px;
-	width: calc(100% - 43px);
+  border: none;
+  margin-bottom: 6px;
+  background: #32465a;
+  border-radius: 3px;
+  color: #f5f5f5;
+  padding: 7px;
+  width: calc(100% - 43px);
 }
-
 #frame #sidepanel #profile .wrap #expanded input:focus {
-	outline: none;
-	background: #435f7a;
+  outline: none;
+  background: #435f7a;
 }
 
 #frame #sidepanel #search {
@@ -409,10 +418,11 @@ body {
 	#frame #sidepanel #contacts::-webkit-scrollbar {
 		display: none;
 	}
+	
 }
 
 #frame #sidepanel #contacts.expanded {
-	height: calc(100% - 334px);
+  height: calc(100% - 334px);
 }
 
 #frame #sidepanel #contacts::-webkit-scrollbar {
@@ -702,7 +712,11 @@ body {
 	float: right;
 	margin: 6px 0 0 8px;
 }
-
+#frame .content .messages ul li.replies span {
+	position: relative;
+	top : 0px;
+	left : 10px;
+}
 #frame .content .messages ul li.replies p {
 	background: #f5f5f5;
 	float: right;

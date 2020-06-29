@@ -16,7 +16,9 @@ import org.qucell.chat.service.SendService;
 import org.qucell.chat.util.JsonUtil;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Data
 public class Room {
 	private final String id;
@@ -108,6 +110,7 @@ public class Room {
 	 */
 	public void sendClientList() {
 		List<Map<String, String>> list  = clientList.stream().map(client ->client.toMap()).collect(Collectors.toList());
+		log.info("client list in room {}, {}", this.id, list.toString());
 		String jsonStr = JsonUtil.toJsonStr(list);
 		JsonMsgRes entity = new JsonMsgRes.Builder().setAction(EventType.UserList).setHeader("roomId", this.id).setContents(jsonStr).build();
 		SendService.writeAndFlushToClients(this.clientList, entity);

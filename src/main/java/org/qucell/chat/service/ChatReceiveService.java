@@ -38,9 +38,7 @@ public class ChatReceiveService {
 		switch(eventType) {
 		case LogIn:
 			adapter.login(client);
-			adapter.sendAllClientListToClient(client);
-			adapter.sendAllRoomListToClient(client);
-			clientIdFriendIdRepository.writeAndFlush(client);
+			adapter.sendRefreshRoomListToClient(client);
 			break;
 		case LogOut:
 			adapter.logout(client);
@@ -69,6 +67,11 @@ public class ChatReceiveService {
 		case MsgLog:
 			chatMessageLogRepository.writeAndFlush(client, roomId);
 			break;
+		case UserRoomList:
+			adapter.sendRefreshRoomListToClient(client);
+			break;
+		case UserList:
+			
 		}
 	}
 }

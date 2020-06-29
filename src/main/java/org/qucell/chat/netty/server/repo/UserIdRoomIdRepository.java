@@ -23,14 +23,14 @@ public class UserIdRoomIdRepository {
 		return userIdRoomIdRepository;
 	}
 	
-	public void save(String userName) {
-		List<Room> list = userIdRoomIdRepository.get(userName);
-		if (list != null) {
-			String key="id:"+userName+":rooms";
-			for (Room room : list) {
-				redisService.saveValueList(key, room);
-			}
-		}
-		
-	}
+//	public void save(String userName) {
+//		List<Room> list = userIdRoomIdRepository.get(userName);
+//		if (list != null) {
+//			String key="id:"+userName+":rooms";
+//			for (Room room : list) {
+//				redisService.saveValueList(key, room);
+//			}
+//		}
+//		
+//	}
 }

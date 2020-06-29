@@ -27,6 +27,7 @@ public class Client {
 	private LocalDateTime createdTime = LocalDateTime.now();
 	private String id;
 	private String name;
+	private String status;
 	private final Channel channel;
 	private List<String> roomList = new ArrayList<>();
 	

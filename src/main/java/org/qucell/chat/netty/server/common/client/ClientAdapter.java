@@ -48,15 +48,15 @@ public class ClientAdapter {
 		SendService.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).build());
 		
 		//클라이언트마다 참여하고 있는 방들의 정보를 가지고 있다.
-		List<Room> list = UserIdRoomIdRepository.getUserIdRoomIdMap().get(client.getName());
-		if (list == null) {
+		List<Room> userRoomList = UserIdRoomIdRepository.getUserIdRoomIdMap().get(client.getName());
+		if (userRoomList == null) {
 			CLIENT_TO_ROOMS.put(client, new ArrayList<>());
 		}
 		else {
-			CLIENT_TO_ROOMS.put(client, list);
-			log.info("client relogin : {} ", list.toString());
+			CLIENT_TO_ROOMS.put(client, userRoomList);
+			log.info("client relogin : {} ", userRoomList.toString());
 			
-			list.stream().forEach(room->{
+			userRoomList.stream().forEach(room->{
 				room.enterRoom(client);
 			});
 		}
@@ -67,8 +67,6 @@ public class ClientAdapter {
 		
 		//클라이언트 리스트를 모든 접속자들에게 broadcast
 		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
-
-		sendAllClientListToClient(client);
 		return this;
 	}
 
@@ -98,7 +96,6 @@ public class ClientAdapter {
 //		client.validateRoom(roomsOfClient.stream().map(room->room.getId()).collect(Collectors.toList()));
 		client.removeAllRooms();
 
-		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogOut).build();
 		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
 
@@ -149,7 +146,7 @@ public class ClientAdapter {
 		SendService.writeAndFlushToClient(client, entity);
 
 		// 방이 만들어졌으므로 방 목록을 보냄
-		sendAllRoomListToClients();
+		sendRefreshRoomListToClient(client);
 		return this;
 	}
 	
@@ -188,7 +185,7 @@ public class ClientAdapter {
 	}
 	
 	/**
-	 * 채팅방 목록이 추가되었을 시에는 모든 접속자들에게 새로운 목록을 보여준다.
+	 * 채팅방 목록이 삭제되었을 시에는 모든 접속자들에게 새로운 목록을 보여준다.
 	 * @return
 	 */
 	public ClientAdapter sendAllRoomListToClients() {
@@ -196,6 +193,18 @@ public class ClientAdapter {
 		String jsonStr = JsonUtil.toJsonStr(list);
 		JsonMsgRes entity = new JsonMsgRes.Builder().setAction(EventType.RoomList).setContents(jsonStr).build();
 		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
+		return this;
+	}
+	
+	/**
+	 * 채팅방이 생성되었을 시에는 생성자에게 새로운 목록을 보여준다.
+	 * @return
+	 */
+	public ClientAdapter sendRefreshRoomListToClient(Client client) {
+		List<Map<String, String>> list = getRoomList(client).stream().map(room->room.toMap()).collect(Collectors.toList());
+		String jsonStr = JsonUtil.toJsonStr(list);
+		JsonMsgRes entity = new JsonMsgRes.Builder().setAction(EventType.UserRoomList).setContents(jsonStr).build();
+		SendService.writeAndFlushToClient(client, entity);
 		return this;
 	}
 	
@@ -276,11 +285,11 @@ public class ClientAdapter {
 	 * @param clientId
 	 * @return
 	 */
-	public List<Room> getRoomList(String clientId) {
-		if (clientId == null) {
+	public List<Room> getRoomList(Client client) {
+		if (client == null) {
 			return Collections.emptyList();
 		}
-		return CLIENT_TO_ROOMS.get(clientId);
+		return CLIENT_TO_ROOMS.get(client);
 	}
 
 	/**

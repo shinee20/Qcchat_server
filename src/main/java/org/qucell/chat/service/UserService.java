@@ -7,7 +7,7 @@ import org.qucell.chat.model.DefaultRes;
 import org.qucell.chat.model.user.Users;
 
 public interface UserService {
-	public DefaultRes getByUserId(int userId);
+	public Users getByUserId(String jwt);
 	
 	/**
 	 * 

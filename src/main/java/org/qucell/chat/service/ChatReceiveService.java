@@ -55,12 +55,13 @@ public class ChatReceiveService {
 			break;
 		case EnterToRoom:
 			adapter.enterRoom(client, roomId);
+			chatMessageLogRepository.writeAndFlush(client, roomId);
 			break;
 		case ExitFromRoom:
 			adapter.exitRoom(client, roomId);
 			break;
 		case SendMsg:
-			chatMessageLogRepository.save(roomId, entity.msg, client.getName());
+			//chatMessageLogRepository.save(roomId, entity.msg, client.getName());
 			Room room = adapter.getRoomByRoomId(roomId);
 			room.sendMsg(client, entity.msg);
 			break;
@@ -71,7 +72,7 @@ public class ChatReceiveService {
 			adapter.sendRefreshRoomListToClient(client);
 			break;
 		case UserList:
-			
+			break;
 		}
 	}
 }

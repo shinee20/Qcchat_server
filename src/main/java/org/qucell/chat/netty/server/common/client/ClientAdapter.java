@@ -36,7 +36,7 @@ public class ClientAdapter {
 	private ClientAdapter() {
 	}
 
-	//key : client value : rooms
+	//로그인한 상태의 클라이언트가 가지고 있는 채팅방 리스트를 관리
 	private final ConcurrentHashMap<Client, List<Room>> CLIENT_TO_ROOMS = new ConcurrentHashMap<>();
 	private final CopyOnWriteArrayList<Room> ROOMS = new CopyOnWriteArrayList<>();	
 	/**
@@ -56,9 +56,9 @@ public class ClientAdapter {
 			CLIENT_TO_ROOMS.put(client, userRoomList);
 			log.info("client relogin : {} ", userRoomList.toString());
 			
-			userRoomList.stream().forEach(room->{
+			for(Room room: userRoomList) {
 				room.enterRoom(client);
-			});
+			}
 		}
 		
 		client.getChannel().closeFuture().addListener(listener->logout(client));
@@ -93,9 +93,13 @@ public class ClientAdapter {
 		UserIdRoomIdRepository.getUserIdRoomIdMap().put(client.getName(), roomsOfClient);
 		
 		//삭제되어서 룸의 개수가 남아있어야 하는 룸의 개수와 일치하는지 확인한다.
-//		client.validateRoom(roomsOfClient.stream().map(room->room.getId()).collect(Collectors.toList()));
+		client.validateRoom(roomsOfClient.stream().map(room->room.getId()).collect(Collectors.toList()));
 		client.removeAllRooms();
 
+		roomsOfClient.stream().forEach(room->{
+			room.exitRoom(client).logout(client);
+		});
+		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogOut).build();
 		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
 
@@ -236,9 +240,6 @@ public class ClientAdapter {
 			room.exitRoom(client);
 			room.sendClientList();
 			
-			/**
-			 * 
-			 */
 			List<Room> clientRooms = CLIENT_TO_ROOMS.get(client);
 			clientRooms.remove(getRoomByRoomId(roomId));
 			log.info(clientRooms.toString());
@@ -299,7 +300,6 @@ public class ClientAdapter {
 	 */
 	public Room getRoomByRoomId(String roomId) {
 		//optional => wrapper class 
-
 		Optional<Room> findFirst = ROOMS.stream().filter(room->room.getId().equals(roomId)).findFirst();
 
 		if (findFirst.isPresent()) {
@@ -329,7 +329,7 @@ public class ClientAdapter {
 		/**
 		 * 수정해야 할 부분
 		 */
-		Objects.requireNonNull(client);
+		Objects.nonNull(client);
 		CLIENT_TO_ROOMS.remove(client);
 		/**
 		 * 수정해야 할 부분

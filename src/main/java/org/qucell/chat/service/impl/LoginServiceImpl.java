@@ -2,6 +2,7 @@ package org.qucell.chat.service.impl;
 
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.DefaultRes;
+import org.qucell.chat.model.user.LoginRes;
 import org.qucell.chat.model.user.LoginVO;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.service.JwtService;
@@ -31,9 +32,36 @@ public class LoginServiceImpl implements LoginService{
 	private RedisService redisService;
 	
 	//login 
+//	@Override
+//	public Users login(LoginVO vo) {
+//		log.info(vo.getUserName());
+//		Users user = userDao.getByUserName(vo.getUserName());
+//		if (user != null) {//check already login 
+//			//create token 
+//			final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.getUserId()));
+//			log.info("success login " + tokenDto.toString());
+//
+//			/*
+//			 * save at redis cache
+//			 */
+//			//save user info
+//			String key = "id:"+user.getUserId();
+//			redisService.saveValue(key, user);
+//			
+//			log.info("--------------------redis dao save--------------------" + redisService.getValue(key));
+//			
+//			/*
+//			 * save at redis cache 
+//			 */	
+//			return user;
+//		}
+//		return null;
+//		
+//	}
+
 	@Override
-	public Users login(LoginVO vo) {
-		log.info(vo.getUserName());
+	public DefaultRes<LoginRes> login(LoginVO vo) {
+		log.info(vo.toString());
 		Users user = userDao.getByUserName(vo.getUserName());
 		if (user != null) {//check already login 
 			//create token 
@@ -52,12 +80,13 @@ public class LoginServiceImpl implements LoginService{
 			/*
 			 * save at redis cache 
 			 */	
-			return user;
+			LoginRes res = new LoginRes(tokenDto, vo.getHost(), vo.getWebsocketPort());
+			return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, res);
 		}
-		return null;
+		log.info("fail login");
+		return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.WRONG_PASSWORD);
 		
 	}
-
 	//sign up
 	//CUD Atomicity  
 	@Transactional

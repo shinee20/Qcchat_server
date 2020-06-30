@@ -25,7 +25,8 @@ public enum EventType {
 	HealthCheck("HealthCheck", "헬스 체크"),
 	Invalid("Invalid", "잘못된 코드"),
 	MsgLog("MsgLog", "메시지 로그"),
-	UserRoomList("UserRoomList", "참여채팅방 목록")
+	UserRoomList("UserRoomList", "참여채팅방 목록"),
+	AlreadyLogin("AlreadyLogin", "이미 로그인된 사용자")
 	;
 	
 	public final String code;

@@ -25,13 +25,13 @@ public class Room {
 	private final String name;
 	private final CopyOnWriteArrayList<Client> clientList = new CopyOnWriteArrayList<>();
 	private final ClientAdapter clientAdapter;
-	
+
 	public Room(String id, String name, ClientAdapter clientAdapter) {
 		this.id = id;
 		this.name = name;
 		this.clientAdapter = clientAdapter;
 	}
-	
+
 	/**
 	 * 새로운 채팅방 입장 
 	 * 이미 입장해있는 사용자라면 재입장하지 않는다.
@@ -39,22 +39,22 @@ public class Room {
 	 * @return
 	 */
 	public Room enterRoom(Client client) {
-		//enter
-		Objects.requireNonNull(client);
-		
-		if (client != null && !clientList.contains(client)) {
-			synchronized(this) {
-				clientList.add(client);
-				client.addRoom(this.id);
+		Objects.requireNonNull(client, "client required!");
+
+		if (client != null ) {
+			if (!clientList.contains(client)) {
+				synchronized(this) {
+					clientList.add(client);
+					client.addRoom(this.id);
+				}
 			}
-			
 			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(this.id).setAction(EventType.EnterToRoom).build();
 			SendService.writeAndFlushToClients(clientList, entity);
 			sendClientList();
 		}
 		return this;
 	}
-	
+
 	/**
 	 * 채팅방 나가기ㅣ
 	 * 방에 한 명도 남아있지 않는 경우에는 채팅방 리스트에서 제해준다. 
@@ -63,18 +63,18 @@ public class Room {
 	 */
 	public Room exitRoom(Client client) {
 		Objects.requireNonNull(client);
-		
+
 		if (client != null && this.clientList.contains(client)) {
 			//현재 접속된 사용자일 경우
 			JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.ExitFromRoom).setRoomId(this.id).build();
 			SendService.writeAndFlushToClients(clientList, entity);
 		}
-		
+
 		synchronized(this) {
 			clientList.remove(client);
 			client.removeRoom(this.getId());
 		}
-		
+
 		if (this.clientList.size() == 0) {
 			//방에 한 명도 없을 경우
 			EmptyRoomMgr.INSTANCE.add(this);
@@ -82,29 +82,29 @@ public class Room {
 		sendClientList();
 		return this;
 	}
-	
-//	/**
-//	 * 로그아웃 상태로 전환이 되면 동작한다.  추후 참여하고 있던 채팅방에서 자동으로 나가지 않도록 수정해야한다.
-//	 * @param client
-//	 * @return
-//	 */
-//	public Room logout(Client client) {
-//		//로그아웃시 방에서 빠져나간다?
-//		/**
-//		 * 추후 수정
-//		 */
-//		synchronized(this) {
-//			if (client != null && this.clientList.contains(client)) {
-//				clientList.remove(client);
-//				exitRoom(client);
-//			}
-//		}
-//		/**
-//		 * 추후 수정
-//		 */
-//		return this;
-//	}
-	
+
+	/**
+	 * 로그아웃 상태로 전환이 되면 동작한다. 추후 참여하고 있던 채팅방에서 자동으로 나가지 않도록 수정해야한다.
+	 * @param client
+	 * @return
+	 */
+	public Room logout(Client client) {
+		//로그아웃시 방에서 빠져나간다?
+		/**
+		 * 추후 수정
+		 */
+		synchronized(this) {
+			if (client != null && this.clientList.contains(client)) {
+				clientList.remove(client);
+				exitRoom(client);
+			}
+		}
+		/**
+		 * 추후 수정
+		 */
+		return this;
+	}
+
 	/**
 	 * 현재 채팅방에 참여하고 있는 사용자들의 리스트를 조회
 	 */
@@ -122,17 +122,18 @@ public class Room {
 	 * @param msg
 	 */
 	public void sendMsg(Client client, String msg) {
+		log.info("send message in room, {}", clientList.toString());
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.SendMsg).setHeader("roomId", this.id).setContents(msg).build();
 		SendService.writeAndFlushToClients(this.clientList, entity);
 	}
-	
+
 	public Map<String, String> toMap() {
 		Map<String, String> map = new HashMap<>();
 		map.put("id", id);
 		map.put("name", name);
 		return map;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -163,5 +164,5 @@ public class Room {
 		return "Room [id=" + id + ", name=" + name + ", clientList=" + clientList
 				+ "]";
 	}
-	
+
 }

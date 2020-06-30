@@ -1,18 +1,16 @@
 package org.qucell.chat.netty.server.handler;
 
-import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.qucell.chat.model.JsonMsgRes;
-import org.qucell.chat.model.user.LoginVO;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.netty.server.common.AttachHelper;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.repo.UserIdRoomIdRepository;
 import org.qucell.chat.netty.server.repo.UserRepository;
 import org.qucell.chat.service.LoginService;
+import org.qucell.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -27,11 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 @Sharable
 public class LoginHandler {
 
-	private static AtomicInteger idGen = new AtomicInteger();
-
 	@Autowired
 	private LoginService loginService;
 
+	@Autowired
+	private UserService userService;
+	
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -44,23 +43,25 @@ public class LoginHandler {
 	 * @return
 	 */
 	public Client loginProcess(ChannelHandlerContext ctx, JsonMsgRes requestEntity) {
-		String name = requestEntity.extractFromHeader("name");
-		Objects.requireNonNull(name, "name is required");
+		String auth = requestEntity.extractFromHeader("auth");
+		Objects.requireNonNull(auth, "auth is required");
 
+		/**
+		 * jwt를 decoding해서 id를 찾아낸다.
+		 */
+		Users user = userService.getByUserId(auth);
 		/**
 		 * 중복 로그인 방지
 		 */
-		if (isLogin(name)) {
+		if (isLogin(user.getUserName())) {
 			throw new IllegalStateException("이미 로그인 된 사용자입니다.");
 		}
-		Users user = loginService.login(new LoginVO(name));
-		Client client = new Client(String.valueOf(user.getUserId()), user.getUserName(), ctx.channel());
-
-		log.info("== login ({}) ({})", name, ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress());
-
+		Client client = new Client(String.valueOf(user.getUserId()),user.getUserName(), ctx.channel());
+		
 		//add login user list
 		userRepository.getUserList().add(client);
 
+		log.info("== login, {}, {}", user.getUserName(), client.toString());
 		AttachHelper.about(ctx).attachUsers(client);
 		return client;
 

@@ -638,6 +638,9 @@ body {
 	margin: 9px 12px 0 9px;
 }
 
+#frame .content .contact-profile span {
+	float: left;
+}
 #frame .content .contact-profile p {
 	float: left;
 }

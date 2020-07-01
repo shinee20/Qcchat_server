@@ -97,7 +97,7 @@ public class ClientAdapter {
 		client.removeAllRooms();
 
 		roomsOfClient.stream().forEach(room->{
-			room.exitRoom(client).logout(client);
+			room.logout(client);
 		});
 		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogOut).build();
@@ -241,8 +241,10 @@ public class ClientAdapter {
 			room.sendClientList();
 			
 			List<Room> clientRooms = CLIENT_TO_ROOMS.get(client);
+			log.info("find room in ROOMS:{}", getRoomByRoomId(roomId));
+			log.info("find exit room : {}", clientRooms.indexOf(getRoomByRoomId(roomId)));
 			clientRooms.remove(getRoomByRoomId(roomId));
-			log.info(clientRooms.toString());
+			log.info("remain rooms : {}", clientRooms.toString());
 		} 
 		return this;
 	}

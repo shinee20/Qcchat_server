@@ -18,14 +18,14 @@ public enum EventType {
 	ExitFromRoom("ExitFromRoom", "방 퇴장"),
 	RoomList("RoomList", "방 목록"),
 	SendMsg("SendMsg", "메시지 전송"),
-	SendInfo("SendInfo", "정보 메시지 전송"),
-	UserList("UserList", "방 사람들 목록"),
-	AllUserList("AllUserList", "모든 사람들 목록"),
+	SendInfo("SendInfo", "에러 메시지 전송"),
+	UserList("UserList", "채팅방 참여 유저 목록"),
+	AllUserList("AllUserList", "모든 접속 유저 목록"),
 	FriendsList("FriendsList", "친구 목록"),
 	HealthCheck("HealthCheck", "헬스 체크"),
 	Invalid("Invalid", "잘못된 코드"),
-	MsgLog("MsgLog", "메시지 로그"),
-	UserRoomList("UserRoomList", "참여채팅방 목록"),
+	MsgLog("MsgLog", "채팅 대화 로그"),
+	UserRoomList("UserRoomList", "참여 채팅방 목록"),
 	AlreadyLogin("AlreadyLogin", "이미 로그인된 사용자")
 	;
 	

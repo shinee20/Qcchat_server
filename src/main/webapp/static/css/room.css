@@ -646,20 +646,17 @@ body {
 }
 
 #frame .content .contact-profile .social-media {
-	float: right;
+  float: right;
 }
-
 #frame .content .contact-profile .social-media i {
-	margin-left: 14px;
-	cursor: pointer;
+  margin-left: 14px;
+  cursor: pointer;
 }
-
 #frame .content .contact-profile .social-media i:nth-last-child(1) {
-	margin-right: 20px;
+  margin-right: 20px;
 }
-
 #frame .content .contact-profile .social-media i:hover {
-	color: #435f7a;
+  color: #435f7a;
 }
 
 #frame .content .messages {

@@ -71,8 +71,10 @@ public class ChatReceiveService {
 		case UserRoomList:
 			adapter.sendRefreshRoomListToClient(client);
 			break;
-		case UserList:
+		case RoomList:
+			adapter.sendAllRoomListToClients();
 			break;
+		
 		}
 	}
 }

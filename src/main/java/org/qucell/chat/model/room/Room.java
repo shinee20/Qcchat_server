@@ -56,7 +56,7 @@ public class Room {
 	}
 
 	/**
-	 * 채팅방 나가기ㅣ
+	 * 채팅방 나가기
 	 * 방에 한 명도 남아있지 않는 경우에는 채팅방 리스트에서 제해준다. 
 	 * @param client
 	 * @return
@@ -79,29 +79,25 @@ public class Room {
 			//방에 한 명도 없을 경우
 			EmptyRoomMgr.INSTANCE.add(this);
 		}
-		sendClientList();
+		
 		return this;
 	}
 
 	/**
 	 * 로그아웃 상태로 전환이 되면 동작한다. 추후 참여하고 있던 채팅방에서 자동으로 나가지 않도록 수정해야한다.
+	 * -> client를 inactive 하기 전에 불러야 한다.
 	 * @param client
 	 * @return
 	 */
 	public Room logout(Client client) {
 		//로그아웃시 방에서 빠져나간다?
-		/**
-		 * 추후 수정
-		 */
+		log.info("== logout {} removed at clientList", client.toString());
 		synchronized(this) {
 			if (client != null && this.clientList.contains(client)) {
 				clientList.remove(client);
-				exitRoom(client);
 			}
 		}
-		/**
-		 * 추후 수정
-		 */
+		
 		return this;
 	}
 

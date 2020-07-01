@@ -116,4 +116,10 @@ public class UserController {
 		vo.setWebsocketPort(websocketPort);
 		return new ResponseEntity<>(loginService.login(vo), HttpStatus.OK);
 	}
+	
+	@ResponseBody
+	@RequestMapping(value ="/signup", method=RequestMethod.POST)
+	public ResponseEntity signup( @RequestBody LoginVO vo) {
+		return new ResponseEntity<>(loginService.signUp(vo), HttpStatus.OK);
+	}
 }

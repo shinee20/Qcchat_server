@@ -96,6 +96,7 @@ public class LoginServiceImpl implements LoginService{
 		try {
 			userDao.insertUser(vo);
 			log.info("join " + vo.getUserName());
+			
 			return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
 		}
 		catch (DuplicateKeyException e) { // name 중복

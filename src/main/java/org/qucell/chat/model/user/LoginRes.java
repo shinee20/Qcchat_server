@@ -16,4 +16,8 @@ public class LoginRes {
 	private String host;
 	private String websocketPort;
 	
-}
+	public LoginRes(String host, String websocketPort) {
+		this.host = host;
+		this.websocketPort = websocketPort;
+	}
+} 

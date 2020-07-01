@@ -14,7 +14,7 @@
 	rel='stylesheet' type='text/css'>
 <link
 	href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
-	rel="stylesheet" id="bootstrap-css">
+	rel="stylesheet" id="bootstrap-css">	
 <script
 	src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -49,6 +49,10 @@
 					<p>
 						<button type="button" class="btn btn-secondary btn-sm" id="logout"
 							onclick="disconnect();" aria-hidden="true">OUT</button>
+					</p>
+					<p>
+						<i class="fa fa-user-plus fa-fw" id="signup"
+							onclick="signup();" aria-hidden="true"></i>
 					</p>
 
 					<!--  <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>-->
@@ -91,19 +95,19 @@
 			</div>
 			<div id="bottom-bar">
 				<button id="addcontact" onclick="createRoom();">
-					<i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>채팅방
+					<i class="fa fa-plus-circle fa-fw" aria-hidden="true"></i> <span>채팅방
 						추가</span>
 				</button>
 				<button id="friends" onClick="requestFriendsList();">
-					<i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>
+					<i class="fa fa-user fa-fw" aria-hidden="true"></i> <span>
 						친구 목록 보기</span>
 				</button>
 				<button id="showallroom" onClick="requestAllRoomList();">
-					<i class="fa fa-comments-o" aria-hidden="true"></i> <span>모든
+					<i class="fa fa-comments-o fa-fw" aria-hidden="true"></i> <span>모든
 						채팅방 보기</span>
 				</button>
 				<button id="showallroom" onClick="requestUserRoomList();">
-					<i class="fa fa-comments-o" aria-hidden="true"></i> <span>참여
+					<i class="fa fa-commenting-o fa-fw" aria-hidden="true"></i> <span>참여
 						채팅방 보기</span>
 				</button>
 			</div>
@@ -111,15 +115,14 @@
 
 		<div class="content" id="content">
 			<div class="contact-profile">
-				<img src="static/img/emoji/smile.png" alt="" />
-				<div>
-					<span id="chat-name">CHATNAME</span>
-					<p id="userListInRoom"></p>
-				</div>
+				<img src="static/img/emoji/smile.png" alt="" /> <span
+					id="chat-name">CHATNAME</span>
+					
 				<div class="social-media">
 					<i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i>
 
 				</div>
+
 			</div>
 			<div class="messages" id="messages">
 				<ul>
@@ -149,6 +152,44 @@
 		var host;
 		var websocketPort;
 
+		function signup() {
+			var name = prompt("가입할 이름을 입력하세요");
+			if (name == null || name == "") {
+				alert("다시 입력하세요");
+				return;
+			}
+			var password = prompt("비밀번호를 입력하세요");
+			if (password == null || password == "") {
+				alert("다시 입력하세요");
+				return;
+			}
+			var user = {
+					"userName" : name,
+					"userPw" : password
+				};
+			$.ajax({
+				type : 'POST',
+				url : 'signup',
+				dataType : 'json',
+				contentType : "application/json; charset=utf-8",
+				data : JSON.stringify(user),
+				async : false,
+				success : function(data) {
+					if (data.status == 201) {
+						console.log(data);
+						alert("회원 가입을 완료하였습니다.");
+						return;
+					} 
+				},
+				error : function() {
+					alert("이미 사용중인 이름입니다. 다른 이름을 입력해주세요.");
+					return;
+				}
+				
+			});
+			
+			
+		}
 		function loginProcess() {
 			var name = prompt("이름을 입력하세요");
 			if (name == null || name == "") {
@@ -213,9 +254,10 @@
 					myName = refName;
 
 					$("#myId").text(myId);
-					$("#myName").text(refName);
+					$("#myName").text(myName);
 
 				} else if (action == 'AllUserList') {
+					//사용 안함
 					var refId = getFromHeader(obj, "refId");
 					var arr = JSON.parse(obj.msg);
 					var target = $("#allUsers");
@@ -228,11 +270,10 @@
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
 					target.html("");
-					$.each(arr,
-							function(idx, elem) {
-								append(target, elem.name + "(" + elem.id + ")",
-										elem.id);
-							});
+					$.each(arr,function(idx, elem) {
+						append(target, elem.name + "(" + elem.id + ")",
+								elem.id);
+					});
 				} else if (action == 'RoomList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
@@ -240,7 +281,7 @@
 					$.each(arr, function(idx, elem) {
 						append(target, elem.name, elem.id);
 					});
-					
+
 				} else if (action == 'UserRoomList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
@@ -248,7 +289,7 @@
 					$.each(arr, function(idx, elem) {
 						append(target, elem.name, elem.id);
 					});
-					
+
 				} else if (action == 'UserList') {
 					var arr = JSON.parse(obj.msg);
 					var roomId = getFromHeader(obj, "roomId");
@@ -262,31 +303,22 @@
 						names += ' ' + elem.name;
 					});
 					target.text(names);
-				} else if (action == 'CreateRoom') {
-					var roomId = getFromHeader(obj, "roomId");
-					var refId = getFromHeader(obj, "refId");
-					var refName = getFromHeader(obj, "refName");
-					
-					console.log("== create room", roomId);
-					
-					activeRoom(roomId);
-					
-				}else if (action == 'EnterToRoom') {
+				} else if (action == 'EnterToRoom') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
 					var alreadyIn = getFromHeader(obj, "alreadyIn");
-					
+
 					console.log("== enter to room", roomId, refId, refName);
 					if (alreadyIn === "true") {
 						console.log("already in!!");
 						emptyMessage(roomId);
-					}
-					else {
-						var msg = refName + "(" + refId + ")이 " + roomId+" 방으로 들어왔습니다."
+					} else {
+						var msg = refName + "(" + refId + ")이 " + roomId
+								+ " 방으로 들어왔습니다."
 						enterMessage(msg, roomId, refName, refId);
 					}
-					
+
 				} else if (action == 'ExitFromRoom') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
@@ -295,7 +327,8 @@
 					if (refId == myId) {
 						$(".contact.active").empty();
 					} else {
-						var msg = refName + "(" + refId + ")이 " + roomId+" 방을 나갔습니다."
+						var msg = refName + "(" + refId + ")이 " + roomId
+								+ " 방을 나갔습니다."
 						enterMessage(msg, roomId, refName, refId);
 					}
 
@@ -593,7 +626,7 @@
 				var input = $("#input-msg");
 				var msg = input.val();
 				input.val("");
-				
+
 				var obj = new Builder().action("SendMsg").header("roomId",
 						roomId).msg(msg).finish();
 				var jsonStr = JSON.stringify(obj);
@@ -604,32 +637,32 @@
 		function emptyMessage(roomId) {
 			if ($("#chat-name").text() === roomId) {
 				//계속 머무르던 방에 대화를 보냄
-				
+
 			} else {
 				$("#chat-name").text(roomId);
 				var target = $("#messages ul");
-	            target.html("");
-	            
-			} 
+				target.html("");
+
+			}
 		}
 		function enterMessage(message, roomId, userName, userId) {
 			console.log(message);
 			$('.contact.active .preview').html('<span>You: </span>' + message);
 			if ($("#chat-name").text() === roomId) {
 				//계속 머무르던 방에 대화를 보냄
-				
+
 			} else {
 				$("#chat-name").text(roomId);
 				var target = $("#messages ul");
-	            target.html("");
-	            
-			} 
+				target.html("");
+
+			}
 			if (myId == userId || userName === myName) {
 				$(
 						'<li class="sent"><img src="static/img/emoji/smile.png" alt="" /><p>'
 								+ message + '</p></li>').appendTo(
 						$('.messages ul'));
-				
+
 			} else {
 				$(
 						'<li class="replies"><div class="avatar"><img src="static/img/emoji/smiling.png" alt="" /></div><div class="name">'
@@ -637,7 +670,7 @@
 								+ '</div><div class="text"><p>'
 								+ message + '</p></div></li>').appendTo(
 						$('.messages ul'));
-				
+
 			}
 
 			$(".messages").animate({

@@ -221,33 +221,34 @@
 					var target = $("#allUsers");
 					target.html("");
 					$.each(arr, function(idx, elem) {
-						append2(target, elem.name + "(" + elem.id + ")"
+						append(target, elem.name + "(" + elem.id + ")"
 								+ (myId == elem.id ? " => 나" : ""), elem.id);
 					});
 				} else if (action == 'FriendsList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
 					target.html("");
-					$.each(arr, function(idx, elem) {
-						append2(target, elem.name + "(" + elem.id + ")",
-								elem.id);
-					});
+					$.each(arr,
+							function(idx, elem) {
+								append(target, elem.name + "(" + elem.id + ")",
+										elem.id);
+							});
 				} else if (action == 'RoomList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
 					target.html("");
 					$.each(arr, function(idx, elem) {
-						append2(target, elem.name, elem.id);
+						append(target, elem.name, elem.id);
 					});
-					target.find("li").last().addClass("active");
+					
 				} else if (action == 'UserRoomList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
 					target.html("");
 					$.each(arr, function(idx, elem) {
-						append2(target, elem.name, elem.id);
+						append(target, elem.name, elem.id);
 					});
-					target.find("li").last().addClass("active");
+					
 				} else if (action == 'UserList') {
 					var arr = JSON.parse(obj.msg);
 					var roomId = getFromHeader(obj, "roomId");
@@ -261,29 +262,41 @@
 						names += ' ' + elem.name;
 					});
 					target.text(names);
-				} else if (action == 'EnterToRoom') {
+				} else if (action == 'CreateRoom') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
-
-					var target = $("#messages ul");
-					target.html("");
-
+					
+					console.log("== create room", roomId);
+					
+					activeRoom(roomId);
+					
+				}else if (action == 'EnterToRoom') {
+					var roomId = getFromHeader(obj, "roomId");
+					var refId = getFromHeader(obj, "refId");
+					var refName = getFromHeader(obj, "refName");
+					var alreadyIn = getFromHeader(obj, "alreadyIn");
+					
 					console.log("== enter to room", roomId, refId, refName);
-					var msg = refName + "(" + refId + ")이 방으로 들어왔습니다."
-					enterMessage(msg, refId, refName);
-					$("#chat-name").text(roomId);
-
+					if (alreadyIn === "true") {
+						console.log("already in!!");
+						emptyMessage(roomId);
+					}
+					else {
+						var msg = refName + "(" + refId + ")이 " + roomId+" 방으로 들어왔습니다."
+						enterMessage(msg, roomId, refName, refId);
+					}
+					
 				} else if (action == 'ExitFromRoom') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
 
 					if (refId == myId) {
-						$(".contact.active").attr("id").empty();
+						$(".contact.active").empty();
 					} else {
-						var msg = refName + "(" + refId + ")이 방을 나갔습니다."
-						enterMessage(msg, refId, refName);
+						var msg = refName + "(" + refId + ")이 " + roomId+" 방을 나갔습니다."
+						enterMessage(msg, roomId, refName, refId);
 					}
 
 				} else if (action == 'SendMsg') {
@@ -291,18 +304,23 @@
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
 
-					enterMessage(obj.msg, refId, refName);
+					enterMessage(obj.msg, roomId, refName, refId);
 
 				} else if (action == 'MsgLog') {
 					var roomId = getFromHeader(obj, "roomId");
+					var refId = getFromHeader(obj, "refId");
+					var refName = getFromHeader(obj, "refName");
 					var arr = JSON.parse(obj.msg);
 
+					$.each(arr, function(idx, elem) {
+						enterMessage(elem.text, roomId, elem.sender);
+					});
 				} else if (action == 'LogIn') {
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
 					var target = $("#allUsers");
 					if (target.find("[hong-etc='" + refId + "']").length == 0) {
-						append2(target, refName + "(" + refId + ")", refId);
+						append(target, refName + "(" + refId + ")", refId);
 					}
 					$("#login").hide();
 					$("#logout").show();
@@ -328,8 +346,14 @@
 		}
 
 		function disconnect() {
-			websocket.close();
-			initDisplay();
+			if (websocket == null) {
+				alert("websocket을 시작한후에 하세요.");
+				return;
+			}
+			if (confirm(name + " 접속을 종료합니다.")) {
+				websocket.close();
+				initDisplay();
+			}
 		}
 
 		function initDisplay() {
@@ -342,7 +366,15 @@
 			$(".contact-profile").html("");
 		}
 
-		
+		function initMessage() {
+			$(".messages").html("");
+			$(".contact-profile").html("");
+		}
+
+		function updateDiv($div) {
+			$div.load(window.location.href + " " + $div);
+		}
+
 		function Builder() {
 			var me = {};
 
@@ -399,11 +431,18 @@
 
 		//사용자가 방에서 exit 할 때  reload 필요 (html("") 한 후에 다시 append 하기 위해 )
 		function exitFromRoom() {
+			if (websocket == null) {
+				alert("websocket을 시작한후에 하세요.");
+				return;
+			}
 			var roomId = $("#chat-name").text();
-			var obj = new Builder().action("ExitFromRoom").header("roomId",
-					roomId).finish();
-			var jsonStr = JSON.stringify(obj);
-			websocket.send(jsonStr);
+			if (confirm(roomId + " 방을 나가시겠습니까?")) {
+				var obj = new Builder().action("ExitFromRoom").header("roomId",
+						roomId).finish();
+				var jsonStr = JSON.stringify(obj);
+				websocket.send(jsonStr);
+				//initMessage();
+			}
 		}
 
 		function requestAllUserList() {
@@ -452,22 +491,10 @@
 		}*/
 
 		//채팅방 리스트 목록 (target, room name, room Id)
-		function append2($div, msg, etcVal) {
-			console.log("==append2", msg, etcVal);
-			var newElem = $("<li class='contact' id='" + etcVal + "'><div class='wrap'><span class='contact-status online'></span><img src='http://emilcarlsson.se/assets/mikeross.png' alt='' /><div class='meta'><p class='name'>"
-					+ msg + "</p></div></div></li>")
-
-			newElem.appendTo($div);
-			$div.animate({
-				scrollTop : 100000
-			});
-		}
-
-		//채팅방 참여 유저 리스트
-		function append3($div, msg) {
-			console.log("==append3", msg);
-			var newElem = $('<li class="contact"><div class="wrap"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><div class="meta"><p class="name">'
-					+ msg + '</p></div></div></li>');
+		function append($div, msg, id) {
+			console.log("==append", msg, id);
+			var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/emoji/smiling.png' alt='' /><div class='meta'><p class='name'>"
+					+ msg + "</p><p class='preview'></p></div></div></li>")
 
 			newElem.appendTo($div);
 			$div.animate({
@@ -566,7 +593,7 @@
 				var input = $("#input-msg");
 				var msg = input.val();
 				input.val("");
-				$('.contact.active .preview').html('<span>You: </span>' + msg);
+				
 				var obj = new Builder().action("SendMsg").header("roomId",
 						roomId).msg(msg).finish();
 				var jsonStr = JSON.stringify(obj);
@@ -574,22 +601,45 @@
 			}
 		}
 
-		function enterMessage(message, userId, userName) {
+		function emptyMessage(roomId) {
+			if ($("#chat-name").text() === roomId) {
+				//계속 머무르던 방에 대화를 보냄
+				
+			} else {
+				$("#chat-name").text(roomId);
+				var target = $("#messages ul");
+	            target.html("");
+	            
+			} 
+		}
+		function enterMessage(message, roomId, userName, userId) {
 			console.log(message);
-
-			if (myId == userId) {
+			$('.contact.active .preview').html('<span>You: </span>' + message);
+			if ($("#chat-name").text() === roomId) {
+				//계속 머무르던 방에 대화를 보냄
+				
+			} else {
+				$("#chat-name").text(roomId);
+				var target = $("#messages ul");
+	            target.html("");
+	            
+			} 
+			if (myId == userId || userName === myName) {
 				$(
-						'<li class="sent"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /><p>'
+						'<li class="sent"><img src="static/img/emoji/smile.png" alt="" /><p>'
 								+ message + '</p></li>').appendTo(
 						$('.messages ul'));
+				
 			} else {
 				$(
-						'<li class="replies"><div class="avatar"><img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /></div><div class="name">'
+						'<li class="replies"><div class="avatar"><img src="static/img/emoji/smiling.png" alt="" /></div><div class="name">'
 								+ userName
 								+ '</div><div class="text"><p>'
 								+ message + '</p></div></li>').appendTo(
 						$('.messages ul'));
+				
 			}
+
 			$(".messages").animate({
 				scrollTop : $(document).height()
 			}, "fast");

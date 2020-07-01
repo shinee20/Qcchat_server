@@ -3,6 +3,7 @@ package org.qucell.chat.netty.server.common.client;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +39,7 @@ public class ClientAdapter {
 
 	//로그인한 상태의 클라이언트가 가지고 있는 채팅방 리스트를 관리
 	private final ConcurrentHashMap<Client, List<Room>> CLIENT_TO_ROOMS = new ConcurrentHashMap<>();
+	//모든 채팅방을 기록한다.
 	private final CopyOnWriteArrayList<Room> ROOMS = new CopyOnWriteArrayList<>();	
 	/**
 	 * 로그인할 때의 이벤트 
@@ -49,10 +51,12 @@ public class ClientAdapter {
 		
 		//클라이언트마다 참여하고 있는 방들의 정보를 가지고 있다.
 		List<Room> userRoomList = UserIdRoomIdRepository.getUserIdRoomIdMap().get(client.getName());
+		
 		if (userRoomList == null) {
 			CLIENT_TO_ROOMS.put(client, new ArrayList<>());
 		}
 		else {
+			//로그아웃 하기 전에 접속했던 채팅방 리스트를 넣어준다
 			CLIENT_TO_ROOMS.put(client, userRoomList);
 			log.info("client relogin : {} ", userRoomList.toString());
 			
@@ -65,7 +69,7 @@ public class ClientAdapter {
 		
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.LogIn).build();
 		
-		//클라이언트 리스트를 모든 접속자들에게 broadcast
+		//현재 접속자의 정보를 모든 접속자들에게 broadcast
 		SendService.writeAndFlushToClients(Collections.list(CLIENT_TO_ROOMS.keys()), entity);
 		return this;
 	}
@@ -141,6 +145,7 @@ public class ClientAdapter {
 		} else {
 			clientRooms.add(newRoom);
 			client.addRoom(roomId);
+			CLIENT_TO_ROOMS.put(client, clientRooms);
 		}
 
 		newRoom.enterRoom(client);
@@ -227,6 +232,10 @@ public class ClientAdapter {
 		return this;
 	}
 	
+	public ClientAdapter exitFromRoom(Client client, Room room){
+		room.exitRoom(client);
+		return this;
+	}
 	/**
 	 * 방에서 나온다.
 	 * @param client
@@ -241,10 +250,15 @@ public class ClientAdapter {
 			room.sendClientList();
 			
 			List<Room> clientRooms = CLIENT_TO_ROOMS.get(client);
-			log.info("find room in ROOMS:{}", getRoomByRoomId(roomId));
-			log.info("find exit room : {}", clientRooms.indexOf(getRoomByRoomId(roomId)));
-			clientRooms.remove(getRoomByRoomId(roomId));
-			log.info("remain rooms : {}", clientRooms.toString());
+			
+			for (Iterator<Room> it=clientRooms.iterator(); it.hasNext();) {
+			    if ((it.next().getId().equals(roomId))) {
+			        it.remove(); // NOTE: Iterator's remove method, not ArrayList's, is used.
+			        break;
+			    }
+			}
+			CLIENT_TO_ROOMS.put(client, clientRooms);
+			log.info("remain rooms : {}", CLIENT_TO_ROOMS.get(client).toString());
 		} 
 		return this;
 	}

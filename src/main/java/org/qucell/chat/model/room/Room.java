@@ -40,15 +40,18 @@ public class Room {
 	 */
 	public Room enterRoom(Client client) {
 		Objects.requireNonNull(client, "client required!");
-
+		
+		String alreadyIn="true";
+		log.info("client list in {} and client list {}, {}", this.id, clientList.toString());
 		if (client != null ) {
 			if (!clientList.contains(client)) {
 				synchronized(this) {
 					clientList.add(client);
 					client.addRoom(this.id);
 				}
+				alreadyIn = "false";
 			}
-			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(this.id).setAction(EventType.EnterToRoom).build();
+			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(this.id).setAction(EventType.EnterToRoom).setHeader("alreadyIn", alreadyIn).build();
 			SendService.writeAndFlushToClients(clientList, entity);
 			sendClientList();
 		}

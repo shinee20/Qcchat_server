@@ -88,13 +88,8 @@ public class JsonMsgRes {
 		
 		private EventType action;
 		private String contents;
-		private String auth;
 		private Map<String, String> headers;
 		
-		public Builder setAuth(String auth) {
-			this.auth = auth;
-			return this;
-		}
 		public Builder setAction(EventType action) {
 			this.action = action;
 			return this;
@@ -115,7 +110,10 @@ public class JsonMsgRes {
 			setHeader("roomId", roomId);
 			return this;
 		}
-		
+		public Builder setAlreadyIn(String alreadyIn) {
+			setHeader("alreadyIn", alreadyIn);
+			return this;
+		}
 		public Builder setRefIdAndName(Client userInfo) {
 			setRefId(userInfo.getId());
 			setRefName(userInfo.getName());

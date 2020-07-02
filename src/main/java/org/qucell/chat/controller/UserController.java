@@ -119,7 +119,9 @@ public class UserController {
 	
 	@ResponseBody
 	@RequestMapping(value ="/signup", method=RequestMethod.POST)
-	public ResponseEntity signup( @RequestBody LoginVO vo) {
+	public ResponseEntity signup(@RequestBody LoginVO vo) {
+		log.info(vo.toString());
 		return new ResponseEntity<>(loginService.signUp(vo), HttpStatus.OK);
 	}
+	
 }

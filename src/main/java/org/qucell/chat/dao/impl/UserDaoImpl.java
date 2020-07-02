@@ -25,8 +25,8 @@ public class UserDaoImpl implements UserDao{
 	}
 
 	@Override
-	public Users getByUserName(String userName) {
-		return (Users)sqlSession.selectOne(namespace+".selectUserByName", userName);
+	public Users getByUserName(LoginVO vo) {
+		return (Users)sqlSession.selectOne(namespace+".selectUserByName", vo);
 	}
 
 	public List<Users> getFriendsList(int userId){

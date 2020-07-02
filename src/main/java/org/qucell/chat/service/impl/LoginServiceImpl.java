@@ -62,7 +62,7 @@ public class LoginServiceImpl implements LoginService{
 	@Override
 	public DefaultRes<LoginRes> login(LoginVO vo) {
 		log.info(vo.toString());
-		Users user = userDao.getByUserName(vo.getUserName());
+		Users user = userDao.getByUserName(vo);
 		if (user != null) {//check already login 
 			//create token 
 			final JwtService.TokenRes tokenDto = new JwtService.TokenRes(jwtService.create(user.getUserId()));
@@ -94,8 +94,9 @@ public class LoginServiceImpl implements LoginService{
 	public DefaultRes signUp(LoginVO vo) {
 
 		try {
+			log.info("join " + vo.toString());
 			userDao.insertUser(vo);
-			log.info("join " + vo.getUserName());
+			
 			
 			return DefaultRes.res(StatusCode.CREATED, ResponseMessage.CREATED_USER);
 		}

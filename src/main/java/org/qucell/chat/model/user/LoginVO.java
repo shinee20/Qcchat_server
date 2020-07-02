@@ -25,5 +25,11 @@ public class LoginVO {
 		this.host = host;
 		this.websocketPort = websocketPort;
 	}
+	public LoginVO(String userName, String userPw, String host, String websocketPort) {
+		this.userName =  userName;
+		this.userPw = userPw;
+		this.host = host;
+		this.websocketPort = websocketPort;
+	}
 	
 }

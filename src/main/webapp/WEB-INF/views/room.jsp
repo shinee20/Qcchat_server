@@ -14,10 +14,44 @@
 	rel='stylesheet' type='text/css'>
 <link
 	href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
-	rel="stylesheet" id="bootstrap-css">	
+	rel="stylesheet" id="bootstrap-css">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <script
-	src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style>
+#myModel {
+	text-align: center;
+}
+
+@media screen and (min-width: 768px) {
+	#myModel:before {
+		display: inline-block;
+		vertical-align: middle;
+		content: " ";
+		height: 100%;
+	}
+}
+
+.modal-dialog {
+	display: inline-block;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.modal-header, h4, .close {
+	background-color: #5cb85c;
+	color: white !important;
+	text-align: center;
+	font-size: 30px;
+}
+
+.modal-footer {
+	background-color: #f9f9f9;
+}
+</style>
 <script src="https://use.typekit.net/hoy3lrg.js"></script>
 <script>
 	try {
@@ -32,8 +66,50 @@
 <link rel='stylesheet prefetch'
 	href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css'>
 <link rel="stylesheet" type="text/css" href="static/css/room.css">
+
 </head>
 <body>
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header" style="padding: 35px 50px;">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4>
+						<span class="glyphicon glyphicon-lock" id="modal-name"></span>
+					</h4>
+				</div>
+				<div class="modal-body" style="padding: 40px 50px;">
+					<form role="form">
+						<div class="form-group">
+							<label for="usrname"><span
+								class="glyphicon glyphicon-user"></span> Username</label> <input
+								type="text" class="form-control" id="username"
+								placeholder="Enter user name">
+						</div>
+						<div class="form-group">
+							<label for="psw"><span
+								class="glyphicon glyphicon-eye-open"></span> Password</label> <input
+								type="password" class="form-control" id="passwd"
+								placeholder="Enter password">
+						</div>
+						<button type="button" class="btn btn-success btn-block"
+							id="closeModal">
+							<span class="glyphicon glyphicon-off"></span> OK
+						</button>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-danger btn-default pull-left"
+						data-dismiss="modal">
+						<span class="glyphicon glyphicon-remove"></span> Cancel
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div id="frame">
 		<div id="sidepanel">
 			<div id="profile">
@@ -43,18 +119,18 @@
 					<p>
 						&nbsp; ID:<span id="myName"></span> (<span id="myId"></span>)
 					<p>
-						<button type="button" class="btn btn-secondary btn-sm" id="login"
-							onclick="loginProcess()" aria-hidden="true">IN</button>
-					</p>
-					<p>
-						<button type="button" class="btn btn-secondary btn-sm" id="logout"
-							onclick="disconnect();" aria-hidden="true">OUT</button>
-					</p>
-					<p>
-						<i class="fa fa-user-plus fa-fw" id="signup"
-							onclick="signup();" aria-hidden="true"></i>
+						<i class="fa fa-user icon fa-fw" id="login" aria-hidden="true"
+							title="로그인"></i>
 					</p>
 
+					<p>
+						<i class="fa fa-user-plus fa-fw" id="signup" aria-hidden="true"
+							title="회원가입"></i>
+					</p>
+					<p>
+						<i class="fa fa-sign-out fa-fw" id="logout"
+							onclick="disconnect();" aria-hidden="true" title="로그아웃"></i>
+					</p>
 					<!--  <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>-->
 
 					<div id="status-options">
@@ -114,10 +190,10 @@
 		</div>
 
 		<div class="content" id="content">
-			<div class="contact-profile">
+			<div class="contact-profile" id="chat-header">
 				<img src="static/img/emoji/smile.png" alt="" /> <span
 					id="chat-name">CHATNAME</span>
-					
+
 				<div class="social-media">
 					<i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i>
 
@@ -143,7 +219,6 @@
 		</div>
 	</div>
 
-	<script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
 	<script>
 		var websocket;
 		var myId;
@@ -152,8 +227,42 @@
 		var host;
 		var websocketPort;
 
-		function signup() {
-			var name = prompt("가입할 이름을 입력하세요");
+		$("#signup").on("click", function() {
+			$("#username").val("");
+			$("#passwd").val("");
+			$("#modal-name").text("SIGNUP");
+			$("#myModal").modal();
+
+		});
+		$("#login").on("click", function() {
+			$("#username").val("");
+			$("#passwd").val("");
+			$("#modal-name").text("LOGIN");
+			$("#myModal").modal();
+
+		});
+		$("#myModal").on('shown.bs.modal', function() {
+			$("#username").focus();
+		});
+		$('#closeModal').on('click', function() {
+			var howuse = $("#modal-name").text();
+
+			var name = $("#username").val();
+			var password = $("#passwd").val();
+
+			if (name == "" || password == "")
+				return;
+
+			if (howuse === "LOGIN") {
+				loginProcess(name, password);
+			} else {
+				signup(name, password);
+			}
+			$("#myModal").modal('hide');
+		});
+		function signup(name, password) {
+			//폼으로 바꾸기
+			/*var name = prompt("가입할 이름을 입력하세요");
 			if (name == null || name == "") {
 				alert("다시 입력하세요");
 				return;
@@ -162,11 +271,11 @@
 			if (password == null || password == "") {
 				alert("다시 입력하세요");
 				return;
-			}
+			}*/
 			var user = {
-					"userName" : name,
-					"userPw" : password
-				};
+				userName : name,
+				userPw : password
+			};
 			$.ajax({
 				type : 'POST',
 				url : 'signup',
@@ -179,27 +288,24 @@
 						console.log(data);
 						alert("회원 가입을 완료하였습니다.");
 						return;
-					} 
+					}
 				},
 				error : function() {
 					alert("이미 사용중인 이름입니다. 다른 이름을 입력해주세요.");
 					return;
 				}
-				
+
 			});
-			
-			
+
 		}
-		function loginProcess() {
-			var name = prompt("이름을 입력하세요");
-			if (name == null || name == "") {
-				alert("다시 입력하세요");
-				return;
-			}
+		function loginProcess(name, password) {
 
 			var user = {
-				"userName" : name
+				userName : name,
+				userPw : password
 			};
+
+			console.log(JSON.stringify(user));
 			$.ajax({
 				type : 'POST',
 				url : 'login',
@@ -218,6 +324,13 @@
 						alert("가입되어있지 않는 사용자입니다.");
 						return;
 					}
+				},
+				error : function(data) {
+					if (data.status == 500) {
+						alert("틀린 비밀번호입니다.");
+						return;
+					}
+					
 				}
 			});
 		}
@@ -239,7 +352,7 @@
 			websocket.onclose = function(event) {
 				console.log("== websocket closed");
 				websocket = null;
-				location.reload();
+
 			};
 
 			websocket.onmessage = function(event) {
@@ -261,7 +374,7 @@
 					var refId = getFromHeader(obj, "refId");
 					var arr = JSON.parse(obj.msg);
 					var target = $("#allUsers");
-					target.html("");
+					target.empty();
 					$.each(arr, function(idx, elem) {
 						append(target, elem.name + "(" + elem.id + ")"
 								+ (myId == elem.id ? " => 나" : ""), elem.id);
@@ -269,15 +382,16 @@
 				} else if (action == 'FriendsList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
-					target.html("");
-					$.each(arr,function(idx, elem) {
-						append(target, elem.name + "(" + elem.id + ")",
-								elem.id);
-					});
+					target.empty();
+					$.each(arr,
+							function(idx, elem) {
+								append(target, elem.name + "(" + elem.id + ")",
+										elem.id);
+							});
 				} else if (action == 'RoomList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
-					target.html("");
+					target.empty();
 					$.each(arr, function(idx, elem) {
 						append(target, elem.name, elem.id);
 					});
@@ -285,7 +399,7 @@
 				} else if (action == 'UserRoomList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
-					target.html("");
+					target.empty();
 					$.each(arr, function(idx, elem) {
 						append(target, elem.name, elem.id);
 					});
@@ -299,10 +413,16 @@
 					    append3(target, elem.name + "(" + elem.id + ")" +
 					        (myId == elem.id ? " => 나" : ""));
 					});*/
+					/*
+					* 추후 수정
+					*/
 					$.each(arr, function(idx, elem) {
 						names += ' ' + elem.name;
 					});
 					target.text(names);
+					/*
+					* 추후 수정
+					*/
 				} else if (action == 'EnterToRoom') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
@@ -310,10 +430,11 @@
 					var alreadyIn = getFromHeader(obj, "alreadyIn");
 
 					console.log("== enter to room", roomId, refId, refName);
-					if (alreadyIn === "true") {
-						console.log("already in!!");
-						emptyMessage(roomId);
-					} else {
+					if (alreadyIn === "true" || refId === myId) {
+						$("#chat-name").text(roomId);
+						$(".messages ul").empty();
+						
+					} else{
 						var msg = refName + "(" + refId + ")이 " + roomId
 								+ " 방으로 들어왔습니다."
 						enterMessage(msg, roomId, refName, refId);
@@ -325,12 +446,15 @@
 					var refName = getFromHeader(obj, "refName");
 
 					if (refId == myId) {
-						$(".contact.active").empty();
+						$(".contact").find(roomId).empty();
+						initDisplay();
 					} else {
 						var msg = refName + "(" + refId + ")이 " + roomId
 								+ " 방을 나갔습니다."
-						enterMessage(msg, roomId, refName, refId);
+						enterMessage(msg, roomId, refName, refId); 
+						//현재 이 방에 있는 사람들에게만 화면에 띄워야 한다. 다른 채팅방에 있는 사람들까지 화면 전환할 필요 없음
 					}
+					
 
 				} else if (action == 'SendMsg') {
 					var roomId = getFromHeader(obj, "roomId");
@@ -356,6 +480,7 @@
 						append(target, refName + "(" + refId + ")", refId);
 					}
 					$("#login").hide();
+					$("#signup").hide();
 					$("#logout").show();
 				}
 			};
@@ -385,27 +510,17 @@
 			}
 			if (confirm(name + " 접속을 종료합니다.")) {
 				websocket.close();
-				initDisplay();
+				location.reload();
 			}
 		}
 
 		function initDisplay() {
-			$("#login").show();
-			$("#logout").hide();
-			$("#myId").text("");
-			$("#myName").text("");
-			$("#contacts").html("");
-			$(".messages").html("");
-			$(".contact-profile").html("");
+			$("#chat-name").empty();
+			$(".messages ul").empty();
+			
 		}
-
-		function initMessage() {
-			$(".messages").html("");
-			$(".contact-profile").html("");
-		}
-
 		function updateDiv($div) {
-			$div.load(window.location.href + " " + $div);
+			
 		}
 
 		function Builder() {
@@ -474,7 +589,7 @@
 						roomId).finish();
 				var jsonStr = JSON.stringify(obj);
 				websocket.send(jsonStr);
-				//initMessage();
+				
 			}
 		}
 
@@ -634,48 +749,35 @@
 			}
 		}
 
-		function emptyMessage(roomId) {
-			if ($("#chat-name").text() === roomId) {
-				//계속 머무르던 방에 대화를 보냄
-
-			} else {
-				$("#chat-name").text(roomId);
-				var target = $("#messages ul");
-				target.html("");
-
-			}
-		}
 		function enterMessage(message, roomId, userName, userId) {
 			console.log(message);
+			
+			console.log($('.contact.active').prop("id"));
+			
 			$('.contact.active .preview').html('<span>You: </span>' + message);
 			if ($("#chat-name").text() === roomId) {
 				//계속 머무르던 방에 대화를 보냄
+				if (myId == userId || userName === myName) {
+					$(
+							'<li class="sent"><img src="static/img/emoji/smile.png" alt="" /><p>'
+									+ message + '</p></li>').appendTo(
+							$('.messages ul'));
 
-			} else {
-				$("#chat-name").text(roomId);
-				var target = $("#messages ul");
-				target.html("");
+				} else {
+					$(
+							'<li class="replies"><div class="avatar"><img src="static/img/emoji/smiling.png" alt="" /></div><div class="name">'
+									+ userName
+									+ '</div><div class="text"><p>'
+									+ message + '</p></div></li>').appendTo(
+							$('.messages ul'));
 
-			}
-			if (myId == userId || userName === myName) {
-				$(
-						'<li class="sent"><img src="static/img/emoji/smile.png" alt="" /><p>'
-								+ message + '</p></li>').appendTo(
-						$('.messages ul'));
+				}
 
-			} else {
-				$(
-						'<li class="replies"><div class="avatar"><img src="static/img/emoji/smiling.png" alt="" /></div><div class="name">'
-								+ userName
-								+ '</div><div class="text"><p>'
-								+ message + '</p></div></li>').appendTo(
-						$('.messages ul'));
-
-			}
-
-			$(".messages").animate({
-				scrollTop : $(document).height()
-			}, "fast");
+				$(".messages").animate({
+					scrollTop : $(document).height()
+				}, "fast");
+			} 
+			
 		};
 
 		/*function newMessage(message) {

@@ -15,7 +15,7 @@
  	</select>
  	
  	<select id ="selectUserByName" resultType="org.qucell.chat.model.user.Users">
- 		select * from USER where user_name=#{userName}
+ 		select * from USER where user_name=#{userName} and user_pw = #{userPw}
  	</select>
  	<select id ="selectFriendsList" resultType="org.qucell.chat.model.user.Users">
  		<![CDATA[

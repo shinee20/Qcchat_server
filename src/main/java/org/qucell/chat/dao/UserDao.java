@@ -8,7 +8,7 @@ import org.qucell.chat.model.user.Users;
 public interface UserDao {
 	
 	public Users getByUserId(int userId);
-	public Users getByUserName(String userName);
+	public Users getByUserName(LoginVO vo);
 	public void insertUser(LoginVO user);
 	public List<Users> getFriendsList(int userId);
 }

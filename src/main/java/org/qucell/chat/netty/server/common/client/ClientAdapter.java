@@ -228,6 +228,19 @@ public class ClientAdapter {
 		if (optional.isPresent()) {
 			Room room  = optional.get();
 			room.enterRoom(client);
+			
+			List<Room> clientRooms = CLIENT_TO_ROOMS.get(client);
+			boolean flag = false;
+			for (Iterator<Room> it=clientRooms.iterator(); it.hasNext();) {
+			    if ((it.next().getId().equals(roomId))) {
+			    	flag = true;
+			        break;
+			    }
+			}
+			if (!flag) {
+				clientRooms.add(room);
+				CLIENT_TO_ROOMS.put(client, clientRooms);
+			}
 		} 
 		return this;
 	}

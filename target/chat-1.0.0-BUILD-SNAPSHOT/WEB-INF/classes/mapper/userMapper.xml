@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.qucell.chat.mapper.userMapper">
+  	
+  	<insert id="insertUser">
+  		insert into USER (user_name, user_pw) 
+  		values(#{userName}, #{userPw})
+ 	</insert>
+ 	
+ 	<select id="selectUserById" resultType="org.qucell.chat.model.user.Users">
+ 		select * from USER where user_id = #{userId}
+ 	</select>
+ 	
+ 	<select id ="selectUserByName" resultType="org.qucell.chat.model.user.Users">
+ 		select * from USER where user_name=#{userName} and user_pw = #{userPw}
+ 	</select>
+ 	<select id ="selectFriendsList" resultType="org.qucell.chat.model.user.Users">
+ 		<![CDATA[
+ 			select * from USER U where U.user_id in (
+ 				select user_id1 from FRIENDS where user_id2 = #{userId}) or 
+ 				U.user_id in (select user_id2 from FRIENDS where user_id1 = #{userId})
+ 		]]>
+ 	</select>
+ 	
+ 	<!-- redis test -->
+ 	<select id="selectUsers" resultType="org.qucell.chat.model.user.Users">
+ 	<![CDATA[
+ 			select * from USER where user_id > 0
+ 		]]>
+ 	</select>
+ 	<!-- redis test -->
+  </mapper>

@@ -39,6 +39,15 @@ public class Client {
 		this.channel = channel;
 	}
 	
+	public Client(String id, String name, String status, Channel channel) {
+		
+		super();
+		this.id = id;
+		this.name = name;
+		this.status = status;
+		this.channel = channel;
+	}
+	
 	public LocalDateTime getCreatedTime() {
 		return createdTime;
 	}

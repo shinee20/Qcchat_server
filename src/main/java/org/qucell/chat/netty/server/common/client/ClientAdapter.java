@@ -47,7 +47,7 @@ public class ClientAdapter {
 	 * @return
 	 */
 	public ClientAdapter login(Client client) {
-		SendService.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).build());
+		SendService.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).setHeader("status", client.getStatus()).build());
 		
 		//클라이언트마다 참여하고 있는 방들의 정보를 가지고 있다.
 		List<Room> userRoomList = UserIdRoomIdRepository.getUserIdRoomIdMap().get(client.getName());
@@ -95,7 +95,7 @@ public class ClientAdapter {
 		 * 로그아웃 후에 다시 로그인을 하는 경우 룸의 정보를 그대로 가지고 있어야 한다.
 		 */
 		UserIdRoomIdRepository.getUserIdRoomIdMap().put(client.getName(), roomsOfClient);
-		
+//		UserIdRoomIdRepository.save(client.getName());
 		//삭제되어서 룸의 개수가 남아있어야 하는 룸의 개수와 일치하는지 확인한다.
 		client.validateRoom(roomsOfClient.stream().map(room->room.getId()).collect(Collectors.toList()));
 		client.removeAllRooms();
@@ -142,10 +142,19 @@ public class ClientAdapter {
 			newRoomList.add(newRoom);
 			CLIENT_TO_ROOMS.put(client, newRoomList);
 			client.addRoom(roomId);
-		} else {
-			clientRooms.add(newRoom);
-			client.addRoom(roomId);
-			CLIENT_TO_ROOMS.put(client, clientRooms);
+		}  else {
+			boolean flag = false;
+			for (Iterator<Room> it=clientRooms.iterator(); it.hasNext();) {
+			    if ((it.next().getId().equals(roomId))) {
+			    	flag = true;
+			        break;
+			    }
+			}
+			if (!flag) {
+				clientRooms.add(newRoom);
+				client.addRoom(roomId);
+				CLIENT_TO_ROOMS.put(client, clientRooms);
+			}
 		}
 
 		newRoom.enterRoom(client);
@@ -211,7 +220,9 @@ public class ClientAdapter {
 	 */
 	public ClientAdapter sendRefreshRoomListToClient(Client client) {
 		List<Map<String, String>> list = getRoomList(client).stream().map(room->room.toMap()).collect(Collectors.toList());
+		log.info("sendRefresh {}",list.toString());
 		String jsonStr = JsonUtil.toJsonStr(list);
+		log.info("sendRefresh {}", jsonStr);
 		JsonMsgRes entity = new JsonMsgRes.Builder().setAction(EventType.UserRoomList).setContents(jsonStr).build();
 		SendService.writeAndFlushToClient(client, entity);
 		return this;

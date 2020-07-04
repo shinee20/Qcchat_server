@@ -120,6 +120,10 @@ public class JsonMsgRes {
 			return this;
 		}
 		
+		public Builder setClientStatus(String status) {
+			setHeader("status", client.getStatus());
+			return this;
+		}
 		public Builder setHeader(String key, String value) {
 			if (headers == null) {
 				headers = new HashMap<>();

@@ -39,6 +39,7 @@ public class ChatReceiveService {
 		ClientAdapter adapter = ClientAdapter.INSTANCE;
 		String roomId = entity.extractFromHeader("roomId");
 		String userName = entity.extractFromHeader("userName");
+		String status = entity.extractFromHeader("status");
 		
 		switch(eventType) {
 		case LogIn:
@@ -92,6 +93,9 @@ public class ChatReceiveService {
 			break;
 		case AddFriend:
 			userService.addUserAsFriend(client.getName(), userName);
+			break;
+		case ChangeStatus:
+			client.setStatus(status);
 			break;
 		}
 	}

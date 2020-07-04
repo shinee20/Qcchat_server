@@ -56,7 +56,7 @@ public class LoginHandler {
 		if (isLogin(user.getUserName())) {
 			throw new IllegalStateException("이미 로그인 된 사용자입니다.");
 		}
-		Client client = new Client(String.valueOf(user.getUserId()),user.getUserName(), ctx.channel());
+		Client client = new Client(String.valueOf(user.getUserId()),user.getUserName(), "online", ctx.channel());
 		
 		//add login user list
 		userRepository.getUserList().add(client);

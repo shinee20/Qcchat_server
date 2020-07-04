@@ -28,7 +28,8 @@ public enum EventType {
 	UserRoomList("UserRoomList", "참여 채팅방 목록"),
 	AlreadyLogin("AlreadyLogin", "이미 로그인된 사용자"),
 	FindUserByName("FindUserByName", "친구 찾기"),
-	AddFriend("AddFriend", "친구 추가")
+	AddFriend("AddFriend", "친구 추가"),
+	ChangeStatus("ChangeStatus", "상태 변경")
 	;
 	
 	public final String code;

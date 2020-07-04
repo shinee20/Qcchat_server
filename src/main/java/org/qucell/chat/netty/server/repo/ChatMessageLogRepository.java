@@ -9,8 +9,10 @@ import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.Message;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
+import org.qucell.chat.service.RedisService;
 import org.qucell.chat.service.SendService;
 import org.qucell.chat.util.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class ChatMessageLogRepository {
+	
+	@Autowired
+	private RedisService redisService;
+	
 	private ConcurrentHashMap<String, List<Message>> chatMessageLogRepository = new ConcurrentHashMap<>();
 	
 	public ConcurrentHashMap<String, List<Message>> getChatMessageMap() {

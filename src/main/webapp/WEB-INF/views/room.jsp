@@ -65,7 +65,7 @@
 	href='https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css'>
 <link rel='stylesheet prefetch'
 	href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css'>
-<link rel="stylesheet" type="text/css" href="static/css/room.css">
+<link rel="stylesheet" type="text/css" href="static/css/room.css?ver=1">
 
 </head>
 <body>
@@ -191,14 +191,9 @@
 
 		<div class="content" id="content">
 			<div class="contact-profile" id="chat-header">
-				<img src="static/img/emoji/smile.png" alt="" /> <span
-					id="chat-name">CHATNAME</span>
-
-				<div class="social-media">
-					<i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i>
-
-				</div>
-
+				<img src="static/img/emoji/smile.png" alt="" /> <span style="width: 80%;" 
+					id="chat-name">CHATNAME</span><div class="social-media"><i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i></div>
+					<span id="userListInRoom"></span>
 			</div>
 			<div class="messages" id="messages">
 				<ul>
@@ -417,7 +412,7 @@
 					* 추후 수정
 					*/
 					$.each(arr, function(idx, elem) {
-						names += ' ' + elem.name;
+						names += " " + elem.name + " ";
 					});
 					target.text(names);
 					/*
@@ -430,7 +425,7 @@
 					var alreadyIn = getFromHeader(obj, "alreadyIn");
 
 					console.log("== enter to room", roomId, refId, refName);
-					if (alreadyIn === "true" || refId === myId) {
+					if (refId === myId) {
 						$("#chat-name").text(roomId);
 						$(".messages ul").empty();
 						
@@ -517,6 +512,7 @@
 		function initDisplay() {
 			$("#chat-name").empty();
 			$(".messages ul").empty();
+			$("#userListInRoom").empty();
 			
 		}
 		function updateDiv($div) {
@@ -752,12 +748,10 @@
 		function enterMessage(message, roomId, userName, userId) {
 			console.log(message);
 			
-			console.log($('.contact.active').prop("id"));
-			
-			$('.contact.active .preview').html('<span>You: </span>' + message);
+			$('.contact[id^='+roomId+'] .preview').html('<span>'+userName+': </span>' + message);
 			if ($("#chat-name").text() === roomId) {
 				//계속 머무르던 방에 대화를 보냄
-				if (myId == userId || userName === myName) {
+				if (myId === userId || userName === myName) {
 					$(
 							'<li class="sent"><img src="static/img/emoji/smile.png" alt="" /><p>'
 									+ message + '</p></li>').appendTo(
@@ -765,9 +759,9 @@
 
 				} else {
 					$(
-							'<li class="replies"><div class="avatar"><img src="static/img/emoji/smiling.png" alt="" /></div><div class="name">'
+							'<li class="replies"><div class="avatar"><img src="static/img/emoji/smiling.png" alt="" /><div class="name" style="float:right;margin-top:-15px">'
 									+ userName
-									+ '</div><div class="text"><p>'
+									+ '</div></div><div class="text"><p>'
 									+ message + '</p></div></li>').appendTo(
 							$('.messages ul'));
 

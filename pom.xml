@@ -247,6 +247,7 @@
 
 	</dependencies>
 	<build>
+		<finalName>chat</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>

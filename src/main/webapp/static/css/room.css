@@ -640,6 +640,8 @@ body {
 
 #frame .content .contact-profile span {
 	float: left;
+	height:35%;
+	
 }
 
 #frame .content .contact-profile .social-media {

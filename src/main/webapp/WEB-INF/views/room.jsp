@@ -36,6 +36,7 @@
 }
 
 .modal-dialog {
+	margin-left:-20%
 	display: inline-block;
 	text-align: left;
 	vertical-align: middle;

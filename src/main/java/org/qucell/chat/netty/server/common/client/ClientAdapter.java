@@ -217,6 +217,12 @@ public class ClientAdapter {
 		return this;
 	}
 	
+	public ClientAdapter sendReponseToClient(Client client, Object o, EventType whichEvent) {
+		String jsonStr = JsonUtil.toJsonStr(o);
+		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(whichEvent).setContents(jsonStr).build();
+		SendService.writeAndFlushToClient(client, entity);
+		return this;
+	}
 	/**
 	 * 방에 들어간다.
 	 * @param client

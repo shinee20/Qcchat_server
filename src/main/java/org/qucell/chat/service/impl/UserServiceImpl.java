@@ -3,13 +3,11 @@ package org.qucell.chat.service.impl;
 import java.util.List;
 
 import org.qucell.chat.dao.UserDao;
-import org.qucell.chat.model.DefaultRes;
+import org.qucell.chat.model.user.UserAndFriend;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.service.JwtService;
 import org.qucell.chat.service.RedisService;
 import org.qucell.chat.service.UserService;
-import org.qucell.chat.util.ResponseMessage;
-import org.qucell.chat.util.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,6 +67,12 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+
+	@Override
+	public Users getUserByName(String userName) {
+		log.info("find user by name! {}", userName);
+		return userDao.getByUserName(userName);
+	}
 	// 사용자의 친구 리스트를 찾는다.
 	@Override
 	public List<Users> getAllFriendsList(int userId) {
@@ -92,4 +96,13 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+
+	@Override
+	public void addUserAsFriend(String userName, String friendName) {
+		Users me = getUserByName(userName);
+		Users friend = getUserByName(friendName);
+		
+		userDao.addFriend(new UserAndFriend(me.getUserId(), friend.getUserId()));
+		
+	}
 }

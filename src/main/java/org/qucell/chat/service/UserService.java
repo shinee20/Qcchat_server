@@ -15,5 +15,6 @@ public interface UserService {
 	 * @throws IOException
 	 */
 	public List<Users> getAllFriendsList(int userId);
-	
+	public Users getUserByName(String userName);
+	public void addUserAsFriend(String userName, String friendName);
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="org.qucell.chat.mapper.roomMapper">
+  	<select id ="selectAllRooms" resultType="org.qucell.chat.model.room.Room">
+  	<![CDATA[
+  		select * from CHATROOM where room_id>0 order by room_id;
+  		]]>
+  	</select>
+  	
+  	<select id ="selectUserRooms" resultType="org.qucell.chat.model.room.Room">
+  	<![CDATA[
+  		select * from CHATROOM C, ROOM R where R.user_id = #{userId} and C.room_id = R.room_id
+  		order by C.room_id
+  		]]>
+  	</select>
+  	
+  	<select id ="selectAllRoomsWithoutAlreadyJoin" resultType="org.qucell.chat.model.room.Room">
+  		<![CDATA[
+  			select * from CHATROOM C where C.room_id not in (select room_id from ROOM 
+  			where user_id = #{userId}) order by C.room_id
+  		]]>
+  	</select>
+  	
+  	<insert id="insertUsersAtRoom" parameterType="java.util.List">
+  		insert into ROOM values
+  		<foreach collection="list" item="item" separator=" , ">
+  		(#{item.roomId},#{item.userId})
+  		</foreach>
+  	</insert>
+  	
+  	<insert id="insertChatRoom">
+  		insert into CHATROOM(room_name, room_pw, room_owner) values
+  		(#{roomName},#{roomPw},#{roomOwner})
+  		<selectKey keyProperty="roomId" resultType="int" order="AFTER">
+  			SELECT LAST_INSERT_ID()
+  		</selectKey>
+  	</insert>
+  	
+  	<update id="updateRoomPw">
+  		update CHATROOM set room_pw = #{roomPw} where room_owner = #{roomOwner} and room_name=#{roomName}
+  	</update>
+  	
+  	<select id="getRoomId" resultType="int">
+  		select room_id from CHATROOM where room_name=#{roomName}
+  	</select>
+  	
+  	<select id="getUsersAtRoom" resultType="org.qucell.chat.model.user.Users">
+  		select * from USER U, ROOM R where room_id=#{roomId} and R.user_id=U.user_id;
+  	</select>
+  	
+  	<delete id="deleteRoomByRoomName">
+  		delete from CHATROOM where room_name=#{roomName}
+  	</delete>
+  	
+  	<select id="selectChatRoomByRoomName" resultType="org.qucell.chat.model.room.Room">
+  		select * from CHATROOM where room_name=#{roomName}
+  	</select>
+  	
+  	<delete id="deleteUserFromRoom">
+  		delete from ROOM where user_id=#{userId} and room_id=#{roomId}
+  	</delete>
+  </mapper>

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.apache.ibatis.session.SqlSession;
 import org.qucell.chat.dao.UserDao;
 import org.qucell.chat.model.user.LoginVO;
+import org.qucell.chat.model.user.UserAndFriend;
 import org.qucell.chat.model.user.Users;
 import org.springframework.stereotype.Repository;
 
@@ -29,6 +30,11 @@ public class UserDaoImpl implements UserDao{
 		return (Users)sqlSession.selectOne(namespace+".selectUserByName", vo);
 	}
 
+	@Override
+	public Users getByUserName(String userName) {
+		return (Users)sqlSession.selectOne(namespace+".selectUserByOnlyName", userName);
+	}
+
 	public List<Users> getFriendsList(int userId){
 		return sqlSession.selectList(namespace + ".selectFriendsList",userId);
 	}
@@ -39,4 +45,11 @@ public class UserDaoImpl implements UserDao{
 		sqlSession.insert(namespace+ ".insertUser", user);
 	}
 
+	@Override
+	public void addFriend(UserAndFriend uaf) {
+		sqlSession.insert(namespace+ ".addFriend", uaf);
+		
+	}
+
+	
 }

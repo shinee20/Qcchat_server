@@ -26,7 +26,9 @@ public enum EventType {
 	Invalid("Invalid", "잘못된 코드"),
 	MsgLog("MsgLog", "채팅 대화 로그"),
 	UserRoomList("UserRoomList", "참여 채팅방 목록"),
-	AlreadyLogin("AlreadyLogin", "이미 로그인된 사용자")
+	AlreadyLogin("AlreadyLogin", "이미 로그인된 사용자"),
+	FindUserByName("FindUserByName", "친구 찾기"),
+	AddFriend("AddFriend", "친구 추가")
 	;
 	
 	public final String code;

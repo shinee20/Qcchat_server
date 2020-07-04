@@ -154,7 +154,10 @@
 					</div>
 				</div>
 			</div>
-
+			<div id="search">
+				<label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
+				<input type="text" id="searchId" placeholder="Search contacts..." />
+			</div>
 			<div id="contacts">
 				<ul>
 					<li class="contact active">
@@ -378,11 +381,10 @@
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
 					target.empty();
-					$.each(arr,
-							function(idx, elem) {
-								append(target, elem.name + "(" + elem.id + ")",
-										elem.id);
-							});
+					$.each(arr,function(idx, elem) {
+						append(target, elem.name + "(" + elem.id + ")",
+						elem.id);
+					});
 				} else if (action == 'RoomList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
@@ -399,6 +401,14 @@
 						append(target, elem.name, elem.id);
 					});
 
+				} else if (action == 'FindUserByName') {
+					var arr = JSON.parse(obj.msg);
+					console.log(arr);
+					var target = $("#contacts ul");
+					target.empty();
+					append2(target, arr.userName, arr.userId);
+					
+
 				} else if (action == 'UserList') {
 					var arr = JSON.parse(obj.msg);
 					var roomId = getFromHeader(obj, "roomId");
@@ -412,7 +422,10 @@
 					* 추후 수정
 					*/
 					$.each(arr, function(idx, elem) {
-						names += " " + elem.name + " ";
+						names += elem.name;
+						if (idx < arr.length-1) {
+							names += ", ";
+						}
 					});
 					target.text(names);
 					/*
@@ -513,9 +526,6 @@
 			$("#chat-name").empty();
 			$(".messages ul").empty();
 			$("#userListInRoom").empty();
-			
-		}
-		function updateDiv($div) {
 			
 		}
 
@@ -646,6 +656,17 @@
 			});
 		}
 
+		function append2($div, msg, id) {
+			console.log("==append2", msg, id);
+			var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/emoji/smiling.png' alt='' /><div class='meta'><p class='name'>"
+					+ msg + "<i class='fa fa-plus-circle fa-fw' aria-hidden='true' style='float:right;' id='addFriendBtn'></i></p></div></div></li>")
+
+			newElem.appendTo($div);
+			$div.animate({
+				scrollTop : 100000
+			});
+		}
+		
 		function onClickRoom(name) {
 			if (confirm(name + " 방에 들어가시겠습니까?")) {
 				var obj = new Builder().action("EnterToRoom").header("roomId",
@@ -685,10 +706,24 @@
 
 		$("#contacts ul").on("click", ".contact", function() {
 			//active되어있는 li를 removeclass하고 현재 선택한 li에 addClass를 한다.
-			$("#contacts ul").find("li.active").removeClass("active");
-			$(this).addClass("active");
-			onClickRoom($(this).find("p").first().text());
-
+			var name = $("#searchId").val();
+			$("#searchId").val("");
+			if (name === ""|| name == null){
+				$("#contacts ul").find("li.active").removeClass("active");
+				$(this).addClass("active");
+				onClickRoom($(this).find("p").first().text());
+			}
+			else {
+				if (confirm(name + " 을 친구 리스트에 추가하시겠습니까?")) {
+					var obj = new Builder().action("AddFriend").header("userName",
+							name).finish();
+					var jsonStr = JSON.stringify(obj);
+					websocket.send(jsonStr);
+					
+				}
+			}
+			
+			
 		});
 
 		/*$("#show-contact-information").click(function() {
@@ -700,6 +735,11 @@
 			}
 		});*/
 
+		/* $("#addFriendBtn").on("click", function(){
+			alert("add friend!");
+			var name = $("#searchId").val();
+			
+			}); */
 		$("#status-options ul li").click(function() {
 			$("#profile-img").removeClass();
 			$("#status-online").removeClass("active");
@@ -730,6 +770,18 @@
 			$("#status-options").removeClass("active");
 		});
 
+		$('#searchId').keypress(function(event){
+		    var keycode = (event.keyCode ? event.keyCode : event.which);
+		    if(keycode == '13'){
+		        var searchName = $("#searchId").val();
+		        console.log(searchName);
+		        var obj = new Builder().action("FindUserByName").header("userName",
+						searchName).finish();
+				var jsonStr = JSON.stringify(obj);
+				websocket.send(jsonStr);
+		    }
+		});
+		
 		function onMsgKeyUp(event) {
 			if (event.keyCode == 13 || event.which == 13) {
 				console.log("== enter");

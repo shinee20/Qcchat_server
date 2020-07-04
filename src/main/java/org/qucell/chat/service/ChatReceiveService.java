@@ -2,6 +2,7 @@ package org.qucell.chat.service;
 
 import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.room.Room;
+import org.qucell.chat.model.user.Users;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
@@ -30,10 +31,14 @@ public class ChatReceiveService {
 	@Autowired
 	private ChatMessageLogRepository chatMessageLogRepository;
 	
+	@Autowired
+	private UserService userService;
+	
 	public void process(Client client, JsonMsgRes entity) {
 		EventType eventType = EventType.from(entity);
 		ClientAdapter adapter = ClientAdapter.INSTANCE;
 		String roomId = entity.extractFromHeader("roomId");
+		String userName = entity.extractFromHeader("userName");
 		
 		switch(eventType) {
 		case LogIn:
@@ -74,7 +79,20 @@ public class ChatReceiveService {
 		case RoomList:
 			adapter.sendAllRoomListToClient(client);
 			break;
-		
+		case FindUserByName:
+			
+			Users user = userService.getUserByName(userName);
+			if (user != null) {
+				log.info("find user == {}", user.toString());
+			}
+			else {
+				log.info("find user == null");
+			}
+			adapter.sendReponseToClient(client, user, EventType.FindUserByName);
+			break;
+		case AddFriend:
+			userService.addUserAsFriend(client.getName(), userName);
+			break;
 		}
 	}
 }

@@ -31,11 +31,8 @@ public class ClientIdFriendIdRepository {
 	 * @return
 	 */
 	public void writeAndFlush(Client client){
-		List<Users> friendsOfClient = clientIdFriendIdRepository.get(client);
-		if (friendsOfClient == null) {
-			friendsOfClient = userService.getAllFriendsList(Integer.parseInt(client.getId()));
-			clientIdFriendIdRepository.put(client, friendsOfClient);
-		}
+		List<Users> friendsOfClient = userService.getAllFriendsList(Integer.parseInt(client.getId()));
+		
 		String jsonStr = JsonUtil.toJsonStr(friendsOfClient.stream().map(user->user.toMap()).collect(Collectors.toList()));
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.FriendsList).setContents(jsonStr).build();
 		SendService.writeAndFlushToClient(client, entity);

@@ -36,6 +36,7 @@
 }
 
 .modal-dialog {
+	margin-left:-20%;
 	display: inline-block;
 	text-align: left;
 	vertical-align: middle;
@@ -194,7 +195,7 @@
 
 		<div class="content" id="content">
 			<div class="contact-profile" id="chat-header">
-				<img src="static/img/emoji/smile.png" alt="" /> <span
+				<img src="static/img/emoji/smile.png" alt="" id="chat-header-img"/> <span
 					style="width: 80%;" id="chat-name">CHATNAME</span>
 				<div class="social-media">
 					<i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i>
@@ -228,7 +229,8 @@
 		var host;
 		var websocketPort;
 		var status;
-
+		var roomCnt;
+		
 		$("#signup").on("click", function() {
 			$("#username").val("");
 			$("#passwd").val("");
@@ -394,18 +396,20 @@
 							});
 				} else if (action == 'RoomList') {
 					var arr = JSON.parse(obj.msg);
+					
 					var target = $("#contacts ul");
 					target.empty();
 					$.each(arr, function(idx, elem) {
-						append(target, elem.name, elem.id);
+						append3(target, elem.name, elem.id, elem.mens, idx);
 					});
 
 				} else if (action == 'UserRoomList') {
 					var arr = JSON.parse(obj.msg);
+					
 					var target = $("#contacts ul");
 					target.empty();
 					$.each(arr, function(idx, elem) {
-						append(target, elem.name, elem.id);
+						append3(target, elem.name, elem.id, elem.mens, idx);
 					});
 
 				} else if (action == 'FindUserByName') {
@@ -446,6 +450,10 @@
 					console.log("== enter to room", roomId, refId, refName, alreadyIn);
 					if (refId === myId) {
 						$("#chat-name").text(roomId);
+						var imgsrc = $('.contact[id^=' + roomId + '] img').attr("src");
+						var src = $('#chat-header-img').attr("src", imgsrc);
+
+						$(".wrap").attr("img", "")
 						$(".messages ul").empty();
 
 					} else {
@@ -619,40 +627,7 @@
 			websocket.send(jsonStr);
 		}
 
-		function getIdxFromRoomname(roomName) {
-			var result;
-			$("#room_1, #room_2, #room_3, #room_4").each(function() {
-				var val = $(this).val();
-				if (val == roomName) {
-					result = $(this).prop("id").substring(5);
-					return false;
-				}
-			});
-			return result;
-		}
-
-		function log(msg) {
-			$('<div/>').text(msg).appendTo($("#log"));
-		}
-
-		/*function append($div, msg, etcVal) {
-		    var children = $div.children("div");
-		    var len = children.length;
-		    // 50개 이전것은 삭제
-		    if (len > 50) {
-		        children.slice(0, len - 50).remove();
-		    }
-		    var newElem = $('<div/>').text(msg);
-		    if (etcVal != null) {
-		        newElem.attr("hong-etc", etcVal);
-		    }
-		    newElem.appendTo($div);
-		    $div.animate({
-		        scrollTop: 100000
-		    });
-		}*/
-
-		//채팅방 리스트 목록 (target, room name, room Id)
+		//친 리스트 목록 (target, room name, room Id)
 		function append($div, msg, id) {
 			console.log("==append", msg, id);
 			var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/emoji/smiling.png' alt='' /><div class='meta'><p class='name'>"
@@ -664,6 +639,7 @@
 			});
 		}
 
+		//친구 찾기 
 		function append2($div, msg, id) {
 			console.log("==append2", msg, id);
 			var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/emoji/smiling.png' alt='' /><div class='meta'><p class='name'>"
@@ -676,6 +652,27 @@
 			});
 		}
 
+		//채팅방 리스트 목록 (target, room name, room Id)
+		function append3($div, msg, id, number, idx) {
+			console.log("==append", msg, id, number);
+			console.log("== size of room", roomCnt);
+			if (number > 2 ) {
+				var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><img src='static/img/avatar/Group01.jpg' alt='' /><div class='meta'><p class='name'>"
+						+ msg + "</p><p class='preview'></p></div></div></li>")
+					
+			}
+			else {
+				var num =(idx+1) % 10;
+				console.log(num);
+				var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/avatar/Member00"+num+".jpg' alt='' /><div class='meta'><p class='name'>"
+					+ msg + "</p><p class='preview'></p></div></div></li>")
+			}
+			newElem.appendTo($div);
+			$div.animate({
+				scrollTop : 100000
+			});
+		}
+		
 		function onClickRoom(name) {
 			if (confirm(name + " 방에 들어가시겠습니까?")) {
 				var obj = new Builder().action("EnterToRoom").header("roomId",
@@ -808,6 +805,7 @@
 			}
 
 			$("#status-options").removeClass("active");
+			
 			var obj = new Builder()
 			.action("ChangeStatus").header(
 					"status", nowStatus)

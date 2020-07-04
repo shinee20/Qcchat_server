@@ -130,6 +130,7 @@ public class Room {
 		Map<String, String> map = new HashMap<>();
 		map.put("id", id);
 		map.put("name", name);
+		map.put("mens", String.valueOf(clientList.size()));
 		return map;
 	}
 

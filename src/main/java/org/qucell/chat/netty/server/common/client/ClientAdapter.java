@@ -48,7 +48,7 @@ public class ClientAdapter {
 	 * @return
 	 */
 	public ClientAdapter login(Client client) {
-		SendService.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).setHeader("status", client.getStatus()).build());
+		SendService.writeAndFlushToClient(client, new JsonMsgRes.Builder(client).setAction(EventType.LoginConfirmed).build());
 		
 		//클라이언트마다 참여하고 있는 방들의 정보를 가지고 있다.
 		List<Room> userRoomList = UserIdRoomIdRepository.getUserIdRoomIdMap().get(client.getName());

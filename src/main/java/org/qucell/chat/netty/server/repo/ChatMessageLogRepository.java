@@ -42,9 +42,9 @@ public class ChatMessageLogRepository {
 		}
 	}
 	
-	public void save(String roomId, String msg, String sender) {
+	public void save(String roomId, String msg, String sender, String status) {
 		List<Message> list = chatMessageLogRepository.get(roomId);
-		Message message = new Message(msg, sender);
+		Message message = new Message(msg, sender, status);
 		if (list == null) {
 			list = new ArrayList<>();
 			list.add(message);

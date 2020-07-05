@@ -51,7 +51,7 @@ public class Room {
 				}
 				alreadyIn = "false";
 			}
-			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(this.id).setAction(EventType.EnterToRoom).setHeader("alreadyIn", alreadyIn).build();
+			JsonMsgRes entity = new JsonMsgRes.Builder(client).setRoomId(this.id).setAction(EventType.EnterToRoom).setHeader("alreadyIn", alreadyIn).setHeader("status", client.getStatus()).build();
 			SendService.writeAndFlushToClients(clientList, entity);
 			sendClientList();
 		}
@@ -122,7 +122,7 @@ public class Room {
 	 */
 	public void sendMsg(Client client, String msg) {
 		log.info("send message in room, {}", clientList.toString());
-		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.SendMsg).setHeader("roomId", this.id).setContents(msg).build();
+		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(EventType.SendMsg).setHeader("roomId", this.id).setHeader("status", client.getStatus()).setContents(msg).build();
 		SendService.writeAndFlushToClients(this.clientList, entity);
 	}
 

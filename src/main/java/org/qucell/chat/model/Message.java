@@ -16,10 +16,12 @@ public class Message {
 	private String text;
 	private String sender;
 	private String time;
-
-	public Message(String text, String sender) {
+	private String status;
+	
+	public Message(String text, String sender, String status) {
 		this.text = text;
 		this.sender = sender;
+		this.status = status;
 		this.time = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 	}
 	
@@ -29,6 +31,7 @@ public class Message {
 		map.put("text", text);
 		map.put("sender", sender);
 		map.put("time", time);
+		map.put("status", status); 
 		
 		return map;
 	}

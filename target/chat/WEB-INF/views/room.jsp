@@ -118,7 +118,7 @@
 					<img id="profile-img" src="static/img/emoji/smile.png"
 						class="online" alt="" />
 					<p>
-						&nbsp; ID:<span id="myName"></span> (<span id="myId"></span>)
+						<span id="myName" style="font-weight: bold; font-size: 1.3em;"></span>
 					<p>
 						<i class="fa fa-user icon fa-fw" id="login" aria-hidden="true"
 							title="로그인"></i>
@@ -161,16 +161,7 @@
 			</div>
 			<div id="contacts">
 				<ul>
-					<li class="contact active">
-						<div class="wrap">
-							<span class="contact-status online"></span> <img
-								src="static/img/emoji/smile.png" alt="" />
-							<div class="meta">
-								<p class="name">CHATNAME</p>
-								<p class="preview">Preview Message</p>
-							</div>
-						</div>
-					</li>
+
 				</ul>
 			</div>
 			<div id="bottom-bar">
@@ -195,8 +186,10 @@
 
 		<div class="content" id="content">
 			<div class="contact-profile" id="chat-header">
-				<img src="static/img/emoji/smile.png" alt="" id="chat-header-img" />
-				<span style="width: 80%; margin-top:-7px;" id="chat-name">CHATNAME</span>
+				<img src="static/img/avatar/Member001.jpg" alt=""
+					id="chat-header-img" /> <span
+					style="width: 80%; margin-top: -7px; font-weight: bold;"
+					id="chat-name"></span>
 				<div class="social-media">
 					<i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i>
 				</div>
@@ -366,7 +359,6 @@
 				if (action == 'LoginConfirmed') {
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
-					status = getFromHeader(obj, "status");
 
 					myId = refId;
 					myName = refName;
@@ -374,17 +366,6 @@
 					$("#myId").text(myId);
 					$("#myName").text(myName);
 
-					setUserStatus();
-				} else if (action == 'AllUserList') {
-					//사용 안함
-					var refId = getFromHeader(obj, "refId");
-					var arr = JSON.parse(obj.msg);
-					var target = $("#allUsers");
-					target.empty();
-					$.each(arr, function(idx, elem) {
-						append(target, elem.name + "(" + elem.id + ")"
-								+ (myId == elem.id ? " => 나" : ""), elem.id);
-					});
 				} else if (action == 'FriendsList') {
 					var arr = JSON.parse(obj.msg);
 					var target = $("#contacts ul");
@@ -424,13 +405,7 @@
 					var roomId = getFromHeader(obj, "roomId");
 					var target = $("#userListInRoom");
 					var names = "";
-					/*$.each(arr, function(idx, elem) {
-					    append3(target, elem.name + "(" + elem.id + ")" +
-					        (myId == elem.id ? " => 나" : ""));
-					});*/
-					/*
-					 * 추후 수정
-					 */
+
 					$.each(arr, function(idx, elem) {
 						names += elem.name;
 						if (idx < arr.length - 1) {
@@ -438,9 +413,6 @@
 						}
 					});
 					target.text(names);
-					/*
-					 * 추후 수정
-					 */
 				} else if (action == 'InviteFriend') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
@@ -470,7 +442,8 @@
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
 					var alreadyIn = getFromHeader(obj, "alreadyIn");
-
+					var status = getFromHeader(obj, "status");
+					
 					console.log("== enter to room", roomId, refId, refName,
 							alreadyIn);
 					if (refId === myId) {
@@ -485,7 +458,7 @@
 						} else {
 							var msg = refName + "(" + refId + ")이 " + roomId
 									+ " 방으로 들어왔습니다."
-							enterMessage(msg, roomId, refName, refId);
+							enterMessage(msg, roomId, "","",status);
 						}
 					}
 
@@ -508,8 +481,9 @@
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
-
-					enterMessage(obj.msg, roomId, refName, refId);
+					var status = getFromHeader(obj, "status");
+					
+					enterMessage(obj.msg, roomId, refName, refId, status);
 
 				} else if (action == 'MsgLog') {
 					var roomId = getFromHeader(obj, "roomId");
@@ -518,7 +492,7 @@
 					var arr = JSON.parse(obj.msg);
 
 					$.each(arr, function(idx, elem) {
-						enterMessage(elem.text, roomId, elem.sender);
+						enterMessage(elem.text, roomId, elem.sender,"",elem.status);
 					});
 				} else if (action == 'LogIn') {
 					var refId = getFromHeader(obj, "refId");
@@ -530,10 +504,10 @@
 					$("#login").hide();
 					$("#signup").hide();
 					$("#logout").show();
-				} else if (action == 'Invalid') {	
+				} else if (action == 'Invalid') {
 					alert(obj.msg);
 				}
-				
+
 			};
 		}
 
@@ -730,7 +704,8 @@
 
 		function addFriendToRoom(friendId, roomId) {
 			console.log("==invite friends", friendId, roomId);
-			var obj = new Builder().action("InviteFriend").header("userName",friendId).header("roomId", roomId).finish();
+			var obj = new Builder().action("InviteFriend").header("userName",
+					friendId).header("roomId", roomId).finish();
 			var jsonStr = JSON.stringify(obj);
 			websocket.send(jsonStr);
 		}
@@ -752,72 +727,38 @@
 
 		});
 
-		$("#contacts ul").on(
-				"click",
-				".contact.friends",
-				function() {
-					//active되어있는 li를 removeclass하고 현재 선택한 li에 addClass를 한다.
-					var name = $("#searchId").val();
-					$("#searchId").val("");
-					if (name === "" || name == null) {
-						//친구를 채팅방에 초대하기 
-						var userId = $(this).find("p").first().text();
-						var userName = userId.substring(0, userId.length-3);
-						var roomId =  prompt(userName + " 을(를) 초대할 방명을 입력해주세요. ");
-						if (roomId === "" || name == null) {
-							alert("방명을 입력하세요.");
-							return;
-						}
-						addFriendToRoom(userName, roomId);
-						
-					} else {
-						if (confirm(name + " 을 친구 리스트에 추가하시겠습니까?")) {
-							var obj = new Builder().action("AddFriend").header(
-									"userName", name).finish();
-							var jsonStr = JSON.stringify(obj);
-							websocket.send(jsonStr);
+		$("#contacts ul")
+				.on(
+						"click",
+						".contact.friends",
+						function() {
+							//active되어있는 li를 removeclass하고 현재 선택한 li에 addClass를 한다.
+							var name = $("#searchId").val();
+							$("#searchId").val("");
+							if (name === "" || name == null) {
+								//친구를 채팅방에 초대하기 
+								var userId = $(this).find("p").first().text();
+								var userName = userId.substring(0,
+										userId.length - 3);
+								var roomId = prompt(userName
+										+ " 을(를) 초대할 방명을 입력해주세요. ");
+								if (roomId === "" || name == null) {
+									alert("방명을 입력하세요.");
+									return;
+								}
+								addFriendToRoom(userName, roomId);
 
-						}
-					}
+							} else {
+								if (confirm(name + " 을 친구 리스트에 추가하시겠습니까?")) {
+									var obj = new Builder().action("AddFriend")
+											.header("userName", name).finish();
+									var jsonStr = JSON.stringify(obj);
+									websocket.send(jsonStr);
 
-				});
+								}
+							}
 
-		
-		/*$("#show-contact-information").click(function() {
-			var x = document.getElementById("information");
-			if (x.style.display == "none") {
-				x.style.display = "block";
-			} else {
-				x.style.display = "none";
-			}
-		});*/
-
-		/* $("#addFriendBtn").on("click", function(){
-			alert("add friend!");
-			var name = $("#searchId").val();
-			
-			}); */
-
-		function setUserStatus() {
-			if (status === "online") {
-				$("#profile-img").addClass("online");
-				$("#profile-img").attr("src", "static/img/emoji/smile.png");
-			} else if (status === "away") {
-				$("#profile-img").addClass("away");
-				$("#profile-img").attr("src", "static/img/emoji/smiling.png");
-			} else if (status === "busy") {
-				$("#profile-img").addClass("busy");
-				$("#profile-img").attr("src", "static/img/emoji/serious.png");
-			} else if (status === "offline") {
-				$("#profile-img").addClass("offline");
-				$("#profile-img").attr("src", "static/img/emoji/sad.png");
-			} else if (status === "happy") {
-				$("#profile-img").addClass("happy");
-				$("#profile-img").attr("src", "static/img/emoji/heart.png");
-			} else {
-				$("#profile-img").removeClass();
-			}
-		}
+						});
 
 		$("#status-options ul li").click(
 				function() {
@@ -828,43 +769,47 @@
 					$("#status-offline").removeClass("active");
 					$("#status-happy").removeClass("active");
 
-					var nowStatus;
+					$(this).addClass("active");
+
+					var changeStatus = "online";
 
 					if ($("#status-online").hasClass("active")) {
 						$("#profile-img").addClass("online");
 						$("#profile-img").attr("src",
 								"static/img/emoji/smile.png");
-						nowStatus = "online";
+						changeStatus = "online";
 					} else if ($("#status-away").hasClass("active")) {
 						$("#profile-img").addClass("away");
 						$("#profile-img").attr("src",
 								"static/img/emoji/smiling.png");
-						nowStatus = "away";
+						changeStatus = "away";
 					} else if ($("#status-busy").hasClass("active")) {
 						$("#profile-img").addClass("busy");
 						$("#profile-img").attr("src",
 								"static/img/emoji/serious.png");
-						nowStatus = "busy";
+						changeStatus = "busy";
 					} else if ($("#status-offline").hasClass("active")) {
 						$("#profile-img").addClass("offline");
 						$("#profile-img").attr("src",
 								"static/img/emoji/sad.png");
-						nowStatus = "offline";
+						changeStatus = "offline";
 					} else if ($("#status-happy").hasClass("active")) {
 						$("#profile-img").addClass("happy");
 						$("#profile-img").attr("src",
 								"static/img/emoji/heart.png");
-						nowStatus = "happy";
+						changeStatus = "happy";
 					} else {
 						$("#profile-img").removeClass();
 					}
 
 					$("#status-options").removeClass("active");
 
-					var obj = new Builder().action("ChangeStatus").header(
-							"status", nowStatus).finish();
+					console.log("change-status ", changeStatus);
+
+					var obj = new Builder().action("ChangeStatus").header("status",changeStatus).finish();
 					var jsonStr = JSON.stringify(obj);
 					websocket.send(jsonStr);
+
 				});
 
 		$('#searchId')
@@ -884,6 +829,7 @@
 							}
 						});
 
+		
 		function onMsgKeyUp(event) {
 			if (event.keyCode == 13 || event.which == 13) {
 
@@ -895,29 +841,50 @@
 					return;
 				input.val("");
 
+				var status = $("#profile-img").attr("class");
+				console.log("profile img class = " , status);
 				var obj = new Builder().action("SendMsg").header("roomId",
-						roomId).msg(msg).finish();
+						roomId).header("status",status).msg(msg).finish();
 				var jsonStr = JSON.stringify(obj);
 				websocket.send(jsonStr);
 			}
 		}
 
-		function enterMessage(message, roomId, userName, userId) {
+		function enterMessage(message, roomId, userName, userId, status) {
 			console.log(message);
 
-			$('.contact[id^=' + roomId + '] .preview').html(
+			if (userName == null || userName === "") {}
+			else {
+				$('.contact[id^=' + roomId + '] .preview').html(
 					'<span>' + userName + ': </span>' + message);
+			}
+
+			var imgName;
+
+			if (status === "online") {
+				imgName="smile";
+				} else if (status === "away") {
+				imgName="smiling";
+				} else if (status === "busy") {
+				imgName="serious";
+				} else if (status === "offline") {
+				imgName="sad";
+				} else if (status === "happy") {
+				imgName="heart";
+				}
+			
+			
 			if ($("#chat-name").text() === roomId) {
 				//계속 머무르던 방에 대화를 보냄
 				if (myId === userId || userName === myName) {
 					$(
-							'<li class="sent"><img src="static/img/emoji/smile.png" alt="" /><p>'
+							'<li class="sent"><img src="static/img/emoji/'+imgName+'.png" alt="" /><p>'
 									+ message + '</p></li>').appendTo(
 							$('.messages ul'));
 
 				} else {
 					$(
-							'<li class="replies"><div class="avatar"><img src="static/img/emoji/smiling.png" alt="" /><div class="name" style="float:right;margin-top:-15px">'
+							'<li class="replies"><div class="avatar"><img src="static/img/emoji/'+imgName+'.png" alt="" /><div class="name" style="float:right;margin-top:-15px">'
 									+ userName
 									+ '</div></div><div class="text"><p>'
 									+ message + '</p></div></li>').appendTo(
@@ -931,33 +898,6 @@
 			}
 
 		};
-
-		/*function newMessage(message) {
-		    var roomId = $("#chat-room").text();
-		    var obj = new Builder().action("SendMsg").header("roomId", roomId)
-		        .msg(msg).finish();
-		    var jsonStr = JSON.stringify(obj);
-
-		    websocket.send(jsonStr);
-		}*/
-
-		/*$('.submit').click(function() {
-		    message = $(".message-input input").val();
-		    if ($.trim(message) == '') {
-		        return false;
-		    }
-		    $('.message-input input').val(null);
-		    $('.contact.active .preview').html('<span>You: </span>' + message);
-
-		    newMessage(message);
-		});
-
-		$(window).on('keydown', function(e) {
-		    if (e.which == 13) {
-		        newMessage();
-		        return false;
-		    }
-		});*/
 
 		//# sourceURL=pen.js
 	</script>

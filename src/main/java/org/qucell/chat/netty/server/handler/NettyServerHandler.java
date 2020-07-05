@@ -56,10 +56,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 		
 			Client client = Client.from(ctx);
 			if (client == null && !EventType.LogIn.code.equals(requestEntity.action)) {
-				throw new IllegalStateException("login부터 시작해야 함.");
+				throw new IllegalStateException("login부터 시작.");
 			}
 			if (client == null) {
-				//일단 확인 없이 로그인을 한다. => 추후에는 다른 방식으로 바꿔야 함
 				client = loginHandler.loginProcess(ctx, requestEntity);
 			}
 			
@@ -87,7 +86,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<WebSocketFra
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		log.error(cause.getMessage(), cause);
 		Client client = AttachHelper.about(ctx).getClient();
-		JsonMsgRes entity = new JsonMsgRes.Builder(ctx).setAction(EventType.SendInfo).setContents("[error] " + cause.toString()).build();
+		JsonMsgRes entity = new JsonMsgRes.Builder(ctx).setAction(EventType.Invalid).setContents("[error] " + cause.toString()).build();
 		SendService.writeAndFlushToClient(client, entity);
 	}
 	

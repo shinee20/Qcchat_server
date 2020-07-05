@@ -419,7 +419,7 @@
 					var refName = getFromHeader(obj, "refName");
 					var alreadyIn = getFromHeader(obj, "alreadyIn");
 
-					console.log("== enter to room", roomId, refId, refName,
+					console.log("== invite to room", roomId, refId, refName,
 							alreadyIn);
 					if (refId === myId) {
 						$("#chat-name").text(roomId);
@@ -433,7 +433,7 @@
 						} else {
 							var msg = refName + "(" + refId + ")이 " + roomId
 									+ " 방으로 들어왔습니다."
-							enterMessage(msg, roomId, refName, refId);
+							enterMessage(msg, roomId, "", "");
 						}
 					}
 
@@ -458,7 +458,7 @@
 						} else {
 							var msg = refName + "(" + refId + ")이 " + roomId
 									+ " 방으로 들어왔습니다."
-							enterMessage(msg, roomId, "","",status);
+							enterMessage(msg, roomId, "","");
 						}
 					}
 
@@ -473,7 +473,7 @@
 					} else {
 						var msg = refName + "(" + refId + ")이 " + roomId
 								+ " 방을 나갔습니다."
-						enterMessage(msg, roomId, refName, refId);
+						enterMessage(msg, roomId, "", "");
 						//현재 이 방에 있는 사람들에게만 화면에 띄워야 한다. 다른 채팅방에 있는 사람들까지 화면 전환할 필요 없음
 					}
 

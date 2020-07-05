@@ -14,11 +14,10 @@
 ## in progress
 
 - todo
-  - chat process (netty, redis - cache database, websocket)
-    - multi chat
-    - single chat
-  - ui 
   - modify chat room password
+  - 방을 생성할 때 친구 리스트를 선택해서 만들기 
+  - 이미지 업로드 
+  - 사용자 프로필 변경하기 
   
 ## complete
 - login + jwt token authorization 
@@ -30,6 +29,10 @@
 - send message in chat room 
 - get message log by room name
 - get room list by user id (user logout -> login)
+- chat process (netty, redis - cache database, websocket)
+    - multi chat
+    - single chat
+- ui 
 
 ## Change
 - 채팅방 방장 제도 없앰 (사람이 한 명도 남아있지 않으면 채팅방 자동 제거)

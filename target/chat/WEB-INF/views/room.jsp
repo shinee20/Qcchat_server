@@ -196,7 +196,7 @@
 		<div class="content" id="content">
 			<div class="contact-profile" id="chat-header">
 				<img src="static/img/emoji/smile.png" alt="" id="chat-header-img" />
-				<span style="width: 80%;" id="chat-name">CHATNAME</span>
+				<span style="width: 80%; margin-top:-7px;" id="chat-name">CHATNAME</span>
 				<div class="social-media">
 					<i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i>
 				</div>
@@ -556,7 +556,7 @@
 
 		function disconnect() {
 			if (websocket == null) {
-				alert("websocket을 시작한후에 하세요.");
+				alert("로그인하십시오.");
 				return;
 			}
 			if (confirm(name + " 접속을 종료합니다.")) {
@@ -608,7 +608,7 @@
 
 		function createRoom() {
 			if (websocket == null) {
-				alert("websocket을 시작한후에 하세요.");
+				alert("로그인하십시오.");
 				return;
 			}
 			var roomName = prompt("방명을 입력해주세요. ");
@@ -627,7 +627,7 @@
 		//사용자가 방에서 exit 할 때  reload 필요 (html("") 한 후에 다시 append 하기 위해 )
 		function exitFromRoom() {
 			if (websocket == null) {
-				alert("websocket을 시작한후에 하세요.");
+				alert("로그인하십시오.");
 				return;
 			}
 			var roomId = $("#chat-name").text();

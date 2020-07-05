@@ -196,7 +196,7 @@
 		<div class="content" id="content">
 			<div class="contact-profile" id="chat-header">
 				<img src="static/img/emoji/smile.png" alt="" id="chat-header-img" />
-				<span style="width: 80%;" id="chat-name">CHATNAME</span>
+				<span style="width: 80%; margin-top:-7px;" id="chat-name">CHATNAME</span>
 				<div class="social-media">
 					<i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i>
 				</div>

@@ -319,10 +319,10 @@ public class ClientAdapter {
 		return this;
 	}
 	
-	public ClientAdapter exitFromRoom(Client client, Room room){
-		room.exitRoom(client);
-		return this;
-	}
+//	public ClientAdapter exitFromRoom(Client client, Room room){
+//		room.exitRoom(client);
+//		return this;
+//	}
 	/**
 	 * 방에서 나온다.
 	 * @param client
@@ -347,6 +347,7 @@ public class ClientAdapter {
 			CLIENT_TO_ROOMS.put(client, clientRooms);
 			log.info("remain rooms : {}", CLIENT_TO_ROOMS.get(client).toString());
 		} 
+		
 		return this;
 	}
 	
@@ -409,6 +410,7 @@ public class ClientAdapter {
 			//get() 메소드를 호출하기 전에 isPresent() 메소드를 사용하여 Optional 객체에 저장된 값이 null인지 아닌지를 먼저 확인한 후 호출하는 것이 좋습니다.
 			return findFirst.get();
 		}
+		
 		else return null;
 	}
 

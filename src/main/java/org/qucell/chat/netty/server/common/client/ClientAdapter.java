@@ -16,6 +16,7 @@ import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.room.Room;
 import org.qucell.chat.netty.server.common.EventType;
 import org.qucell.chat.netty.server.repo.UserIdRoomIdRepository;
+import org.qucell.chat.netty.server.repo.UserRepository;
 import org.qucell.chat.service.SendService;
 import org.qucell.chat.util.JsonUtil;
 
@@ -229,9 +230,65 @@ public class ClientAdapter {
 	}
 	
 	public ClientAdapter sendReponseToClient(Client client, Object o, EventType whichEvent) {
+		log.info("invalid request {}", o.toString());
 		String jsonStr = JsonUtil.toJsonStr(o);
 		JsonMsgRes entity = new JsonMsgRes.Builder(client).setAction(whichEvent).setContents(jsonStr).build();
 		SendService.writeAndFlushToClient(client, entity);
+		return this;
+	}
+	
+	public ClientAdapter inviteFriendToRoom(Client client, String friendName, String roomId) {
+		log.info("invite friend {} {}", friendName, roomId);
+		Optional<Room> optional = ROOMS.stream().filter(room->room.getId().equals(roomId)).findFirst();
+		//해당 방이 존재하는지 일단 확인한다.
+		if (optional.isPresent()) {
+			Room room  = optional.get();
+			
+			//현재 클라이언트가 해당 방에 참여하고 있는 지 확인한다. 
+			List<Room> clientRooms = CLIENT_TO_ROOMS.get(client);
+			boolean flag = false;
+			for (Iterator<Room> it=clientRooms.iterator(); it.hasNext();) {
+			    if ((it.next().getId().equals(roomId))) {
+			    	flag = true;
+			        break;
+			    }
+			}
+			if (!flag) {
+				String msg = "참여하고 있지 않는 채팅방에는 초대할 수 없습니다.";
+				sendReponseToClient(client, msg, EventType.Invalid);
+				return this;
+			}
+			
+			//클라이언트가참여하고 있는 방이라면 해당 친구가 접속되어있는 경우에는 참여할 수 있다. 
+			Optional<Client> friendClient = Optional.ofNullable(UserRepository.findLoginedUser(friendName));
+			
+			if (friendClient.isPresent()) {
+				//로그인된 사용자라면 
+				//해당 채팅방에 초대한다. 
+				clientRooms = CLIENT_TO_ROOMS.get(friendClient.get());
+				flag = false;
+				for (Iterator<Room> it=clientRooms.iterator(); it.hasNext();) {
+				    if ((it.next().getId().equals(roomId))) {
+				    	flag = true;
+				        break;
+				    }
+				}
+				if (!flag) {
+					clientRooms.add(room);
+					CLIENT_TO_ROOMS.put(friendClient.get(), clientRooms);
+					room.enterRoom(friendClient.get());
+				}
+			}
+			else {
+				String msg = "로그인된 사용자만 초대 가능합니다.";
+				sendReponseToClient(client, msg, EventType.Invalid);
+			}
+		}
+		else {
+			String msg = "해당 채팅방이 존재하지 않습니다.";
+			sendReponseToClient(client, msg, EventType.Invalid);
+		}
+		
 		return this;
 	}
 	/**

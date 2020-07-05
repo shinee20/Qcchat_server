@@ -8,6 +8,7 @@ import org.qucell.chat.netty.server.common.client.Client;
 import org.qucell.chat.netty.server.common.client.ClientAdapter;
 import org.qucell.chat.netty.server.repo.ChatMessageLogRepository;
 import org.qucell.chat.netty.server.repo.ClientIdFriendIdRepository;
+import org.qucell.chat.netty.server.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,9 @@ public class ChatReceiveService {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	public void process(Client client, JsonMsgRes entity) {
 		EventType eventType = EventType.from(entity);
@@ -96,6 +100,14 @@ public class ChatReceiveService {
 			break;
 		case ChangeStatus:
 			client.setStatus(status);
+			break;
+		case InviteFriend: 
+			/**
+			 * 일단 해당 클라이언트가 자신이 초대한 방에 들어가 있는지를 확인해주고
+			 * 참여하고 있지 않다면 초대할 수 없다. 
+			 * 만약,참여하고 있는 채팅방이라면 친구의 client를 찾아서 room과 연결해줘야 한다. -> 어쩔 수 없이 접속한 사용자만 가능하다. 
+			 */
+			adapter.inviteFriendToRoom(client, userName, roomId);
 			break;
 		}
 	}

@@ -7,9 +7,7 @@ import org.qucell.chat.model.JsonMsgRes;
 import org.qucell.chat.model.user.Users;
 import org.qucell.chat.netty.server.common.AttachHelper;
 import org.qucell.chat.netty.server.common.client.Client;
-import org.qucell.chat.netty.server.repo.UserIdRoomIdRepository;
 import org.qucell.chat.netty.server.repo.UserRepository;
-import org.qucell.chat.service.LoginService;
 import org.qucell.chat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,17 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 @Sharable
 public class LoginHandler {
 
-	@Autowired
-	private LoginService loginService;
 
 	@Autowired
 	private UserService userService;
 	
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private UserIdRoomIdRepository userIdRoomIdRepository;
+
 	/**
 	 * 로그인
 	 * @param ctx
@@ -59,7 +51,7 @@ public class LoginHandler {
 		Client client = new Client(String.valueOf(user.getUserId()),user.getUserName(), "online", ctx.channel());
 		
 		//add login user list
-		userRepository.getUserList().add(client);
+		UserRepository.getUserList().add(client);
 
 		log.info("== login, {}, {}", user.getUserName(), client.toString());
 		AttachHelper.about(ctx).attachUsers(client);
@@ -73,7 +65,7 @@ public class LoginHandler {
 	 * @return
 	 */
 	public boolean isLogin(String name) {
-		Optional<Client> optional = userRepository.getUserList().stream().filter(cl->name.equals(cl.getName())).findFirst();
+		Optional<Client> optional = UserRepository.getUserList().stream().filter(cl->name.equals(cl.getName())).findFirst();
 
 		if (optional.isPresent()) return true;
 		return false;
@@ -84,10 +76,10 @@ public class LoginHandler {
 	 * @param client
 	 */
 	public void logout(Client client) {
-		Optional<Client> optional = userRepository.getUserList().stream().filter(cl->client.equals(cl)).findFirst();
+		Optional<Client> optional = UserRepository.getUserList().stream().filter(cl->client.equals(cl)).findFirst();
 
 		if (optional.isPresent()) {
-			userRepository.getUserList().remove(client);
+			UserRepository.getUserList().remove(client);
 //			userIdRoomIdRepository.save(client.getName());
 		}
 	}

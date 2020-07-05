@@ -36,7 +36,7 @@
 }
 
 .modal-dialog {
-	margin-left:-20%;
+	margin-left: -20%;
 	display: inline-block;
 	text-align: left;
 	vertical-align: middle;
@@ -195,8 +195,8 @@
 
 		<div class="content" id="content">
 			<div class="contact-profile" id="chat-header">
-				<img src="static/img/emoji/smile.png" alt="" id="chat-header-img"/> <span
-					style="width: 80%;" id="chat-name">CHATNAME</span>
+				<img src="static/img/emoji/smile.png" alt="" id="chat-header-img" />
+				<span style="width: 80%;" id="chat-name">CHATNAME</span>
 				<div class="social-media">
 					<i class="fa fa-times" aria-hidden="true" onclick="exitFromRoom();"></i>
 				</div>
@@ -230,7 +230,7 @@
 		var websocketPort;
 		var status;
 		var roomCnt;
-		
+
 		$("#signup").on("click", function() {
 			$("#username").val("");
 			$("#passwd").val("");
@@ -396,7 +396,7 @@
 							});
 				} else if (action == 'RoomList') {
 					var arr = JSON.parse(obj.msg);
-					
+
 					var target = $("#contacts ul");
 					target.empty();
 					$.each(arr, function(idx, elem) {
@@ -405,7 +405,7 @@
 
 				} else if (action == 'UserRoomList') {
 					var arr = JSON.parse(obj.msg);
-					
+
 					var target = $("#contacts ul");
 					target.empty();
 					$.each(arr, function(idx, elem) {
@@ -441,24 +441,48 @@
 					/*
 					 * 추후 수정
 					 */
+				} else if (action == 'InviteFriend') {
+					var roomId = getFromHeader(obj, "roomId");
+					var refId = getFromHeader(obj, "refId");
+					var refName = getFromHeader(obj, "refName");
+					var alreadyIn = getFromHeader(obj, "alreadyIn");
+
+					console.log("== enter to room", roomId, refId, refName,
+							alreadyIn);
+					if (refId === myId) {
+						$("#chat-name").text(roomId);
+						var imgsrc = $('.contact[id^=' + roomId + '] img')
+								.attr("src");
+						var src = $('#chat-header-img').attr("src", imgsrc);
+						$(".messages ul").empty();
+
+					} else {
+						if (alreadyIn === "true") {
+						} else {
+							var msg = refName + "(" + refId + ")이 " + roomId
+									+ " 방으로 들어왔습니다."
+							enterMessage(msg, roomId, refName, refId);
+						}
+					}
+
 				} else if (action == 'EnterToRoom') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
 					var refName = getFromHeader(obj, "refName");
 					var alreadyIn = getFromHeader(obj, "alreadyIn");
 
-					console.log("== enter to room", roomId, refId, refName, alreadyIn);
+					console.log("== enter to room", roomId, refId, refName,
+							alreadyIn);
 					if (refId === myId) {
 						$("#chat-name").text(roomId);
-						var imgsrc = $('.contact[id^=' + roomId + '] img').attr("src");
+						var imgsrc = $('.contact[id^=' + roomId + '] img')
+								.attr("src");
 						var src = $('#chat-header-img').attr("src", imgsrc);
-
-						$(".wrap").attr("img", "")
 						$(".messages ul").empty();
 
 					} else {
-						if (alreadyIn === "true") {}
-						else {
+						if (alreadyIn === "true") {
+						} else {
 							var msg = refName + "(" + refId + ")이 " + roomId
 									+ " 방으로 들어왔습니다."
 							enterMessage(msg, roomId, refName, refId);
@@ -506,7 +530,10 @@
 					$("#login").hide();
 					$("#signup").hide();
 					$("#logout").show();
+				} else if (action == 'Invalid') {	
+					alert(obj.msg);
 				}
+				
 			};
 		}
 
@@ -539,7 +566,7 @@
 		}
 
 		function initDisplay() {
-			$("#chat-name").empty();
+			$("#chat-name").text("");
 			$(".messages ul").empty();
 			$("#userListInRoom").empty();
 
@@ -558,9 +585,7 @@
 					me.headers = {};
 					me.headers[k] = v;
 				} else {
-					me.headers.push({
-						k : v
-					});
+					me.headers[k] = v;
 				}
 				return this;
 			}
@@ -630,7 +655,7 @@
 		//친 리스트 목록 (target, room name, room Id)
 		function append($div, msg, id) {
 			console.log("==append", msg, id);
-			var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/emoji/smiling.png' alt='' /><div class='meta'><p class='name'>"
+			var newElem = $("<li class='contact friends' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/emoji/smiling.png' alt='' /><div class='meta'><p class='name'>"
 					+ msg + "</p><p class='preview'></p></div></div></li>")
 
 			newElem.appendTo($div);
@@ -642,7 +667,7 @@
 		//친구 찾기 
 		function append2($div, msg, id) {
 			console.log("==append2", msg, id);
-			var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/emoji/smiling.png' alt='' /><div class='meta'><p class='name'>"
+			var newElem = $("<li class='contact friends' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/emoji/smiling.png' alt='' /><div class='meta'><p class='name'>"
 					+ msg
 					+ "<i class='fa fa-plus-circle fa-fw' aria-hidden='true' style='float:right;' id='addFriendBtn'></i></p></div></div></li>")
 
@@ -656,23 +681,24 @@
 		function append3($div, msg, id, number, idx) {
 			console.log("==append", msg, id, number);
 			console.log("== size of room", roomCnt);
-			if (number > 2 ) {
-				var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><img src='static/img/avatar/Group01.jpg' alt='' /><div class='meta'><p class='name'>"
+			if (number > 2) {
+				var newElem = $("<li class='contact room' id='" + id + "'><div class='wrap'><img src='static/img/avatar/Group01.jpg' alt='' /><div class='meta'><p class='name'>"
 						+ msg + "</p><p class='preview'></p></div></div></li>")
-					
-			}
-			else {
-				var num =(idx+1) % 10;
+
+			} else {
+				var num = (idx + 1) % 10;
 				console.log(num);
-				var newElem = $("<li class='contact' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/avatar/Member00"+num+".jpg' alt='' /><div class='meta'><p class='name'>"
-					+ msg + "</p><p class='preview'></p></div></div></li>")
+				var newElem = $("<li class='contact room' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/avatar/Member00"+num+".jpg' alt='' /><div class='meta'><p class='name'>"
+						+ msg + "</p><p class='preview'></p></div></div></li>")
 			}
 			newElem.appendTo($div);
+			$('.contact[id^=' + $("#chat-name").text() + ']').addClass(
+					".active");
 			$div.animate({
 				scrollTop : 100000
 			});
 		}
-		
+
 		function onClickRoom(name) {
 			if (confirm(name + " 방에 들어가시겠습니까?")) {
 				var obj = new Builder().action("EnterToRoom").header("roomId",
@@ -702,6 +728,13 @@
 			websocket.send(jsonStr);
 		}
 
+		function addFriendToRoom(friendId, roomId) {
+			console.log("==invite friends", friendId, roomId);
+			var obj = new Builder().action("InviteFriend").header("userName",friendId).header("roomId", roomId).finish();
+			var jsonStr = JSON.stringify(obj);
+			websocket.send(jsonStr);
+		}
+
 		$(".messages").animate({
 			scrollTop : $(document).height()
 		}, "fast");
@@ -710,18 +743,33 @@
 			$("#status-options").toggleClass("active");
 		});
 
+		$("#contacts ul").on("click", ".contact.room", function() {
+			//active되어있는 li를 removeclass하고 현재 선택한 li에 addClass를 한다.
+
+			$("#contacts ul").find("li.active").removeClass("active");
+			$(this).addClass("active");
+			onClickRoom($(this).find("p").first().text());
+
+		});
+
 		$("#contacts ul").on(
 				"click",
-				".contact",
+				".contact.friends",
 				function() {
 					//active되어있는 li를 removeclass하고 현재 선택한 li에 addClass를 한다.
 					var name = $("#searchId").val();
 					$("#searchId").val("");
 					if (name === "" || name == null) {
-						$("#contacts ul").find("li.active").removeClass(
-								"active");
-						$(this).addClass("active");
-						onClickRoom($(this).find("p").first().text());
+						//친구를 채팅방에 초대하기 
+						var userId = $(this).find("p").first().text();
+						var userName = userId.substring(0, userId.length-3);
+						var roomId =  prompt(userName + " 을(를) 초대할 방명을 입력해주세요. ");
+						if (roomId === "" || name == null) {
+							alert("방명을 입력하세요.");
+							return;
+						}
+						addFriendToRoom(userName, roomId);
+						
 					} else {
 						if (confirm(name + " 을 친구 리스트에 추가하시겠습니까?")) {
 							var obj = new Builder().action("AddFriend").header(
@@ -734,6 +782,7 @@
 
 				});
 
+		
 		/*$("#show-contact-information").click(function() {
 			var x = document.getElementById("information");
 			if (x.style.display == "none") {
@@ -770,49 +819,53 @@
 			}
 		}
 
-		$("#status-options ul li").click(function() {
-			$("#profile-img").removeClass();
-			$("#status-online").removeClass("active");
-			$("#status-away").removeClass("active");
-			$("#status-busy").removeClass("active");
-			$("#status-offline").removeClass("active");
-			$("#status-happy").removeClass("active");
+		$("#status-options ul li").click(
+				function() {
+					$("#profile-img").removeClass();
+					$("#status-online").removeClass("active");
+					$("#status-away").removeClass("active");
+					$("#status-busy").removeClass("active");
+					$("#status-offline").removeClass("active");
+					$("#status-happy").removeClass("active");
 
-			var nowStatus;
-			
-			if ($("#status-online").hasClass("active")) {
-				$("#profile-img").addClass("online");
-				$("#profile-img").attr("src", "static/img/emoji/smile.png");
-				nowStatus = "online";
-			} else if ($("#status-away").hasClass("active")) {
-				$("#profile-img").addClass("away");
-				$("#profile-img").attr("src", "static/img/emoji/smiling.png");
-				nowStatus = "away";
-			} else if ($("#status-busy").hasClass("active")) {
-				$("#profile-img").addClass("busy");
-				$("#profile-img").attr("src", "static/img/emoji/serious.png");
-				nowStatus = "busy";
-			} else if ($("#status-offline").hasClass("active")) {
-				$("#profile-img").addClass("offline");
-				$("#profile-img").attr("src", "static/img/emoji/sad.png");
-				nowStatus = "offline";
-			} else if ($("#status-happy").hasClass("active")) {
-				$("#profile-img").addClass("happy");
-				$("#profile-img").attr("src", "static/img/emoji/heart.png");
-				nowStatus = "happy";
-			} else {
-				$("#profile-img").removeClass();
-			}
+					var nowStatus;
 
-			$("#status-options").removeClass("active");
-			
-			var obj = new Builder()
-			.action("ChangeStatus").header(
-					"status", nowStatus)
-			.finish();
-			var jsonStr = JSON.stringify(obj);
-			websocket.send(jsonStr);
-		});
+					if ($("#status-online").hasClass("active")) {
+						$("#profile-img").addClass("online");
+						$("#profile-img").attr("src",
+								"static/img/emoji/smile.png");
+						nowStatus = "online";
+					} else if ($("#status-away").hasClass("active")) {
+						$("#profile-img").addClass("away");
+						$("#profile-img").attr("src",
+								"static/img/emoji/smiling.png");
+						nowStatus = "away";
+					} else if ($("#status-busy").hasClass("active")) {
+						$("#profile-img").addClass("busy");
+						$("#profile-img").attr("src",
+								"static/img/emoji/serious.png");
+						nowStatus = "busy";
+					} else if ($("#status-offline").hasClass("active")) {
+						$("#profile-img").addClass("offline");
+						$("#profile-img").attr("src",
+								"static/img/emoji/sad.png");
+						nowStatus = "offline";
+					} else if ($("#status-happy").hasClass("active")) {
+						$("#profile-img").addClass("happy");
+						$("#profile-img").attr("src",
+								"static/img/emoji/heart.png");
+						nowStatus = "happy";
+					} else {
+						$("#profile-img").removeClass();
+					}
+
+					$("#status-options").removeClass("active");
+
+					var obj = new Builder().action("ChangeStatus").header(
+							"status", nowStatus).finish();
+					var jsonStr = JSON.stringify(obj);
+					websocket.send(jsonStr);
+				});
 
 		$('#searchId')
 				.keypress(
@@ -833,10 +886,13 @@
 
 		function onMsgKeyUp(event) {
 			if (event.keyCode == 13 || event.which == 13) {
+
 				console.log("== enter");
 				var roomId = $("#chat-name").text();
 				var input = $("#input-msg");
 				var msg = input.val();
+				if (msg == null || msg === "")
+					return;
 				input.val("");
 
 				var obj = new Builder().action("SendMsg").header("roomId",

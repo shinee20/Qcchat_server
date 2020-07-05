@@ -65,7 +65,6 @@ public class ChatReceiveService {
 			break;
 		case EnterToRoom:
 			adapter.enterRoom(client, roomId);
-			chatMessageLogRepository.writeAndFlush(client, roomId);
 			break;
 		case ExitFromRoom:
 			adapter.exitRoom(client, roomId);

@@ -398,7 +398,8 @@
 					console.log(arr);
 					var target = $("#contacts ul");
 					target.empty();
-					append2(target, arr.userName, arr.userId);
+					
+					append2(target, arr.userName+ "(" + arr.userId + ")", arr.userId);
 
 				} else if (action == 'UserList') {
 					var arr = JSON.parse(obj.msg);
@@ -406,13 +407,15 @@
 					var target = $("#userListInRoom");
 					var names = "";
 
-					$.each(arr, function(idx, elem) {
-						names += elem.name;
-						if (idx < arr.length - 1) {
-							names += ", ";
-						}
-					});
-					target.text(names);
+					if ($("#chat-name").text() === roomId) {
+						$.each(arr, function(idx, elem) {
+							names += elem.name;
+							if (idx < arr.length - 1) {
+								names += ", ";
+							}
+						});
+						target.text(names);
+					}
 				} else if (action == 'InviteFriend') {
 					var roomId = getFromHeader(obj, "roomId");
 					var refId = getFromHeader(obj, "refId");
@@ -446,6 +449,10 @@
 					
 					console.log("== enter to room", roomId, refId, refName,
 							alreadyIn);
+					if ($("#chat-room").val() != roomId) {
+						requestMessageLog(roomId);
+					}
+					
 					if (refId === myId) {
 						$("#chat-name").text(roomId);
 						var imgsrc = $('.contact[id^=' + roomId + '] img')

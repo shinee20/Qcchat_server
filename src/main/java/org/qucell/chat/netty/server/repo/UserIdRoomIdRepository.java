@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.qucell.chat.model.room.Room;
-import org.qucell.chat.service.RedisService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component

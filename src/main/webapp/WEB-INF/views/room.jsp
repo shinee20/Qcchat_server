@@ -35,6 +35,10 @@
 	}
 }
 
+.confirmpsw {
+	display:none;
+}
+
 .modal-dialog {
 	margin-left: -20%;
 	display: inline-block;
@@ -93,8 +97,14 @@
 						<div class="form-group">
 							<label for="psw"><span
 								class="glyphicon glyphicon-eye-open"></span> Password</label> <input
-								type="password" class="form-control" id="passwd"
+								type="password" class="form-control" id="passwd1"
 								placeholder="Enter password">
+						</div>
+						<div class="form-group confirmpsw">
+							<label for="psw"><span
+								class="glyphicon glyphicon-eye-open"></span> Confirm Password</label> <input
+								type="password" class="form-control" id="passwd2"
+								placeholder="Enter password again">
 						</div>
 						<button type="button" class="btn btn-success btn-block"
 							id="closeModal">
@@ -226,14 +236,17 @@
 
 		$("#signup").on("click", function() {
 			$("#username").val("");
-			$("#passwd").val("");
+			$("#passwd1").val("");
+			$("#passwd2").val("");
 			$("#modal-name").text("SIGNUP");
 			$("#myModal").modal();
+			$(".confirmpsw").css("display", "block");
 
 		});
 		$("#login").on("click", function() {
 			$("#username").val("");
-			$("#passwd").val("");
+			$("#passwd1").val("");
+			$(".confirmpsw").css("display", "none");
 			$("#modal-name").text("LOGIN");
 			$("#myModal").modal();
 
@@ -244,16 +257,28 @@
 		$('#closeModal').on('click', function() {
 			var howuse = $("#modal-name").text();
 
-			var name = $("#username").val();
-			var password = $("#passwd").val();
-
-			if (name == "" || password == "")
-				return;
-
 			if (howuse === "LOGIN") {
+				var name = $("#username").val();
+				var password = $("#passwd1").val();
+			
+				if (name === "" || password === "")
+					return;
+	
+				
 				loginProcess(name, password);
 			} else {
-				signup(name, password);
+				var name = $("#username").val();
+				var password = $("#passwd1").val();
+				var password2 = $("#passwd2").val();
+				
+				if (name === "" || password === "" || password2 === "")
+					return;
+				if (password === password2)
+					signup(name, password);
+				else {
+					alert("비밀번호가 불일치합니다. 다시 확인해주세요.");
+					return;
+				}
 			}
 			$("#myModal").modal('hide');
 		});
@@ -449,9 +474,6 @@
 					
 					console.log("== enter to room", roomId, refId, refName,
 							alreadyIn);
-					if ($("#chat-room").val() != roomId) {
-						requestMessageLog(roomId);
-					}
 					
 					if (refId === myId) {
 						$("#chat-name").text(roomId);
@@ -460,6 +482,7 @@
 						var src = $('#chat-header-img').attr("src", imgsrc);
 						$(".messages ul").empty();
 
+						if (alreadyIn === "true") requestMessageLog(roomId);
 					} else {
 						if (alreadyIn === "true") {
 						} else {
@@ -664,26 +687,25 @@
 			console.log("== size of room", roomCnt);
 			if (number > 2) {
 				var newElem = $("<li class='contact room' id='" + id + "'><div class='wrap'><img src='static/img/avatar/Group01.jpg' alt='' /><div class='meta'><p class='name'>"
-						+ msg + "</p><p class='preview'></p></div></div></li>")
+						+ msg + "("+number+"명 참여)</p><p class='preview'></p></div></div></li>")
 
 			} else {
 				var num = (idx + 1) % 10;
 				console.log(num);
 				var newElem = $("<li class='contact room' id='" + id + "'><div class='wrap'><span class='contact-status online'></span><img src='static/img/avatar/Member00"+num+".jpg' alt='' /><div class='meta'><p class='name'>"
-						+ msg + "</p><p class='preview'></p></div></div></li>")
+						+ msg + "("+number+"명 참여)</p><p class='preview'></p></div></div></li>")
 			}
 			newElem.appendTo($div);
-			$('.contact[id^=' + $("#chat-name").text() + ']').addClass(
-					".active");
+			
 			$div.animate({
 				scrollTop : 100000
 			});
 		}
 
 		function onClickRoom(name) {
-			if (confirm(name + " 방에 들어가시겠습니까?")) {
+			if (confirm(name.substring(0, name.indexOf('(')) + " 방에 들어가시겠습니까?")) {
 				var obj = new Builder().action("EnterToRoom").header("roomId",
-						name).finish();
+						name.substring(0,name.indexOf("("))).finish();
 				var jsonStr = JSON.stringify(obj);
 				websocket.send(jsonStr);
 			}
@@ -746,7 +768,7 @@
 								//친구를 채팅방에 초대하기 
 								var userId = $(this).find("p").first().text();
 								var userName = userId.substring(0,
-										userId.length - 3);
+										userId.indexOf('('));
 								var roomId = prompt(userName
 										+ " 을(를) 초대할 방명을 입력해주세요. ");
 								if (roomId === "" || name == null) {

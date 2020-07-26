@@ -18,6 +18,7 @@
   - 방을 생성할 때 친구 리스트를 선택해서 만들기 
   - 이미지 업로드 
   - 사용자 프로필 변경하기 
+  - nginx를 사용해서 사용자 채팅 로그 남기기(redis mapping)
   
 ## complete
 - login + jwt token authorization 
